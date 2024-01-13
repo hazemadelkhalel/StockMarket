@@ -1,0 +1,70 @@
+@use "./colors" as *;
+// Centering
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Between
+@mixin between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Start
+@mixin start {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+// End
+@mixin end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+// Around
+@mixin around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+// Separator
+@mixin bottomSeparator($widthVal, $topVal, $bottomVal, $trStatus) {
+  &::after {
+    content: "";
+    position: absolute;
+    width: #{$widthVal};
+    height: 2px;
+    background-color: $separatorColor;
+    @if ($trStatus == 1) {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @if ($topVal == 0) {
+      bottom: #{$bottomVal};
+    } @else {
+      top: #{$topVal};
+    }
+  }
+}
+
+// Scrollbar
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    &-track {
+      background-color: #f1f5f9;
+      border-radius: 10px;
+    }
+    &-thumb {
+      background-color: $mainColor;
+      border-radius: 10px;
+    }
+  }
+}

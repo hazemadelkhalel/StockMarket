@@ -1,9 +1,10 @@
+import { Navbar } from "./components";
 import "./scss/home.css";
 
 export default function Home() {
   return (
     <main>
-      <h1>Hello World!</h1>
+      <Navbar idx={0} />
     </main>
-  )
+  );
 }

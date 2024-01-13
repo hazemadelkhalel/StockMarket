@@ -1,0 +1,147 @@
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+  position: sticky;
+  top: 0px;
+  background-color: black;
+  color: white;
+}
+.nav-container .active {
+  color: #00a9ff;
+}
+.nav-container .nav-logo {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 30px;
+  position: relative;
+}
+.nav-container .nav-logo h1 {
+  font-size: 26px;
+  flex: 1;
+  font-weight: bold;
+  margin-left: 5px;
+}
+.nav-container .nav-logo img {
+  width: 50px;
+  height: 50px;
+}
+.nav-container .nav-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 6;
+}
+.nav-container .nav-links li {
+  position: relative;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.nav-container .nav-links li .nav-link {
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 25px;
+}
+.nav-container .nav-links li .nav-link:hover {
+  background-color: #333840;
+}
+.nav-container .nav-user {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+  margin-right: 40px;
+}
+.nav-container .nav-user img {
+  width: 45px;
+  height: 45px;
+  padding: 5px;
+  border-radius: 50%;
+}
+.nav-container .nav-user img:hover {
+  cursor: pointer;
+  background-color: #333840;
+}
+.nav-container .profile-area {
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  background-color: #fff;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 15px 10px;
+  border-top: 4px solid #00a9ff;
+  z-index: 1;
+}
+.nav-container .profile-area.false {
+  display: none;
+}
+.nav-container .profile-area .pa-info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  width: 250px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  transition: 0.3s;
+  padding: 5px 0px;
+  cursor: pointer;
+}
+.nav-container .profile-area .pa-info::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  background-color: #ddd;
+}
+.nav-container .profile-area .pa-info img {
+  width: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.nav-container .profile-area .pa-info span {
+  font-weight: bold;
+  font-size: 16px;
+  color: #00a9ff;
+}
+.nav-container .profile-area .pa-info:hover {
+  background-color: #eee;
+}
+.nav-container .profile-area .logout {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 6px;
+  transition: 0.3s;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  width: 100%;
+  padding: 10px;
+  color: #0e141e;
+}
+.nav-container .profile-area .logout:hover {
+  background-color: #00a9ff;
+  color: #fff;
+}
+.nav-container .profile-area .logout img {
+  width: 16px;
+  margin-right: 5px;
+}
+.nav-container .profile-area .logout span {
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 14px;
+}/*# sourceMappingURL=navbar.css.map */
