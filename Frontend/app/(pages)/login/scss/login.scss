@@ -1,0 +1,97 @@
+@use "../../../shared/styles/colors" as *;
+@use "../../../shared/styles/mixins" as *;
+
+.login-container {
+  background-color: #f2f2f2;
+  .login-div {
+    @include center;
+    background-color: white;
+    display: flex;
+    align-items: flex-start;
+    width: fit-content;
+    margin: auto;
+    height: 100vh;
+    flex-direction: column;
+    border-radius: 6px;
+    .auth-title {
+      position: relative;
+      font-weight: bold;
+      font-size: 26px;
+      margin: 20px 0 60px 30px;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 50px;
+        height: 5px;
+        background-color: #ddd;
+      }
+      span {
+        color: $blueColor;
+      }
+    }
+    .auth-form {
+      @include center;
+      flex-direction: column;
+      padding: 30px 45px 100px;
+      .groofy-input {
+        input {
+          &:focus,
+          &:hover {
+            outline-color: $blueColor;
+          }
+        }
+      }
+      .groofybtn {
+        margin-top: 10px;
+        background-color: #008ed6;
+        color: white;
+        width: 90px;
+        padding: 7px;
+        border-radius: 12px;
+        &:hover {
+          background-color: $mainColor;
+          color: white;
+        }
+        .btn-text {
+          font-size: 14px;
+        }
+      }
+      .f-sbmt {
+        @include center;
+        flex-direction: column;
+        .frg-pass {
+          margin-top: 20px;
+          margin-bottom: 25px;
+          color: $blueColor;
+          transition: 0.3s;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+        .alrg {
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            width: calc(100% + 100px);
+            height: 1px;
+            background-color: #ddd;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          a {
+            margin-left: 5px;
+            color: $blueColor;
+            transition: 0.3s;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}

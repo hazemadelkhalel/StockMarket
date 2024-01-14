@@ -1,0 +1,96 @@
+.login-container {
+  background-color: #f2f2f2;
+}
+.login-container .login-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  display: flex;
+  align-items: flex-start;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto;
+  height: 100vh;
+  flex-direction: column;
+  border-radius: 6px;
+}
+.login-container .login-div .auth-title {
+  position: relative;
+  font-weight: bold;
+  font-size: 26px;
+  margin: 20px 0 60px 30px;
+}
+.login-container .login-div .auth-title::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  width: 50px;
+  height: 5px;
+  background-color: #ddd;
+}
+.login-container .login-div .auth-title span {
+  color: #00a9ff;
+}
+.login-container .login-div .auth-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 30px 45px 100px;
+}
+.login-container .login-div .auth-form .groofy-input input:focus, .login-container .login-div .auth-form .groofy-input input:hover {
+  outline-color: #00a9ff;
+}
+.login-container .login-div .auth-form .groofybtn {
+  margin-top: 10px;
+  background-color: #008ed6;
+  color: white;
+  width: 90px;
+  padding: 7px;
+  border-radius: 12px;
+}
+.login-container .login-div .auth-form .groofybtn:hover {
+  background-color: #0e141e;
+  color: white;
+}
+.login-container .login-div .auth-form .groofybtn .btn-text {
+  font-size: 14px;
+}
+.login-container .login-div .auth-form .f-sbmt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.login-container .login-div .auth-form .f-sbmt .frg-pass {
+  margin-top: 20px;
+  margin-bottom: 25px;
+  color: #00a9ff;
+  transition: 0.3s;
+}
+.login-container .login-div .auth-form .f-sbmt .frg-pass:hover {
+  text-decoration: underline;
+}
+.login-container .login-div .auth-form .f-sbmt .alrg {
+  position: relative;
+}
+.login-container .login-div .auth-form .f-sbmt .alrg::before {
+  content: "";
+  position: absolute;
+  width: calc(100% + 100px);
+  height: 1px;
+  background-color: #ddd;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.login-container .login-div .auth-form .f-sbmt .alrg a {
+  margin-left: 5px;
+  color: #00a9ff;
+  transition: 0.3s;
+}
+.login-container .login-div .auth-form .f-sbmt .alrg a:hover {
+  text-decoration: underline;
+}/*# sourceMappingURL=login.css.map */

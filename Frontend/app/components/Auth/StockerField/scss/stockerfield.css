@@ -1,0 +1,37 @@
+.stocker-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.stocker-input:not(:last-of-type) {
+  margin-bottom: 25px;
+}
+.stocker-input .gi-text {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.stocker-input input {
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 10px;
+  border: none;
+  caret-color: #feb139;
+  font-size: 16px;
+  transition: 0.3s;
+  width: 400px;
+  outline: 2px solid transparent;
+}
+.stocker-input input:focus,
+.stocker-input input:hover {
+  outline-color: #00a9ff;
+}
+.stocker-input input::-moz-placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.stocker-input input::placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+} /*# sourceMappingURL=stockerfield.css.map */
