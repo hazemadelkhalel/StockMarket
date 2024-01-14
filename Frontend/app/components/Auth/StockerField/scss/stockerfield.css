@@ -21,8 +21,7 @@
   width: 400px;
   outline: 2px solid transparent;
 }
-.stocker-input input:focus,
-.stocker-input input:hover {
+.stocker-input input:focus, .stocker-input input:hover {
   outline-color: #00a9ff;
 }
 .stocker-input input::-moz-placeholder {
@@ -34,4 +33,4 @@
   opacity: 0.5;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.854);
-} /*# sourceMappingURL=stockerfield.css.map */
+}/*# sourceMappingURL=stockerfield.css.map */

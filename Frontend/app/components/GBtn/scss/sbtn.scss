@@ -1,7 +1,7 @@
 @use "../../../shared/styles/colors" as *;
 @use "../../../shared/styles/mixins" as *;
 
-.groofybtn {
+.stockerbtn {
   @include center;
   gap: 0 5px;
   background-color: $btnColor;

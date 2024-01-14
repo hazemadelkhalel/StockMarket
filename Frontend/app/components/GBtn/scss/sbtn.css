@@ -1,4 +1,4 @@
-.groofybtn {
+.stockerbtn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,14 +14,14 @@
      -moz-user-select: none;
           user-select: none;
 }
-.groofybtn:hover {
+.stockerbtn:hover {
   box-shadow: none;
 }
-.groofybtn .btn-text {
+.stockerbtn .btn-text {
   font-size: 17px;
   font-weight: 500;
   font-family: "Roboto", sans-serif;
 }
-.groofybtn .btn-icn {
+.stockerbtn .btn-icn {
   width: 25px;
-}/*# sourceMappingURL=gbtn.css.map */
+}/*# sourceMappingURL=sbtn.css.map */
