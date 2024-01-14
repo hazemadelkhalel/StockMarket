@@ -1,0 +1,37 @@
+{
+  "example": {
+    "name": "Release 12.6.0 Benchmarks",
+    "status": "Running",
+    "timeLeft": "01:26",
+    "queuing": 126,
+    "running": 13,
+    "passed": 214,
+    "failed": 83,
+    "completionPercentage": 83,
+    "history": [
+      {
+        "date": "15/10/2020",
+        "passed": 327,
+        "failed": 21
+      },
+      {
+        "date": "15/10/2020",
+        "passed": 327,
+        "failed": 21
+      },
+      {
+        "date": "15/10/2020",
+        "passed": 327,
+        "failed": 21
+      },
+      {
+        "date": "15/10/2020",
+        "passed": 327,
+        "failed": 21
+      }
+    ],
+    "creationDate": "15/10/2020 10:30",
+    "updateDate": "28/06/2021 02:46",
+    "tags": ["mpg", "sw_streamer", "emulation", "hw_streamer"]
+  }
+}
