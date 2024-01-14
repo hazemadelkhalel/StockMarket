@@ -1,0 +1,35 @@
+@use "../../../../shared/styles/colors" as *;
+@use "../../../../shared/styles/mixins" as *;
+
+.groofy-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  &:not(:last-of-type) {
+    margin-bottom: 25px;
+  }
+  .gi-text {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  input {
+    background-color: #eee;
+    border-radius: 6px;
+    padding: 10px;
+    border: none;
+    caret-color: $btnColor;
+    font-size: 16px;
+    transition: 0.3s;
+    width: 400px;
+    outline: 2px solid transparent;
+    &:focus,
+    &:hover {
+      outline-color: $blueColor;
+    }
+    &::placeholder {
+      opacity: 0.5;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.854);
+    }
+  }
+}
