@@ -1,0 +1,116 @@
+@use "../../../shared/styles/colors" as *;
+@use "../../../shared/styles/mixins" as *;
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  .profile-section-1 {
+    display: flex;
+    margin-top: 60px;
+    margin-left: 100px;
+    margin-bottom: 40px;
+    .profile-pc {
+      margin-right: 20px;
+      img {
+        width: 180px;
+        height: 180px;
+      }
+    }
+    .profile-info {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      .p-i-data {
+        h1 {
+          font-size: 32px;
+          line-height: 36px;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+        .p-i-creation {
+          display: flex;
+          align-items: center;
+          img {
+            width: 22px;
+            height: 22px;
+            margin-right: 5px;
+          }
+          span {
+            font-size: 12px;
+            color: #6a6d78;
+          }
+        }
+      }
+      .p-i-container-progress {
+        display: flex;
+        .p-i-progress {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-right: 50px;
+
+          h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #6a6d78;
+          }
+        }
+      }
+    }
+  }
+  .profile-section-2 {
+    margin-left: 100px;
+    .p-s-2-header {
+      display: flex;
+      h2 {
+        font-size: 20px;
+        font-weight: 600;
+        padding: 15px 20px;
+        position: relative;
+        cursor: pointer;
+
+        &:hover {
+          color: #1e53e5;
+
+          &.active {
+            &::after {
+              width: 100%;
+              left: 0px;
+            }
+          }
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 80%;
+          height: 3px;
+          bottom: -12px;
+          left: 13px;
+          transition: width 0.3s, left 0.3s;
+        }
+      }
+    }
+  }
+}
+.active {
+  color: #1e53e5;
+  &::after {
+    background-color: #1e53e5;
+  }
+  &:hover {
+    .active::after {
+      width: 100%;
+      left: 0px;
+    }
+  }
+}
+
+.p-divider.p-divider-horizontal {
+  margin: 0.7rem;
+}
