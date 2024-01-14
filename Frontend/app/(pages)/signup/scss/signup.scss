@@ -1,0 +1,138 @@
+@use "../../../shared/styles/colors" as *;
+@use "../../../shared/styles/mixins" as *;
+
+.signup-div {
+  @include center;
+  height: 100vh;
+  width: calc(100% - 60px);
+  margin: auto;
+  .features {
+    width: 40%;
+    height: 800px;
+    background-color: $mainColor;
+    box-shadow: $headerShadow;
+    border-radius: 6px 0 0 6px;
+    .ft-title {
+      color: #fff;
+      font-weight: bold;
+      font-size: 26px;
+      margin: 15px 0 30px 20px;
+      span {
+        color: $blueColor;
+      }
+    }
+    .ft-container {
+      padding: 30px 30px 100px;
+      width: 100%;
+      @include center;
+      flex-direction: column;
+      .ft-box {
+        @include center;
+        &:not(:last-of-type) {
+          margin-bottom: 45px;
+        }
+        .ftb-icn {
+          @include center;
+          margin-right: 15px;
+          padding: 25px;
+          background-color: $blueColor;
+          border-radius: 12px;
+          img {
+            width: 65px;
+            height: 65px;
+          }
+        }
+        .ftb-info {
+          h4 {
+            color: #fff;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 18px;
+          }
+          p {
+            width: 400px;
+            color: #eee;
+            font-weight: 300;
+            line-height: 1.5;
+          }
+        }
+      }
+    }
+  }
+  .auth {
+    width: 60%;
+    height: 800px;
+    background-color: #fff;
+    box-shadow: $headerShadow;
+    border-radius: 0 6px 6px 0;
+    .auth-title {
+      position: relative;
+      font-weight: bold;
+      font-size: 26px;
+      margin: 15px 0 30px 20px;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 50px;
+        height: 5px;
+        background-color: #ddd;
+      }
+      span {
+        color: $blueColor;
+      }
+    }
+    .auth-form {
+      @include center;
+      flex-direction: column;
+      padding: 30px 30px 50px;
+      width: 100%;
+      .groofy-input input:hover {
+        outline-color: $blueColor;
+      }
+      .f-sbmt {
+        @include center;
+        flex-direction: column;
+        .groofybtn {
+          background-color: $blueColor;
+          color: white;
+          width: 180px;
+          border-radius: 12px;
+          &:hover {
+            background-color: $mainColor;
+            color: white;
+          }
+          .btn-text {
+            font-size: 16px;
+            font-weight: bold;
+          }
+        }
+        .groofybtn {
+          margin-bottom: 35px;
+        }
+        .alrg {
+          position: relative;
+          &::before {
+            content: "";
+            position: absolute;
+            width: calc(100% + 100px);
+            height: 1px;
+            background-color: #ddd;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          a {
+            margin-left: 5px;
+            color: $blueColor;
+            transition: 0.3s;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
