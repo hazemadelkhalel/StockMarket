@@ -47,6 +47,15 @@ public:
 
 
     Response<UserDTO> getUserById(int id);
+    
+    Response<UserDTO> getUserByUsername(std::string username);
+
+    Response<UserDTO> getUserByEmail(std::string email);
+
+    Response<UserDTO> validateUserLogin(std::string username_or_email, std::string password);
+
+
+
 
 
     // /// @brief Creates test suite run.

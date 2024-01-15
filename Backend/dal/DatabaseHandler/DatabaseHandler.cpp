@@ -222,6 +222,174 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
     return response;
 }
 
+Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
+{
+    Response<UserDTO> response;
+
+    std::string UserQ = "SELECT "
+                     "user.id, "
+                     "user.username, "
+                     "user.email, "
+                     "user.password, "
+                     "user.created_at, "
+                     "user.first_name, "
+                     "user.last_name, "
+                     "user.phone, "
+                     "user.aboutme, "
+                     "user.website, "
+                     "user.facebook_profile, "
+                     "user.instagram_profile "
+                     "FROM user AS user "
+                     "WHERE user.username = '" +
+                     username + "'";
+;
+
+
+    auto UserResult = this->queryRows(UserQ.c_str());
+    if (!UserResult.ok)
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    if (UserResult.rows->size() == 0)
+    {
+        response.status = NOT_FOUND;
+        return response;
+    }
+
+
+    UserDTO *dto = new UserDTO(
+        std::stoi(UserResult.rows->at(0)["id"]),
+        UserResult.rows->at(0)["username"],
+        UserResult.rows->at(0)["email"],
+        UserResult.rows->at(0)["password"],
+        UserResult.rows->at(0)["created_at"],
+        UserResult.rows->at(0)["first_name"],
+        UserResult.rows->at(0)["last_name"],
+        UserResult.rows->at(0)["phone"],
+        UserResult.rows->at(0)["aboutme"],
+        UserResult.rows->at(0)["website"],
+        UserResult.rows->at(0)["facebook_profile"],
+        UserResult.rows->at(0)["instagram_profile"]);
+        
+
+    response.status = SUCCESS;
+    response.result = dto;
+    return response;
+}
+
+Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
+{
+    Response<UserDTO> response;
+
+    std::string UserQ = "SELECT "
+                     "user.id, "
+                     "user.username, "
+                     "user.email, "
+                     "user.password, "
+                     "user.created_at, "
+                     "user.first_name, "
+                     "user.last_name, "
+                     "user.phone, "
+                     "user.aboutme, "
+                     "user.website, "
+                     "user.facebook_profile, "
+                     "user.instagram_profile "
+                     "FROM user AS user "
+                     "WHERE user.email = '" + email + "'";
+
+
+    auto UserResult = this->queryRows(UserQ.c_str());
+    if (!UserResult.ok)
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    if (UserResult.rows->size() == 0)
+    {
+        response.status = NOT_FOUND;
+        return response;
+    }
+
+    UserDTO *dto = new UserDTO(
+        std::stoi(UserResult.rows->at(0)["id"]),
+        UserResult.rows->at(0)["username"],
+        UserResult.rows->at(0)["email"],
+        UserResult.rows->at(0)["password"],
+        UserResult.rows->at(0)["created_at"],
+        UserResult.rows->at(0)["first_name"],
+        UserResult.rows->at(0)["last_name"],
+        UserResult.rows->at(0)["phone"],
+        UserResult.rows->at(0)["aboutme"],
+        UserResult.rows->at(0)["website"],
+        UserResult.rows->at(0)["facebook_profile"],
+        UserResult.rows->at(0)["instagram_profile"]);
+
+    response.status = SUCCESS;
+    response.result = dto;
+
+    return response;
+}
+
+Response<UserDTO> DatabaseHandler::validateUserLogin(std::string username_or_email, std::string password)
+{
+    Response<UserDTO> response;
+
+std::string UserQ = "SELECT "
+                    "user.id, "
+                    "user.username, "
+                    "user.email, "
+                    "user.password, "
+                    "user.created_at, "
+                    "user.first_name, "
+                    "user.last_name, "
+                    "user.phone, "
+                    "user.aboutme, "
+                    "user.website, "
+                    "user.facebook_profile, "
+                    "user.instagram_profile "
+                    "FROM user AS user "
+                    "WHERE (user.email = '" + username_or_email + 
+                    "' OR user.username = '" + username_or_email +
+                     "') AND user.password = '" + password + "'";
+
+
+    auto UserResult = this->queryRows(UserQ.c_str());
+    if (!UserResult.ok)
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    if (UserResult.rows->size() == 0)
+    {
+        response.status = NOT_FOUND;
+        return response;
+    }
+
+
+    UserDTO *dto = new UserDTO(
+        std::stoi(UserResult.rows->at(0)["id"]),
+        UserResult.rows->at(0)["username"],
+        UserResult.rows->at(0)["email"],
+        UserResult.rows->at(0)["password"],
+        UserResult.rows->at(0)["created_at"],
+        UserResult.rows->at(0)["first_name"],
+        UserResult.rows->at(0)["last_name"],
+        UserResult.rows->at(0)["phone"],
+        UserResult.rows->at(0)["aboutme"],
+        UserResult.rows->at(0)["website"],
+        UserResult.rows->at(0)["facebook_profile"],
+        UserResult.rows->at(0)["instagram_profile"]);
+        
+
+    response.status = SUCCESS;
+    response.result = dto;
+    return response;
+}
+
 // Response<int> DatabaseHandler::updateTestCase(UpdateTestCaseDTO &dto)
 // {
 //     Response<int> response;

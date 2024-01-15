@@ -32,7 +32,6 @@ const SignUp = () => {
   const handleClick = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     try {
-      console.log(username, email, password, confirmPassword);
       if (
         username === "" ||
         email === "" ||
@@ -76,7 +75,7 @@ const SignUp = () => {
         (toast.current as any)?.show({
           severity: "error",
           summary: "Failed",
-          detail: "Make sure the username and email are unique",
+          detail: data.error,
           life: 3000,
         });
         return;
@@ -90,7 +89,6 @@ const SignUp = () => {
       setTimeout(() => {
         router.push("/");
       }, 1000);
-      console.log(data);
     } catch (error) {
       console.error("Error sending message:", error as Error);
     }

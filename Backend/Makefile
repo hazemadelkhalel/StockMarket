@@ -5,7 +5,7 @@ CXX := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -lpthread
 
 # Source files
-SRC := dal/DatabaseHandler/DatabaseHandler.cpp StockMarket.cpp controllers/UserController.cpp
+SRC := dal/DatabaseHandler/DatabaseHandler.cpp StockMarket.cpp controllers/UserController.cpp controllers/AuthController.cpp
 
 # Object files
 OBJ := $(SRC:.cpp=.o)

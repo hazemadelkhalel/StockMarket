@@ -58,6 +58,20 @@
     "streambuf": "cpp",
     "thread": "cpp",
     "cinttypes": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "any": "cpp",
+    "bitset": "cpp",
+    "csignal": "cpp",
+    "cstring": "cpp",
+    "forward_list": "cpp",
+    "list": "cpp",
+    "set": "cpp",
+    "unordered_set": "cpp",
+    "regex": "cpp",
+    "future": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "valarray": "cpp",
+    "variant": "cpp"
   }
 }
