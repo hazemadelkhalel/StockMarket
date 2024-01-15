@@ -2,10 +2,101 @@
 import Link from "next/link";
 import { GBtn, StockerField } from "../../components";
 import "./scss/signup.css";
+import { useRef, useState } from "react";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/lara-light-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const toast = useRef(null);
+  const router = useRouter();
+
+  const handleUsernameChange = (value: any) => {
+    setUsername(value);
+  };
+  const handleEmailChange = (value: any) => {
+    setEmail(value);
+  };
+  const handlePasswordChange = (value: any) => {
+    setPassword(value);
+  };
+  const handleConfirmPasswordChange = (value: any) => {
+    setConfirmPassword(value);
+  };
+  const handleClick = async (event: any) => {
+    event.preventDefault();
+    try {
+      console.log(username, email, password, confirmPassword);
+      if (
+        username === "" ||
+        email === "" ||
+        password === "" ||
+        confirmPassword === ""
+      ) {
+        (toast.current as any)?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: "Missing fields",
+          life: 1500,
+        });
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        (toast.current as any)?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: "Passwords do not match",
+          life: 1500,
+        });
+        return;
+      }
+      const response = await fetch("http://localhost:8000/signup/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          User: {
+            username: username,
+            email: email,
+            password: password,
+          },
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        (toast.current as any)?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: "Make sure the username and email are unique",
+          life: 3000,
+        });
+        return;
+      }
+      (toast.current as any)?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Account created successfully",
+        life: 1500,
+      });
+      router.push("/");
+      console.log(data);
+    } catch (error) {
+      console.error("Error sending message:", error as Error);
+    }
+  };
+
   return (
     <div className="align">
+      <Toast ref={toast} />
       <div className="signup-div">
         <div className="features">
           <div className="ft-title">
@@ -64,24 +155,28 @@ const SignUp = () => {
               giText="Username"
               giPlaceholder="Enter your username"
               giType="text"
+              onInputChange={handleUsernameChange}
             />
             <StockerField
               giText="Email"
               giPlaceholder="Enter your email"
               giType="email"
+              onInputChange={handleEmailChange}
             />
             <StockerField
               giText="Password"
               giPlaceholder="Enter your password"
               giType="password"
+              onInputChange={handlePasswordChange}
             />
             <StockerField
               giText="Confirm Password"
               giPlaceholder="Confirm your password"
               giType="password"
+              onInputChange={handleConfirmPasswordChange}
             />
             <div className="f-sbmt">
-              <GBtn btnText="Create new account" clickEvent={() => {}} />
+              <GBtn btnText="Create new account" clickEvent={handleClick} />
               <span className="alrg">
                 Already have an account?<Link href="/login">Login</Link>
               </span>

@@ -10,4 +10,5 @@ export interface StockerInputProps {
   giText: string;
   giPlaceholder: string;
   giType: string;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
