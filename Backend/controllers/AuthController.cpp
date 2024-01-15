@@ -87,7 +87,9 @@ json AuthController::login(json &User)
             {"aboutme", response.result->aboutme},
             {"website", response.result->website},
             {"facebook_profile", response.result->facebook_profile},
-            {"instagram_profile", response.result->instagram_profile}
+            {"instagram_profile", response.result->instagram_profile},
+            {"card_number", response.result->card_number},
+            {"wallet", response.result->wallet}
             };
         
         return json({{"status", "success"}, {"User", userDataJson}});
@@ -118,6 +120,8 @@ json AuthController::createUser(json &User)
     std::string website = "";
     std::string facebook_profile = "";
     std::string instagram_profile = "";
+    std::string card_number = "";
+    float wallet = 0;
 
     if (User.contains("username"))
     {
@@ -159,9 +163,17 @@ json AuthController::createUser(json &User)
     {
         instagram_profile = User["instagram_profile"];
     }
+    if (User.contains("card_number"))
+    {
+        card_number = User["card_number"];
+    }
+    if (User.contains("wallet"))
+    {
+        wallet = User["wallet"];
+    }
     created_at = DatabaseHandler::getHandler()->datetimeNow();
 
-    UserDTO dto(1, username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile);
+    UserDTO dto(1, username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, wallet);
     auto response = db_handler->createUser(dto);
     if (response.status != SUCCESS)
     {
@@ -182,7 +194,9 @@ json AuthController::createUser(json &User)
         {"aboutme", aboutme},
         {"website", website},
         {"facebook_profile", facebook_profile},
-        {"instagram_profile", instagram_profile}
+        {"instagram_profile", instagram_profile},
+        {"card_number", card_number},
+        {"wallet", wallet}
         };
     return json({{"status", "success"},
                  {"User", UserResponse}});

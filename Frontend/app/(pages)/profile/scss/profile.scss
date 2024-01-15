@@ -204,6 +204,15 @@ body {
           bottom: 40px;
           @include end;
           margin-top: 30px;
+          .stockerbtn {
+            background-color: #1e53e5;
+            color: white;
+            box-shadow: none;
+            transition: 0.3s;
+            &:hover {
+              background-color: #063cd0;
+            }
+          }
         }
       }
       .settings-right {
@@ -297,6 +306,15 @@ body {
           bottom: 40px;
           @include end;
           margin-top: 30px;
+          .stockerbtn {
+            background-color: #1e53e5;
+            color: white;
+            box-shadow: none;
+            transition: 0.3s;
+            &:hover {
+              background-color: #063cd0;
+            }
+          }
         }
       }
     }
@@ -317,14 +335,4 @@ body {
 
 .p-divider.p-divider-horizontal {
   margin: 0.7rem;
-}
-
-.stockerbtn {
-  background-color: #1e53e5;
-  color: white;
-  box-shadow: none;
-  transition: 0.3s;
-  &:hover {
-    background-color: #063cd0;
-  }
 }

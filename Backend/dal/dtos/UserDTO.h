@@ -17,11 +17,13 @@ struct UserDTO
     std::string website;
     std::string facebook_profile;
     std::string instagram_profile;
+    std::string card_number;
+    float wallet;
 
     UserDTO(int id, std::string username, std::string email, std::string password
     , std::string created_at, std::string first_name, std::string last_name
     , std::string phone, std::string aboutme, std::string website, std::string facebook_profile
-    , std::string instagram_profile)
+    , std::string instagram_profile, std::string card_number, float wallet)
     {
         this->id = id;
         this->username = username;
@@ -35,6 +37,8 @@ struct UserDTO
         this->website = website;
         this->facebook_profile = facebook_profile;
         this->instagram_profile = instagram_profile;
+        this->card_number = card_number;
+        this->wallet = wallet;
     }
 };
 

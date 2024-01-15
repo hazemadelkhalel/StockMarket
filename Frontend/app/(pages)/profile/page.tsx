@@ -520,20 +520,10 @@ const Profile = () => {
                     <input type="text" placeholder="Phone" />
                   </div>
                 </div>
-                <div className="settings-item">
-                  <div className="stocker-item-input">
-                    <span className="gi-item-text">Wallet</span>
-                    <input type="text" placeholder="Phone" />
-                  </div>
-                </div>
-                <div className="settings-item">
-                  <div className="stocker-item-input">
-                    <span className="gi-item-text">Phone</span>
-                    <input type="text" placeholder="Phone" />
-                  </div>
-                </div>
                 <Divider />
-                <h1>Billing and Credit Details</h1>
+                <h1 style={{ marginTop: "20px" }}>
+                  Billing and Credit Details
+                </h1>
                 <p>
                   This information will be used for billing purposes and payment
                   of your subscription.

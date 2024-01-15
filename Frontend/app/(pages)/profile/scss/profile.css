@@ -205,6 +205,15 @@ body {
   align-items: center;
   margin-top: 30px;
 }
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-btn .stockerbtn {
+  background-color: #1e53e5;
+  color: white;
+  box-shadow: none;
+  transition: 0.3s;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-btn .stockerbtn:hover {
+  background-color: #063cd0;
+}
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right {
   position: relative;
   border: 1px solid #ddd;
@@ -306,6 +315,15 @@ body {
   align-items: center;
   margin-top: 30px;
 }
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-btn .stockerbtn {
+  background-color: #1e53e5;
+  color: white;
+  box-shadow: none;
+  transition: 0.3s;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-btn .stockerbtn:hover {
+  background-color: #063cd0;
+}
 
 .active {
   color: #1e53e5;
@@ -320,14 +338,4 @@ body {
 
 .p-divider.p-divider-horizontal {
   margin: 0.7rem;
-}
-
-.stockerbtn {
-  background-color: #1e53e5;
-  color: white;
-  box-shadow: none;
-  transition: 0.3s;
-}
-.stockerbtn:hover {
-  background-color: #063cd0;
 }/*# sourceMappingURL=profile.css.map */

@@ -32,23 +32,39 @@ DatabaseHandler::DatabaseHandler()
     // To enable foreign key constraints support
     sqlite3_exec(db, "PRAGMA foreign_keys = ON", NULL, 0, NULL);
 
-    std::string schemaQ = "BEGIN TRANSACTION; "
-                          "CREATE TABLE IF NOT EXISTS \"user\" ( "
-                          "\"id\"INTEGER, "
-                          "\"username\"TEXT NOT NULL UNIQUE, "
-                          "\"email\"TEXT NOT NULL UNIQUE, "
-                          "\"password\"TEXT NOT NULL, "
-                          "\"created_at\"TEXT NOT NULL, "
-                          "\"first_name\"TEXT, "
-                          "\"last_name\"TEXT, "
-                          "\"phone\"TEXT, "
-                          "\"aboutme\"TEXT, "
-                          "\"website\"TEXT, "
-                          "\"facebook_profile\"TEXT, "
-                          "\"instagram_profile\"TEXT, "
-                          "PRIMARY KEY(\"id\" AUTOINCREMENT) "
-                          "); "
-                          "COMMIT;";
+std::string schemaQ = "BEGIN TRANSACTION; "
+                      "CREATE TABLE IF NOT EXISTS \"user\" ( "
+                      "\"id\" INTEGER, "
+                      "\"username\" TEXT NOT NULL UNIQUE, "
+                      "\"email\" TEXT NOT NULL UNIQUE, "
+                      "\"password\" TEXT NOT NULL, "
+                      "\"created_at\" TEXT NOT NULL, "
+                      "\"first_name\" TEXT, "
+                      "\"last_name\" TEXT, "
+                      "\"phone\" TEXT, "
+                      "\"aboutme\" TEXT, "
+                      "\"website\" TEXT, "
+                      "\"facebook_profile\" TEXT, "
+                      "\"instagram_profile\" TEXT, "
+                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                      "); "
+                      "CREATE TABLE IF NOT EXISTS \"stock\" ( "
+                      "\"id\" INTEGER, "
+                      "\"company\" TEXT NOT NULL UNIQUE, "
+                      "\"type\" TEXT NOT NULL, "
+                      "\"price\" TEXT NOT NULL, "
+                      "\"change\" REAL DEFAULT 0.00, "
+                      "\"profit\" REAL DEFAULT 0.00, "
+                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                      "); "
+                      "CREATE TABLE IF NOT EXISTS \"transaction\" ( "
+                      "\"id\" INTEGER, "
+                      "\"userID\" INTEGER REFERENCES \"user\"(\"id\"), "
+                      "\"stockID\" INTEGER REFERENCES \"stock\"(\"id\"), "
+                      "\"date\" TEXT NOT NULL, "
+                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                      "); "
+                      "COMMIT;";
     sqlite3_exec(db, schemaQ.c_str(), NULL, 0, NULL);
 }
 
@@ -128,8 +144,8 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
     response.result = new int(1);
 
     std::string updateQ = "INSERT INTO user "
-                          "(username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile) "
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          "(username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, wallet) "
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     sqlite3_stmt *stmt = 0;
     sqlite3_prepare_v2(this->db, updateQ.c_str(), -1, &stmt, NULL);
@@ -145,6 +161,8 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
     sqlite3_bind_text(stmt, 9, dto.website.c_str(), dto.website.length(), SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 10, dto.facebook_profile.c_str(), dto.facebook_profile.length(), SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 11, dto.instagram_profile.c_str(), dto.instagram_profile.length(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 12, dto.card_number.c_str(), dto.card_number.length(), SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 13, dto.wallet);
 
 
     char *preparedQ = sqlite3_expanded_sql(stmt);
@@ -183,6 +201,8 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
                      "user.website, "
                      "user.facebook_profile, "
                      "user.instagram_profile "
+                     "user.card_number "
+                     "user.wallet"
                      "FROM user AS user "
                      "WHERE user.id = " +
                      std::to_string(id);
@@ -214,7 +234,10 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
         UserResult.rows->at(0)["aboutme"],
         UserResult.rows->at(0)["website"],
         UserResult.rows->at(0)["facebook_profile"],
-        UserResult.rows->at(0)["instagram_profile"]);
+        UserResult.rows->at(0)["instagram_profile"],
+        UserResult.rows->at(0)["card_number"],
+        std::stof(UserResult.rows->at(0)["wallet"])
+        );
         
 
     response.status = SUCCESS;
@@ -239,6 +262,8 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
                      "user.website, "
                      "user.facebook_profile, "
                      "user.instagram_profile "
+                     "user.card_number "
+                     "user.wallet"
                      "FROM user AS user "
                      "WHERE user.username = '" +
                      username + "'";
@@ -271,7 +296,10 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
         UserResult.rows->at(0)["aboutme"],
         UserResult.rows->at(0)["website"],
         UserResult.rows->at(0)["facebook_profile"],
-        UserResult.rows->at(0)["instagram_profile"]);
+        UserResult.rows->at(0)["instagram_profile"],
+        UserResult.rows->at(0)["card_number"],
+        std::stof(UserResult.rows->at(0)["wallet"])
+        );
         
 
     response.status = SUCCESS;
@@ -296,6 +324,8 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
                      "user.website, "
                      "user.facebook_profile, "
                      "user.instagram_profile "
+                     "user.card_number "
+                     "user.wallet"
                      "FROM user AS user "
                      "WHERE user.email = '" + email + "'";
 
@@ -325,7 +355,9 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
         UserResult.rows->at(0)["aboutme"],
         UserResult.rows->at(0)["website"],
         UserResult.rows->at(0)["facebook_profile"],
-        UserResult.rows->at(0)["instagram_profile"]);
+        UserResult.rows->at(0)["instagram_profile"],
+        UserResult.rows->at(0)["card_number"],
+        std::stof(UserResult.rows->at(0)["wallet"]));
 
     response.status = SUCCESS;
     response.result = dto;
@@ -350,6 +382,8 @@ std::string UserQ = "SELECT "
                     "user.website, "
                     "user.facebook_profile, "
                     "user.instagram_profile "
+                    "user.card_number "
+                    "user.wallet"
                     "FROM user AS user "
                     "WHERE (user.email = '" + username_or_email + 
                     "' OR user.username = '" + username_or_email +
@@ -382,7 +416,10 @@ std::string UserQ = "SELECT "
         UserResult.rows->at(0)["aboutme"],
         UserResult.rows->at(0)["website"],
         UserResult.rows->at(0)["facebook_profile"],
-        UserResult.rows->at(0)["instagram_profile"]);
+        UserResult.rows->at(0)["instagram_profile"],
+        UserResult.rows->at(0)["card_number"],
+        std::stof(UserResult.rows->at(0)["wallet"])
+        );
         
 
     response.status = SUCCESS;

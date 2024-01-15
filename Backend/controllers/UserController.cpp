@@ -40,7 +40,9 @@ json UserController::getUserById(const int &userId)
         {"aboutme", response.result->aboutme},
         {"website", response.result->website},
         {"facebook_profile", response.result->facebook_profile},
-        {"instagram_profile", response.result->instagram_profile}
+        {"instagram_profile", response.result->instagram_profile},
+        {"card_number", response.result->card_number},
+        {"wallet", response.result->wallet}
         };
     
 
