@@ -94,11 +94,12 @@
       .f-sbmt {
         @include center;
         flex-direction: column;
-        .groofybtn {
+        .stockerbtn {
           background-color: $blueColor;
           color: white;
           width: 180px;
           border-radius: 12px;
+          margin-bottom: 30px;
           &:hover {
             background-color: $mainColor;
             color: white;

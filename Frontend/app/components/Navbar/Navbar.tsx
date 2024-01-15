@@ -28,7 +28,7 @@ const Navbar = (props: { idx: number }) => {
             className={`${props.idx == 2 ? "nav-link active" : "nav-link "}`}
             href="/market"
           >
-            Market
+            Markets
           </Link>
         </li>
         <li>

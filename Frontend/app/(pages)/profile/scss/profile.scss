@@ -1,0 +1,293 @@
+@use "../../../shared/styles/colors" as *;
+@use "../../../shared/styles/mixins" as *;
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  .profile-section-1 {
+    display: flex;
+    margin-top: 60px;
+    padding-left: 100px;
+    margin-bottom: 40px;
+    .profile-pc {
+      margin-right: 20px;
+      img {
+        width: 180px;
+        height: 180px;
+      }
+    }
+    .profile-info {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      .p-i-data {
+        h1 {
+          font-size: 32px;
+          line-height: 36px;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+        .p-i-creation {
+          display: flex;
+          align-items: center;
+          img {
+            width: 22px;
+            height: 22px;
+            margin-right: 5px;
+          }
+          span {
+            font-size: 12px;
+            color: #6a6d78;
+          }
+        }
+      }
+      .p-i-container-progress {
+        display: flex;
+        .p-i-progress {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-right: 50px;
+
+          h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #6a6d78;
+          }
+        }
+      }
+    }
+  }
+  .profile-section-2 {
+    padding-left: 100px;
+    .p-s-2-header {
+      display: flex;
+      h2 {
+        font-size: 20px;
+        font-weight: 600;
+        padding: 15px 20px;
+        position: relative;
+        cursor: pointer;
+
+        &:hover {
+          color: #1e53e5;
+
+          &.active {
+            &::after {
+              width: 100%;
+              left: 0px;
+            }
+          }
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 80%;
+          height: 3px;
+          bottom: -12px;
+          left: 13px;
+          transition: width 0.3s, left 0.3s;
+        }
+      }
+    }
+  }
+  .profile-section-3 {
+    display: flex;
+    padding-left: 120px;
+    padding-right: 120px;
+    margin-top: 20px;
+    margin-bottom: 100px;
+    width: 100%;
+    .p-s-3-settings-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      width: 100%;
+      gap: 30px;
+      .settings-left {
+        border: 1px solid #ddd;
+        padding: 10px 40px;
+        flex: 1;
+        h1 {
+          font-size: 20px;
+          font-weight: bold;
+          color: #3c414b;
+        }
+        p {
+          font-size: 12px;
+          color: #6a6d78;
+          margin-bottom: 20px;
+        }
+        .settings-item {
+          margin-bottom: 30px;
+          .stocker-item-input {
+            display: flex;
+            align-items: center;
+            &:not(:last-of-type) {
+              margin-bottom: 25px;
+            }
+            .gi-item-text {
+              font-weight: bold;
+              margin-bottom: 5px;
+              width: 200px;
+            }
+            input {
+              background-color: #eee;
+              border-radius: 6px;
+              padding: 5px 10px;
+              border: none;
+              caret-color: $btnColor;
+              font-size: 16px;
+              transition: 0.3s;
+              width: 100%;
+              outline: 2px solid transparent;
+              &:focus,
+              &:hover {
+                outline-color: $blueColor;
+              }
+              &::placeholder {
+                opacity: 0.5;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.854);
+              }
+            }
+            textarea {
+              background-color: #eee;
+              border-radius: 6px;
+              padding: 5px 10px;
+              border: none;
+              caret-color: $btnColor;
+              font-size: 16px;
+              transition: 0.3s;
+              width: 100%;
+              height: 80px;
+              outline: 2px solid transparent;
+              &:focus,
+              &:hover {
+                outline-color: $blueColor;
+              }
+              &::placeholder {
+                opacity: 0.5;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.854);
+              }
+            }
+          }
+        }
+        .settings-btn {
+          @include end;
+          margin-top: 30px;
+        }
+      }
+      .settings-right {
+        border: 1px solid #ddd;
+        padding: 10px 40px;
+        width: 100%;
+        flex: 1;
+        h1 {
+          font-size: 20px;
+          font-weight: bold;
+          color: #3c414b;
+        }
+        p {
+          font-size: 12px;
+          color: #6a6d78;
+          margin-bottom: 20px;
+        }
+        .settings-item {
+          margin-bottom: 30px;
+          .stocker-item-input {
+            display: flex;
+            align-items: center;
+            &:not(:last-of-type) {
+              margin-bottom: 25px;
+            }
+            .gi-item-text {
+              font-weight: bold;
+              margin-bottom: 5px;
+              width: 200px;
+            }
+            input {
+              background-color: #eee;
+              border-radius: 6px;
+              padding: 5px 10px;
+              border: none;
+              caret-color: $btnColor;
+              font-size: 16px;
+              transition: 0.3s;
+              width: 100%;
+              outline: 2px solid transparent;
+              &:focus,
+              &:hover {
+                outline-color: $blueColor;
+              }
+              &::placeholder {
+                opacity: 0.5;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.854);
+              }
+            }
+            textarea {
+              background-color: #eee;
+              border-radius: 6px;
+              padding: 5px 10px;
+              border: none;
+              caret-color: $btnColor;
+              font-size: 16px;
+              transition: 0.3s;
+              width: 100%;
+              height: 80px;
+              outline: 2px solid transparent;
+              &:focus,
+              &:hover {
+                outline-color: $blueColor;
+              }
+              &::placeholder {
+                opacity: 0.5;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.854);
+              }
+            }
+          }
+        }
+        .settings-btn {
+          @include end;
+          margin-top: 30px;
+        }
+      }
+    }
+  }
+}
+.active {
+  color: #1e53e5;
+  &::after {
+    background-color: #1e53e5;
+  }
+  &:hover {
+    .active::after {
+      width: 100%;
+      left: 0px;
+    }
+  }
+}
+
+.p-divider.p-divider-horizontal {
+  margin: 0.7rem;
+}
+
+.stockerbtn {
+  background-color: #1e53e5;
+  color: white;
+  box-shadow: none;
+  transition: 0.3s;
+  &:hover {
+    background-color: #063cd0;
+  }
+}

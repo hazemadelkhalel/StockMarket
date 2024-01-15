@@ -1,0 +1,301 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+.profile-container .profile-section-1 {
+  display: flex;
+  margin-top: 60px;
+  padding-left: 100px;
+  margin-bottom: 40px;
+}
+.profile-container .profile-section-1 .profile-pc {
+  margin-right: 20px;
+}
+.profile-container .profile-section-1 .profile-pc img {
+  width: 180px;
+  height: 180px;
+}
+.profile-container .profile-section-1 .profile-info {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+.profile-container .profile-section-1 .profile-info .p-i-data h1 {
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.profile-container .profile-section-1 .profile-info .p-i-data .p-i-creation {
+  display: flex;
+  align-items: center;
+}
+.profile-container .profile-section-1 .profile-info .p-i-data .p-i-creation img {
+  width: 22px;
+  height: 22px;
+  margin-right: 5px;
+}
+.profile-container .profile-section-1 .profile-info .p-i-data .p-i-creation span {
+  font-size: 12px;
+  color: #6a6d78;
+}
+.profile-container .profile-section-1 .profile-info .p-i-container-progress {
+  display: flex;
+}
+.profile-container .profile-section-1 .profile-info .p-i-container-progress .p-i-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 50px;
+}
+.profile-container .profile-section-1 .profile-info .p-i-container-progress .p-i-progress h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.profile-container .profile-section-1 .profile-info .p-i-container-progress .p-i-progress span {
+  font-size: 14px;
+  font-weight: bold;
+  color: #6a6d78;
+}
+.profile-container .profile-section-2 {
+  padding-left: 100px;
+}
+.profile-container .profile-section-2 .p-s-2-header {
+  display: flex;
+}
+.profile-container .profile-section-2 .p-s-2-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  padding: 15px 20px;
+  position: relative;
+  cursor: pointer;
+}
+.profile-container .profile-section-2 .p-s-2-header h2:hover {
+  color: #1e53e5;
+}
+.profile-container .profile-section-2 .p-s-2-header h2:hover.active::after {
+  width: 100%;
+  left: 0px;
+}
+.profile-container .profile-section-2 .p-s-2-header h2::after {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 3px;
+  bottom: -12px;
+  left: 13px;
+  transition: width 0.3s, left 0.3s;
+}
+.profile-container .profile-section-3 {
+  display: flex;
+  padding-left: 120px;
+  padding-right: 120px;
+  margin-top: 20px;
+  margin-bottom: 100px;
+  width: 100%;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  width: 100%;
+  gap: 30px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left {
+  border: 1px solid #ddd;
+  padding: 10px 40px;
+  flex: 1;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3c414b;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left p {
+  font-size: 12px;
+  color: #6a6d78;
+  margin-bottom: 20px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item {
+  margin-bottom: 30px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input {
+  display: flex;
+  align-items: center;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input:not(:last-of-type) {
+  margin-bottom: 25px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input .gi-item-text {
+  font-weight: bold;
+  margin-bottom: 5px;
+  width: 200px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input {
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 5px 10px;
+  border: none;
+  caret-color: #feb139;
+  font-size: 16px;
+  transition: 0.3s;
+  width: 100%;
+  outline: 2px solid transparent;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:focus, .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:hover {
+  outline-color: #00a9ff;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input::-moz-placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input::placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea {
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 5px 10px;
+  border: none;
+  caret-color: #feb139;
+  font-size: 16px;
+  transition: 0.3s;
+  width: 100%;
+  height: 80px;
+  outline: 2px solid transparent;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea:focus, .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea:hover {
+  outline-color: #00a9ff;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea::-moz-placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea::placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-btn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 30px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right {
+  border: 1px solid #ddd;
+  padding: 10px 40px;
+  width: 100%;
+  flex: 1;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3c414b;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right p {
+  font-size: 12px;
+  color: #6a6d78;
+  margin-bottom: 20px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item {
+  margin-bottom: 30px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input {
+  display: flex;
+  align-items: center;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input:not(:last-of-type) {
+  margin-bottom: 25px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input .gi-item-text {
+  font-weight: bold;
+  margin-bottom: 5px;
+  width: 200px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input input {
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 5px 10px;
+  border: none;
+  caret-color: #feb139;
+  font-size: 16px;
+  transition: 0.3s;
+  width: 100%;
+  outline: 2px solid transparent;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input input:focus, .profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input input:hover {
+  outline-color: #00a9ff;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input input::-moz-placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input input::placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input textarea {
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 5px 10px;
+  border: none;
+  caret-color: #feb139;
+  font-size: 16px;
+  transition: 0.3s;
+  width: 100%;
+  height: 80px;
+  outline: 2px solid transparent;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input textarea:focus, .profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input textarea:hover {
+  outline-color: #00a9ff;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input textarea::-moz-placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input textarea::placeholder {
+  opacity: 0.5;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-btn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.active {
+  color: #1e53e5;
+}
+.active::after {
+  background-color: #1e53e5;
+}
+.active:hover .active::after {
+  width: 100%;
+  left: 0px;
+}
+
+.p-divider.p-divider-horizontal {
+  margin: 0.7rem;
+}
+
+.stockerbtn {
+  background-color: #1e53e5;
+  color: white;
+  box-shadow: none;
+  transition: 0.3s;
+}
+.stockerbtn:hover {
+  background-color: #063cd0;
+}/*# sourceMappingURL=profile.css.map */

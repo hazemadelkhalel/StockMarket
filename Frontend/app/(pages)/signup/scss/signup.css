@@ -105,17 +105,18 @@
   align-items: center;
   flex-direction: column;
 }
-.signup-div .auth .auth-form .f-sbmt .groofybtn {
+.signup-div .auth .auth-form .f-sbmt .stockerbtn {
   background-color: #00a9ff;
   color: white;
   width: 180px;
   border-radius: 12px;
+  margin-bottom: 30px;
 }
-.signup-div .auth .auth-form .f-sbmt .groofybtn:hover {
+.signup-div .auth .auth-form .f-sbmt .stockerbtn:hover {
   background-color: #0e141e;
   color: white;
 }
-.signup-div .auth .auth-form .f-sbmt .groofybtn .btn-text {
+.signup-div .auth .auth-form .f-sbmt .stockerbtn .btn-text {
   font-size: 16px;
   font-weight: bold;
 }

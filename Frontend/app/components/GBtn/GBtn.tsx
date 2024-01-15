@@ -1,10 +1,10 @@
 "use client";
 import { btnProps } from "../../shared/types";
-import "./scss/gbtn.css";
+import "./scss/sbtn.css";
 
 const GBtn = (props: btnProps) => {
   return (
-    <button className="groofybtn" onClick={props.clickEvent}>
+    <button className="stockerbtn" onClick={props.clickEvent}>
       {props.icnSrc && (
         <img className="btn-icn" src={`${props.icnSrc}`} alt="Run" />
       )}

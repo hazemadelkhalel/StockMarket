@@ -43,7 +43,7 @@
 .login-container .login-div .auth-form .groofy-input input:focus, .login-container .login-div .auth-form .groofy-input input:hover {
   outline-color: #00a9ff;
 }
-.login-container .login-div .auth-form .groofybtn {
+.login-container .login-div .auth-form .stockerbtn {
   margin-top: 10px;
   background-color: #008ed6;
   color: white;
@@ -51,11 +51,11 @@
   padding: 7px;
   border-radius: 12px;
 }
-.login-container .login-div .auth-form .groofybtn:hover {
+.login-container .login-div .auth-form .stockerbtn:hover {
   background-color: #0e141e;
   color: white;
 }
-.login-container .login-div .auth-form .groofybtn .btn-text {
+.login-container .login-div .auth-form .stockerbtn .btn-text {
   font-size: 14px;
 }
 .login-container .login-div .auth-form .f-sbmt {
