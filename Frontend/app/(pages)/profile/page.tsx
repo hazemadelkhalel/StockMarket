@@ -429,6 +429,7 @@ const Profile = () => {
                 stripedRows
                 paginator
                 sortMode="multiple"
+                removableSort
                 rows={10}
                 rowsPerPageOptions={[10, 50, 100, 200]}
               >
