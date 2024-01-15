@@ -553,9 +553,10 @@ const Profile = () => {
                         fontWeight: "bold",
                         color: "black",
                         fontSize: 13,
+                        width: "100%",
                       }}
                     >
-                      1265$
+                      $1265
                     </span>
                   </div>
                 </div>

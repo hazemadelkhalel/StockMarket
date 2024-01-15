@@ -1,6 +1,10 @@
 @use "../../../shared/styles/colors" as *;
 @use "../../../shared/styles/mixins" as *;
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu,
+    sans-serif;
+}
 .login-container {
   background-color: #f2f2f2;
   .login-div {

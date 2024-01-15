@@ -1,6 +1,9 @@
 @use "../../../../shared/styles/colors" as *;
 @use "../../../../shared/styles/mixins" as *;
-
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu,
+    sans-serif;
+}
 .stocker-input {
   display: flex;
   flex-direction: column;

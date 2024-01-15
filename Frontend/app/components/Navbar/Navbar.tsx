@@ -15,7 +15,15 @@ const Navbar = (props: { idx: number }) => {
         </div>
       </Link>
       <ul className="nav-links">
-        <li className="">
+        <li>
+          <Link
+            className={`${props.idx == 0 ? "nav-link active" : "nav-link "}`}
+            href="/"
+          >
+            Home
+          </Link>
+        </li>
+        <li>
           <Link
             className={`${props.idx == 1 ? "nav-link active" : "nav-link "}`}
             href="/companies"
@@ -37,14 +45,6 @@ const Navbar = (props: { idx: number }) => {
             href="/news"
           >
             News
-          </Link>
-        </li>
-        <li>
-          <Link
-            className={`${props.idx == 4 ? "nav-link active" : "nav-link "}`}
-            href="/about"
-          >
-            About
           </Link>
         </li>
       </ul>

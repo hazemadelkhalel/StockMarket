@@ -1,0 +1,93 @@
+@use "../../../shared/styles/colors" as *;
+@use "../../../shared/styles/mixins" as *;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu,
+    sans-serif;
+}
+.market-container {
+  margin-top: 100px;
+  .m-c-section1 {
+    @include center;
+    flex-direction: column;
+    margin-bottom: 50px;
+    h1 {
+      font-size: 70px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 40px;
+    }
+    h3 {
+      font-size: 30px;
+      line-height: 36px;
+      margin-bottom: 30px;
+    }
+    .m-c-s1-btns {
+      @include center;
+      gap: 10px;
+      margin-bottom: 20px;
+      .clicked {
+        .stockerbtn {
+          background-color: black;
+          color: white;
+          transition: 0.3s;
+          &:hover {
+            background-color: black;
+          }
+        }
+      }
+      .stockerbtn {
+        color: black;
+        background-color: #f0f3fa;
+        .btn-text {
+          font-weight: bold;
+        }
+        padding: 10px 25px;
+        border-radius: 25px;
+        box-shadow: none;
+        transition: 0.3s;
+        &:hover {
+          background-color: #e0e3eb;
+        }
+      }
+    }
+    .market-balance {
+      font-size: 20px;
+      line-height: 36px;
+    }
+  }
+  .m-c-section2 {
+    padding: 0 40px;
+    margin-bottom: 100px;
+  }
+}
+.market-action-btn-buy {
+  .stockerbtn {
+    color: white;
+    background-color: #42c45e;
+    .btn-text {
+      font-weight: bold;
+    }
+    padding: 10px 25px;
+    box-shadow: none;
+    transition: 0.3s;
+    &:hover {
+      background-color: #2d9a45;
+    }
+  }
+}
+.market-action-btn-sell {
+  .stockerbtn {
+    color: white;
+    background-color: #e72d2d;
+    .btn-text {
+      font-weight: bold;
+    }
+    padding: 10px 25px;
+    box-shadow: none;
+    transition: 0.3s;
+    &:hover {
+      background-color: rgb(186, 0, 0);
+    }
+  }
+}

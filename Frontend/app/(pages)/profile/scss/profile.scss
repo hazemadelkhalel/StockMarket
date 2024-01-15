@@ -1,6 +1,10 @@
 @use "../../../shared/styles/colors" as *;
 @use "../../../shared/styles/mixins" as *;
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu,
+    sans-serif;
+}
 .profile-container {
   display: flex;
   flex-direction: column;
@@ -109,7 +113,6 @@
     .p-s-3-settings-container {
       display: flex;
       justify-content: space-between;
-      align-items: start;
       width: 100%;
       gap: 30px;
       .settings-left {
