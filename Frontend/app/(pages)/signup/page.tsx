@@ -29,7 +29,7 @@ const SignUp = () => {
   const handleConfirmPasswordChange = (value: any) => {
     setConfirmPassword(value);
   };
-  const handleClick = async (event: any) => {
+  const handleClick = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     try {
       console.log(username, email, password, confirmPassword);
@@ -85,9 +85,11 @@ const SignUp = () => {
         severity: "success",
         summary: "Success",
         detail: "Account created successfully",
-        life: 1500,
+        life: 1000,
       });
-      router.push("/");
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
       console.log(data);
     } catch (error) {
       console.error("Error sending message:", error as Error);

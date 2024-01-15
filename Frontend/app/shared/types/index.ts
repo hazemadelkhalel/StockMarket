@@ -2,7 +2,7 @@
 export interface btnProps {
   btnText: string;
   icnSrc?: string;
-  clickEvent: () => void;
+  clickEvent: any;
 }
 
 // Groofy Input props
