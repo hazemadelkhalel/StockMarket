@@ -9,6 +9,7 @@
   top: 0px;
   background-color: black;
   color: white;
+  z-index: 100;
   .active {
     color: $blueColor;
   }

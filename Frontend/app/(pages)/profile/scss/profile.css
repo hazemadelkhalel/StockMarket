@@ -1,7 +1,6 @@
 .profile-container {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
 }
 .profile-container .profile-section-1 {
   display: flex;
@@ -95,6 +94,7 @@
   margin-top: 20px;
   margin-bottom: 100px;
   width: 100%;
+  height: 750px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container {
   display: flex;
@@ -104,9 +104,12 @@
   gap: 30px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left {
+  position: relative;
   border: 1px solid #ddd;
-  padding: 10px 40px;
+  padding: 20px 30px;
+  border-radius: 12px;
   flex: 1;
+  height: 100%;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left h1 {
   font-size: 20px;
@@ -118,8 +121,14 @@
   color: #6a6d78;
   margin-bottom: 20px;
 }
-.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item {
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left h3 {
+  font-size: 12px;
+  color: #45464e;
+  font-weight: bold;
   margin-bottom: 30px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item {
+  margin-bottom: 60px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input {
   display: flex;
@@ -129,7 +138,9 @@
   margin-bottom: 25px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input .gi-item-text {
+  font-size: 12px;
   font-weight: bold;
+  color: #6a6d78;
   margin-bottom: 5px;
   width: 200px;
 }
@@ -183,16 +194,22 @@
   color: rgba(0, 0, 0, 0.854);
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-btn {
+  position: absolute;
+  right: 30px;
+  bottom: 40px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   margin-top: 30px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right {
+  position: relative;
   border: 1px solid #ddd;
-  padding: 10px 40px;
+  padding: 20px 30px;
+  border-radius: 12px;
   width: 100%;
   flex: 1;
+  height: 100%;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right h1 {
   font-size: 20px;
@@ -203,6 +220,13 @@
   font-size: 12px;
   color: #6a6d78;
   margin-bottom: 20px;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-right h3 {
+  text-align: center;
+  font-size: 12px;
+  color: #45464e;
+  font-weight: bold;
+  margin-bottom: 30px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item {
   margin-bottom: 30px;
@@ -215,7 +239,9 @@
   margin-bottom: 25px;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-item .stocker-item-input .gi-item-text {
+  font-size: 12px;
   font-weight: bold;
+  color: #6a6d78;
   margin-bottom: 5px;
   width: 200px;
 }
@@ -269,6 +295,9 @@
   color: rgba(0, 0, 0, 0.854);
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-right .settings-btn {
+  position: absolute;
+  right: 30px;
+  bottom: 40px;
   display: flex;
   justify-content: flex-end;
   align-items: center;

@@ -8,6 +8,7 @@
   top: 0px;
   background-color: black;
   color: white;
+  z-index: 100;
 }
 .nav-container .active {
   color: #00a9ff;

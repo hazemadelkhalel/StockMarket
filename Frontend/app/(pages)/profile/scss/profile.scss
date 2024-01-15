@@ -4,7 +4,6 @@
 .profile-container {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
   .profile-section-1 {
     display: flex;
     margin-top: 60px;
@@ -105,6 +104,8 @@
     margin-top: 20px;
     margin-bottom: 100px;
     width: 100%;
+    height: 750px;
+
     .p-s-3-settings-container {
       display: flex;
       justify-content: space-between;
@@ -112,9 +113,13 @@
       width: 100%;
       gap: 30px;
       .settings-left {
+        position: relative;
         border: 1px solid #ddd;
-        padding: 10px 40px;
+        padding: 20px 30px;
+        border-radius: 12px;
         flex: 1;
+        height: 100%;
+
         h1 {
           font-size: 20px;
           font-weight: bold;
@@ -125,8 +130,15 @@
           color: #6a6d78;
           margin-bottom: 20px;
         }
-        .settings-item {
+        h3 {
+          font-size: 12px;
+          color: #45464e;
+          font-weight: bold;
           margin-bottom: 30px;
+        }
+        .settings-item {
+          margin-bottom: 60px;
+
           .stocker-item-input {
             display: flex;
             align-items: center;
@@ -134,7 +146,9 @@
               margin-bottom: 25px;
             }
             .gi-item-text {
+              font-size: 12px;
               font-weight: bold;
+              color: #6a6d78;
               margin-bottom: 5px;
               width: 200px;
             }
@@ -182,15 +196,23 @@
           }
         }
         .settings-btn {
+          position: absolute;
+          right: 30px;
+          bottom: 40px;
           @include end;
           margin-top: 30px;
         }
       }
       .settings-right {
+        position: relative;
+
         border: 1px solid #ddd;
-        padding: 10px 40px;
+        padding: 20px 30px;
+        border-radius: 12px;
         width: 100%;
         flex: 1;
+        height: 100%;
+
         h1 {
           font-size: 20px;
           font-weight: bold;
@@ -201,6 +223,13 @@
           color: #6a6d78;
           margin-bottom: 20px;
         }
+        h3 {
+          text-align: center;
+          font-size: 12px;
+          color: #45464e;
+          font-weight: bold;
+          margin-bottom: 30px;
+        }
         .settings-item {
           margin-bottom: 30px;
           .stocker-item-input {
@@ -210,7 +239,9 @@
               margin-bottom: 25px;
             }
             .gi-item-text {
+              font-size: 12px;
               font-weight: bold;
+              color: #6a6d78;
               margin-bottom: 5px;
               width: 200px;
             }
@@ -258,6 +289,9 @@
           }
         }
         .settings-btn {
+          position: absolute;
+          right: 30px;
+          bottom: 40px;
           @include end;
           margin-top: 30px;
         }
