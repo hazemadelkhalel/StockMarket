@@ -5,6 +5,8 @@
 #include "../dtos/UserDTO.h"
 #include "QueryResponse.h"
 #include "Response.h"
+#include "../dtos/StockDTO.h"
+#include "../dtos/TransactionDTO.h"
 
 class DatabaseHandler
 {
@@ -44,6 +46,8 @@ public:
 
     Response<int> createUser(UserDTO &dto);
 
+    Response<int> addStock(StockDTO &dto);
+
 
 
     Response<UserDTO> getUserById(int id);
@@ -52,7 +56,27 @@ public:
 
     Response<UserDTO> getUserByEmail(std::string email);
 
+    Response<UserDTO> updateUser(UserDTO &dto);
+
     Response<UserDTO> validateUserLogin(std::string username_or_email, std::string password);
+    
+
+
+    Response<StockDTO> getStockById(int id);
+
+
+
+    Response<TransactionDTO> buyStock(const int &userID, const int &stockID);
+
+    Response<int> sellStock(const int &transactionID);
+
+    Response<TransactionDTO> addTransaction(const int &userID, const int &stockID);
+
+    Response<TransactionDTO> getTransactionById(const int &transactionID);
+
+    Response<std::vector<StockDTO>> getAllStocks();
+
+
 
 
 

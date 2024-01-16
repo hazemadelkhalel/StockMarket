@@ -11,8 +11,10 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import React from "react";
 import { Dialog } from "primereact/dialog";
+import { useRouter } from "next/navigation";
 
 interface Stock {
+  id: number;
   company: string;
   type: string;
   price: string;
@@ -22,6 +24,7 @@ interface Stock {
 
 const Market = () => {
   let emptyStock: Stock = {
+    id: 0,
     company: "",
     type: "",
     price: "",
@@ -34,30 +37,98 @@ const Market = () => {
   const [selectedTypeStock, setSelectedTypeStock] = useState(1);
   const [stock, setStock] = useState<Stock>(emptyStock);
   const [actionStockDialog, setActionStockDialog] = useState<boolean>(false);
+  const [nextUpdate, setNextUpdate] = useState(20);
+  const clearEveryThing = () => {
+    setBuyStocks([]);
+    setSellStocks([]);
+    setSelectedTypeStock(1);
+    setStock(emptyStock);
+    setActionStockDialog(false);
+    setNextUpdate(20);
+  };
 
   const hideActionStockDialog = () => {
     setActionStockDialog(false);
   };
 
-  const actionStock = () => {
+  const actionStock = async () => {
     let _stocks;
     if (selectedTypeStock === 1) {
       _stocks = buyStocks.filter((val) => val.company !== stock.company);
-      setBuyStocks(_stocks);
+      try {
+        const response = await fetch("http://localhost:8000/market/buy", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            User: 1,
+            Stock: stock.id,
+          }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          (toast.current as any)?.show({
+            severity: "error",
+            summary: "Failed",
+            detail: data.error,
+            life: 3000,
+          });
+          return;
+        }
+        setActionStockDialog(false);
+        setStock(emptyStock);
+        setBuyStocks(_stocks);
+
+        let summary = selectedTypeStock === 1 ? "Bought" : "Sold";
+        (toast.current as any)?.show({
+          severity: "success",
+          summary: "Successful",
+          detail: "Stock " + summary + " Successfully",
+          life: 3000,
+        });
+      } catch (error) {
+        console.error("Error sending message:", error as Error);
+      }
     } else {
       _stocks = sellStocks.filter((val) => val.company !== stock.company);
-      setBuyStocks(_stocks);
-    }
+      try {
+        const response = await fetch("http://localhost:8000/market/sell", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            User: 1,
+            Stock: stock.id,
+          }),
+        });
 
-    setActionStockDialog(false);
-    setStock(emptyStock);
-    let summary = selectedTypeStock === 1 ? "Bought" : "Sold";
-    (toast.current as any)?.show({
-      severity: "success",
-      summary: "Successful",
-      detail: "Stock " + summary + " Successfully",
-      life: 3000,
-    });
+        const data = await response.json();
+        if (data.error) {
+          (toast.current as any)?.show({
+            severity: "error",
+            summary: "Failed",
+            detail: data.error,
+            life: 3000,
+          });
+          return;
+        }
+        setActionStockDialog(false);
+        setStock(emptyStock);
+        let summary = selectedTypeStock === 1 ? "Bought" : "Sold";
+        setBuyStocks(_stocks);
+        (toast.current as any)?.show({
+          severity: "success",
+          summary: "Successful",
+          detail: "Stock " + summary + " Successfully",
+          life: 3000,
+        });
+      } catch (error) {
+        console.error("Error sending message:", error as Error);
+      }
+    }
   };
 
   const confirmActionStock = (rowStock: Stock) => {
@@ -83,345 +154,61 @@ const Market = () => {
     </React.Fragment>
   );
 
+  const fetchData = async () => {
+    try {
+      clearEveryThing();
+      const response = await fetch(
+        "http://localhost:8000/market/getAllStocks",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+
+      const shuffledStocks = shuffleArray(data.stocks);
+
+      setBuyStocks(
+        shuffledStocks.filter((stock: { type: string }) => stock.type === "Buy")
+      );
+      setSellStocks(
+        shuffledStocks.filter(
+          (stock: { type: string }) => stock.type === "Sell"
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const shuffleArray = (array: any) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
   useEffect(() => {
-    const stocks: Stock[] = [
-      {
-        company: "Apple",
-        type: "Buy",
-        price: "$127.13",
-        change: "0.23",
-        profit: "$1,271.30",
-      },
-      {
-        company: "Microsoft",
-        type: "Sell",
-        price: "$92.45",
-        change: "0.00",
-        profit: "$785.60",
-      },
-      {
-        company: "Google",
-        type: "Sell",
-        price: "$345.78",
-        change: "1.12",
-        profit: "$2,430.90",
-      },
-      {
-        company: "Amazon",
-        type: "Buy",
-        price: "$1892.36",
-        change: "0.88",
-        profit: "$5,678.20",
-      },
-      {
-        company: "Tesla",
-        type: "Sell",
-        price: "$720.50",
-        change: "0.75",
-        profit: "$3,456.80",
-      },
-      {
-        company: "Apple",
-        type: "Buy",
-        price: "$135.80",
-        change: "0.42",
-        profit: "$987.40",
-      },
-      {
-        company: "Microsoft",
-        type: "Buy",
-        price: "$102.20",
-        change: "-0.91",
-        profit: "$1,234.50",
-      },
-      {
-        company: "Google",
-        type: "Sell",
-        price: "$410.25",
-        change: "-1.25",
-        profit: "$4,567.90",
-      },
-      {
-        company: "Amazon",
-        type: "Buy",
-        price: "$2005.60",
-        change: "-2.05",
-        profit: "$8,765.30",
-      },
-      {
-        company: "Tesla",
-        type: "Sell",
-        price: "$890.20",
-        change: "-0.98%",
-        profit: "$6,543.10",
-      },
-      {
-        company: "Apple",
-        type: "Buy",
-        price: "$115.75",
-        change: "0.54",
-        profit: "$1,123.60",
-      },
-      {
-        company: "Microsoft",
-        type: "Sell",
-        price: "$110.30",
-        change: "-0.75%",
-        profit: "$987.20",
-      },
-      {
-        company: "Google",
-        type: "Buy",
-        price: "$380.90",
-        change: "+1.80%",
-        profit: "$3,890.50",
-      },
-      {
-        company: "Amazon",
-        type: "Sell",
-        price: "$1750.10",
-        change: "-1.15%",
-        profit: "$5,432.40",
-      },
-      {
-        company: "Tesla",
-        type: "Buy",
-        price: "$670.40",
-        change: "+0.32%",
-        profit: "$2,345.60",
-      },
-      {
-        company: "Apple",
-        type: "Sell",
-        price: "$145.15",
-        change: "-0.21%",
-        profit: "$1,567.80",
-      },
-      {
-        company: "Microsoft",
-        type: "Sell",
-        price: "$98.60",
-        change: "+1.15%",
-        profit: "$1,345.70",
-      },
-      {
-        company: "Google",
-        type: "Buy",
-        price: "$330.50",
-        change: "-0.95%",
-        profit: "$4,678.90",
-      },
-      {
-        company: "Amazon",
-        type: "Buy",
-        price: "$1800.80",
-        change: "+1.50%",
-        profit: "$7,890.20",
-      },
-      {
-        company: "Tesla",
-        type: "Sell",
-        price: "$810.30",
-        change: "-0.72%",
-        profit: "$5,678.90",
-      },
-      {
-        company: "Facebook",
-        type: "Buy",
-        price: "$300.45",
-        change: "+0.85%",
-        profit: "$2,345.60",
-      },
-      {
-        company: "Netflix",
-        type: "Sell",
-        price: "$520.30",
-        change: "-0.62%",
-        profit: "$3,987.40",
-      },
-      {
-        company: "Twitter",
-        type: "Buy",
-        price: "$45.20",
-        change: "+1.20%",
-        profit: "$456.70",
-      },
-      {
-        company: "Snapchat",
-        type: "Sell",
-        price: "$65.75",
-        change: "-0.45%",
-        profit: "$789.20",
-      },
-      {
-        company: "Uber",
-        type: "Buy",
-        price: "$32.90",
-        change: "+0.95%",
-        profit: "$234.50",
-      },
-      {
-        company: "Lyft",
-        type: "Sell",
-        price: "$48.60",
-        change: "-1.15%",
-        profit: "$345.80",
-      },
-      {
-        company: "Airbnb",
-        type: "Buy",
-        price: "$180.20",
-        change: "+2.10%",
-        profit: "$1,234.50",
-      },
-      {
-        company: "Zoom",
-        type: "Sell",
-        price: "$340.90",
-        change: "-1.75%",
-        profit: "$4,567.80",
-      },
-      {
-        company: "Alibaba",
-        type: "Buy",
-        price: "$210.60",
-        change: "+1.80%",
-        profit: "$6,789.20",
-      },
-      {
-        company: "Tencent",
-        type: "Sell",
-        price: "$380.10",
-        change: "-0.98%",
-        profit: "$8,765.30",
-      },
-      {
-        company: "Intel",
-        type: "Buy",
-        price: "$50.75",
-        change: "+0.54%",
-        profit: "$567.80",
-      },
-      {
-        company: "AMD",
-        type: "Sell",
-        price: "$95.30",
-        change: "-0.75%",
-        profit: "$789.20",
-      },
-      {
-        company: "NVIDIA",
-        type: "Buy",
-        price: "$220.90",
-        change: "+1.20%",
-        profit: "$2,345.60",
-      },
-      {
-        company: "Samsung",
-        type: "Sell",
-        price: "$150.20",
-        change: "-1.30%",
-        profit: "$1,234.50",
-      },
-      {
-        company: "Sony",
-        type: "Buy",
-        price: "$75.80",
-        change: "+0.98%",
-        profit: "$987.40",
-      },
-      {
-        company: "LG",
-        type: "Sell",
-        price: "$40.60",
-        change: "-0.85%",
-        profit: "$567.80",
-      },
-      {
-        company: "Tesla",
-        type: "Buy",
-        price: "$650.30",
-        change: "+0.65%",
-        profit: "$5,678.90",
-      },
-      {
-        company: "SpaceX",
-        type: "Sell",
-        price: "$800.60",
-        change: "-1.50%",
-        profit: "$7,890.20",
-      },
-      {
-        company: "Coca-Cola",
-        type: "Buy",
-        price: "$50.20",
-        change: "+0.75%",
-        profit: "$456.70",
-      },
-      {
-        company: "PepsiCo",
-        type: "Sell",
-        price: "$120.90",
-        change: "-0.98%",
-        profit: "$1,234.50",
-      },
-    ];
-    setBuyStocks(stocks.filter((stock) => stock.type === "Buy"));
-    setSellStocks(stocks.filter((stock) => stock.type === "Sell"));
+    // Fetch data initially
+    fetchData();
+
+    // Set up interval to fetch data every 10 seconds
+    const fetchDataIntervalId = setInterval(fetchData, 20000);
+
+    // Set up interval to decrement nextUpdate every second
+    const countdownIntervalId = setInterval(() => {
+      setNextUpdate((prevNextUpdate) => prevNextUpdate - 1);
+    }, 1000);
+
+    // Clear intervals on component unmount
+    return () => {
+      clearInterval(fetchDataIntervalId);
+      clearInterval(countdownIntervalId);
+    };
   }, []);
 
-  //   const handleClick = async (event: { preventDefault: () => void }) => {
-  //     event.preventDefault();
-  //     try {
-
-  //       if (username_or_email === "" || password === "") {
-  //         (toast.current as any)?.show({
-  //           severity: "error",
-  //           summary: "Failed",
-  //           detail: "Missing fields",
-  //           life: 1500,
-  //         });
-  //         return;
-  //       }
-
-  //       const response = await fetch("http://localhost:8000/login/redirect", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           User: {
-  //             username_or_email: username_or_email,
-  //             password: password,
-  //           },
-  //         }),
-  //       });
-
-  //       const data = await response.json();
-  //       console.log(data);
-  //       if (data.error) {
-  //         (toast.current as any)?.show({
-  //           severity: "error",
-  //           summary: "Failed",
-  //           detail: data.error,
-  //           life: 3000,
-  //         });
-  //         return;
-  //       }
-  //       (toast.current as any)?.show({
-  //         severity: "success",
-  //         summary: "Success",
-  //         detail: "Login successfully",
-  //         life: 1000,
-  //       });
-  //       setTimeout(() => {
-  //         router.push("/");
-  //       }, 1000);
-  //       console.log(data);
-  //     } catch (error) {
-  //       console.error("Error sending message:", error as Error);
-  //     }
-  //   };
   const actionView = (rowData: any) => {
     return (
       <div
@@ -435,6 +222,9 @@ const Market = () => {
           btnText={selectedTypeStock === 1 ? "Buy" : "Sell"}
           clickEvent={() => {
             confirmActionStock(rowData);
+            {
+              selectedTypeStock === 1;
+            }
           }}
           icnSrc={
             selectedTypeStock === 1 ? "/SVG/dollar.svg" : "/Images/sell.png"
@@ -502,6 +292,9 @@ const Market = () => {
             )}
           </div>
           <span className="market-balance">Current Balance: $217</span>
+          <div className="market-timer">
+            <span>Refresh after: {nextUpdate}s</span>
+          </div>
         </div>
         <div className="m-c-section2">
           <div style={{ width: "100%" }}>

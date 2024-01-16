@@ -8,6 +8,7 @@ body {
 .market-container {
   margin-top: 100px;
   .m-c-section1 {
+    position: relative;
     @include center;
     flex-direction: column;
     margin-bottom: 50px;
@@ -54,6 +55,14 @@ body {
     .market-balance {
       font-size: 20px;
       line-height: 36px;
+    }
+    .market-timer {
+      position: absolute;
+      font-size: 16px;
+      line-height: 36px;
+      bottom: -40px;
+      right: 40px;
+      color: #6a6d78;
     }
   }
   .m-c-section2 {

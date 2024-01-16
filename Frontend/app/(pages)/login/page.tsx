@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import { signIn } from "next-auth/react";
 
 const Login = () => {
   const [username_or_email, setUsernameOrEmail] = useState("");
@@ -61,15 +62,17 @@ const Login = () => {
         });
         return;
       }
+      await signIn("credentials", {
+        redirect: false,
+      });
+
       (toast.current as any)?.show({
         severity: "success",
         summary: "Success",
         detail: "Login successfully",
         life: 1000,
       });
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      setTimeout(() => {}, 500);
       console.log(data);
     } catch (error) {
       console.error("Error sending message:", error as Error);

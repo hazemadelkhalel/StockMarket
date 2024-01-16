@@ -1,17 +1,23 @@
 # Makefile for building StockMarket application
-  
+
 # Compiler and flags
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -lpthread
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic 
 
 # Source files
-SRC := dal/DatabaseHandler/DatabaseHandler.cpp StockMarket.cpp controllers/UserController.cpp controllers/AuthController.cpp
+SRC := dal/DatabaseHandler/DatabaseHandler.cpp \
+       Service.cpp \
+       controllers/AuthController.cpp \
+       controllers/StockController.cpp \
+       controllers/StockMarketController.cpp \
+       controllers/TransactionController.cpp \
+       controllers/UserController.cpp 
 
 # Object files
 OBJ := $(SRC:.cpp=.o)
 
 # Libraries
-LIBS := -lsqlite3 -I /json-develop/single_include
+LIBS := -lsqlite3 -I/json-develop/single_include -I/jwt-cpp -lssl -lcrypto -lpthread 
 
 # Executable
 EXEC := StockMarket

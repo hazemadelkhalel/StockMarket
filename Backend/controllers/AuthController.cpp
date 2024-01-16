@@ -45,12 +45,10 @@ json AuthController::validateSignup(json &User) {
         if (response1.status == SUCCESS) {
             return json({{"status", "failed"}, {"message", "username already exists"}});
         }
-
         auto response2 = db_handler->getUserByEmail(email);
         if (response2.status == SUCCESS) {
             return json({{"status", "failed"}, {"message", "email already exists"}});
         }
-
 
         return json({{"status", "success"}});
     }
@@ -71,6 +69,7 @@ json AuthController::login(json &User)
             return json({{"status", "failed"}, {"message", "username_or_email, password cannot be empty"}});
         }
         auto response = db_handler->validateUserLogin(username_or_email, password);
+
         if (response.status != SUCCESS) {
             return json({{"status", "failed"}, {"message", "username/email or password is incorrect"}});
         }
@@ -104,7 +103,6 @@ json AuthController::login(json &User)
 
 json AuthController::createUser(json &User)
 {
-
     auto validation = validateSignup(User);
     if(validation["status"] == "failed"){
         return validation;
@@ -172,9 +170,11 @@ json AuthController::createUser(json &User)
         wallet = User["wallet"];
     }
     created_at = DatabaseHandler::getHandler()->datetimeNow();
-
+    
     UserDTO dto(1, username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, wallet);
+
     auto response = db_handler->createUser(dto);
+
     if (response.status != SUCCESS)
     {
         return json({{"status", "failed"}});
@@ -198,6 +198,8 @@ json AuthController::createUser(json &User)
         {"card_number", card_number},
         {"wallet", wallet}
         };
+
+
     return json({{"status", "success"},
                  {"User", UserResponse}});
 }
