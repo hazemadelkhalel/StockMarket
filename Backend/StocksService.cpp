@@ -41,6 +41,7 @@ private:
     std::mutex mutex_;
     std::condition_variable cv_;
     bool data_ready = false;
+    int maxAvailableStocks;
 
 public:
     // Load stocks from JSON file
@@ -64,9 +65,22 @@ public:
             float initial_price = std::stof(stock["initial_price"].dump());
 
             stocks.emplace_back(company_name, available_stocks, initial_price);
+            if (available_stocks > maxAvailableStocks)
+                maxAvailableStocks = available_stocks;
         }
 
         // TODO: Add stocks to database
+    }
+    double calculatePriceChange(int availableStocks)
+    {
+        // Calculate a factor based on the available stocks
+        double factor = 1.0 - static_cast<double>(availableStocks) / maxAvailableStocks;
+
+        // Generate random value between -0.1 and 0.1
+        double randomChange = ((rand() % 200) - 100) / 1000.0;
+
+        // Adjust the randomChange based on the factor
+        return randomChange * factor;
     }
 
     void updateStockPricesAndNotify(websocket::stream<tcp::socket> &ws)
@@ -78,8 +92,13 @@ public:
 
             for (auto &stock : stocks)
             {
+            }
+
+            for (auto &stock : stocks)
+            {
                 // Generate random value between -0.1 and 0.1
-                double randomChange = ((rand() % 200) - 100) / 1000.0;
+                double randomChange = calculatePriceChange(stock.available_stocks);
+
                 double tempCurrentPrice = stock.current_price;
                 stock.current_price *= (1 + randomChange);
                 stock.change = (stock.current_price - tempCurrentPrice) / tempCurrentPrice * 100;
