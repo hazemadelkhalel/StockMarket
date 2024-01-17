@@ -1,0 +1,148 @@
+{
+  "stocks": [
+    {
+      "company": "Apple",
+      "available_stocks": 1000,
+      "initial_price": 127.13,
+      "current_price": 127.36
+    },
+    {
+      "company": "Microsoft",
+      "available_stocks": 800,
+      "initial_price": 92.45,
+      "current_price": 92.45
+    },
+    {
+      "company": "Google",
+      "available_stocks": 1200,
+      "initial_price": 345.78,
+      "current_price": 349.18
+    },
+    {
+      "company": "Amazon",
+      "available_stocks": 500,
+      "initial_price": 1892.36,
+      "current_price": 1875.79
+    },
+    {
+      "company": "Tesla",
+      "available_stocks": 700,
+      "initial_price": 720.5,
+      "current_price": 725.1
+    },
+    {
+      "company": "Facebook",
+      "available_stocks": 700,
+      "initial_price": 300.45,
+      "current_price": 302.93
+    },
+    {
+      "company": "Netflix",
+      "available_stocks": 200,
+      "initial_price": 520.3,
+      "current_price": 516.07
+    },
+    {
+      "company": "Twitter",
+      "available_stocks": 100,
+      "initial_price": 45.2,
+      "current_price": 45.66
+    },
+    {
+      "company": "Snapchat",
+      "available_stocks": 150,
+      "initial_price": 65.75,
+      "current_price": 65.44
+    },
+    {
+      "company": "Uber",
+      "available_stocks": 80,
+      "initial_price": 32.9,
+      "current_price": 33.18
+    },
+    {
+      "company": "Lyft",
+      "available_stocks": 120,
+      "initial_price": 48.6,
+      "current_price": 48.02
+    },
+    {
+      "company": "Airbnb",
+      "available_stocks": 250,
+      "initial_price": 180.2,
+      "current_price": 183.61
+    },
+    {
+      "company": "Zoom",
+      "available_stocks": 400,
+      "initial_price": 340.9,
+      "current_price": 335.68
+    },
+    {
+      "company": "Alibaba",
+      "available_stocks": 300,
+      "initial_price": 210.6,
+      "current_price": 214.12
+    },
+    {
+      "company": "Tencent",
+      "available_stocks": 500,
+      "initial_price": 380.1,
+      "current_price": 376.3
+    },
+    {
+      "company": "Intel",
+      "available_stocks": 150,
+      "initial_price": 50.75,
+      "current_price": 51.03
+    },
+    {
+      "company": "AMD",
+      "available_stocks": 200,
+      "initial_price": 95.3,
+      "current_price": 94.56
+    },
+    {
+      "company": "NVIDIA",
+      "available_stocks": 300,
+      "initial_price": 220.9,
+      "current_price": 223.46
+    },
+    {
+      "company": "Samsung",
+      "available_stocks": 100,
+      "initial_price": 150.2,
+      "current_price": 148.19
+    },
+    {
+      "company": "Sony",
+      "available_stocks": 50,
+      "initial_price": 75.8,
+      "current_price": 76.53
+    },
+    {
+      "company": "LG",
+      "available_stocks": 70,
+      "initial_price": 40.6,
+      "current_price": 40.26
+    },
+    {
+      "company": "SpaceX",
+      "available_stocks": 300,
+      "initial_price": 800.6,
+      "current_price": 788.52
+    },
+    {
+      "company": "Coca-Cola",
+      "available_stocks": 200,
+      "initial_price": 50.2,
+      "current_price": 50.57
+    },
+    {
+      "company": "PepsiCo",
+      "available_stocks": 350,
+      "initial_price": 120.9,
+      "current_price": 119.73
+    }
+  ]
+}

@@ -12,7 +12,6 @@ private:
     TransactionController();
 
     ~TransactionController();
-    
 
 public:
     static TransactionController *getInstance();
@@ -20,6 +19,8 @@ public:
     json addTransaction(const int &userID, const int &stockID);
 
     json getTransactionById(const int &transactionID);
+
+    json getAllTransactionsByUserId(const int &userID);
 };
 
 #endif

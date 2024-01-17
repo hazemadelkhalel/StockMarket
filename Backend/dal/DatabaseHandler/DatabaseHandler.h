@@ -31,8 +31,6 @@ class DatabaseHandler
     /// @return Query response object.
     QueryResponse queryRows(const char *query);
 
-
-
 public:
     /// @brief Singleton design function to get instance.
     /// @return Run of DatabaseHandler.
@@ -41,17 +39,12 @@ public:
     /// @brief Get current datetime in ISO format.
     std::string datetimeNow();
 
-
-
-
     Response<int> createUser(UserDTO &dto);
 
     Response<int> addStock(StockDTO &dto);
 
-
-
     Response<UserDTO> getUserById(int id);
-    
+
     Response<UserDTO> getUserByUsername(std::string username);
 
     Response<UserDTO> getUserByEmail(std::string email);
@@ -59,12 +52,8 @@ public:
     Response<UserDTO> updateUser(UserDTO &dto);
 
     Response<UserDTO> validateUserLogin(std::string username_or_email, std::string password);
-    
-
 
     Response<StockDTO> getStockById(int id);
-
-
 
     Response<TransactionDTO> buyStock(const int &userID, const int &stockID);
 
@@ -76,18 +65,10 @@ public:
 
     Response<std::vector<StockDTO>> getAllStocks();
 
+    Response<std::vector<TransactionDTO>> getAllTransactionsByUserId(const int &userID);
 
-
-
-
-
-
-    // /// @brief Creates test suite run.
-    // /// @param dto Test suite run DTO.
-    // /// @return Test suite run ID.
-    // Response<int> createTestSuiteRun(int testSuiteId);
-
-
+    Response<int> addStockTokenByUserId(const int &id, std::string token);
+    Response<std::string> getStockTokenByUserId(const int &id);
 };
 
 #endif

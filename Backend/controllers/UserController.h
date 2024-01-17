@@ -16,6 +16,8 @@ public:
     static UserController *getInstance();
     
     json getUserById(const int &UserId);
+    
+    json getUserByUsername(std::string username);
 
     // json editUser(json &User);
 };

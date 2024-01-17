@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic 
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic  
 
 # Source files
 SRC := dal/DatabaseHandler/DatabaseHandler.cpp \
@@ -12,12 +12,11 @@ SRC := dal/DatabaseHandler/DatabaseHandler.cpp \
        controllers/StockMarketController.cpp \
        controllers/TransactionController.cpp \
        controllers/UserController.cpp 
-
 # Object files
 OBJ := $(SRC:.cpp=.o)
 
 # Libraries
-LIBS := -lsqlite3 -I/json-develop/single_include -I/jwt-cpp -lssl -lcrypto -lpthread 
+LIBS := -lsqlite3 -I/json-develop/single_include -I/jwt-cpp -lssl -lcrypto -lpthread  
 
 # Executable
 EXEC := StockMarket

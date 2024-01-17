@@ -8,6 +8,7 @@ import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { useRouter } from "next/navigation";
+import { setSessionToken } from "@/app/utils/cookie";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -56,7 +57,7 @@ const SignUp = () => {
         });
         return;
       }
-      const response = await fetch("http://localhost:8000/signup/create", {
+      const response = await fetch("http://localhost:8001/api/signup/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,6 +72,7 @@ const SignUp = () => {
       });
 
       const data = await response.json();
+
       if (data.error) {
         (toast.current as any)?.show({
           severity: "error",
@@ -80,6 +82,8 @@ const SignUp = () => {
         });
         return;
       }
+      setSessionToken(data.token);
+
       (toast.current as any)?.show({
         severity: "success",
         summary: "Success",
@@ -88,7 +92,7 @@ const SignUp = () => {
       });
       setTimeout(() => {
         router.push("/");
-      }, 1000);
+      }, 500);
     } catch (error) {
       console.error("Error sending message:", error as Error);
     }

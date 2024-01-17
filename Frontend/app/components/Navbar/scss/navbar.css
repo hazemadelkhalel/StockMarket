@@ -62,15 +62,22 @@ body {
   flex: 1;
   margin-right: 40px;
 }
-.nav-container .nav-user img {
-  width: 45px;
-  height: 45px;
-  padding: 5px;
+.nav-container .nav-user span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  align-items: center;
   border-radius: 50%;
+  background-color: #00a9ff;
+  transition: 0.3s;
+  font-size: 20px;
 }
-.nav-container .nav-user img:hover {
+.nav-container .nav-user span:hover {
   cursor: pointer;
-  background-color: #333840;
+  background-color: #0079b6;
 }
 .nav-container .profile-area {
   position: absolute;
@@ -108,10 +115,18 @@ body {
   transform: translateX(-50%);
   background-color: #ddd;
 }
-.nav-container .profile-area .pa-info img {
+.nav-container .profile-area .pa-info .home-user-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00a9ff;
+  color: white;
+  text-align: center;
+  align-items: center;
   width: 30px;
+  height: 30px;
   border-radius: 50%;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 .nav-container .profile-area .pa-info span {
   font-weight: bold;
@@ -120,6 +135,16 @@ body {
 }
 .nav-container .profile-area .pa-info:hover {
   background-color: #eee;
+}
+.nav-container .profile-area .profile-area-space {
+  content: "";
+  height: 1px;
+  width: 100%;
+  background-color: #ddd;
+  margin-top: 5px;
+}
+.nav-container .profile-area .active-logout:hover {
+  background-color: #f55353 !important;
 }
 .nav-container .profile-area .logout {
   display: flex;
@@ -142,8 +167,7 @@ body {
   color: #fff;
 }
 .nav-container .profile-area .logout img {
-  width: 16px;
-  margin-right: 5px;
+  width: 20px;
 }
 .nav-container .profile-area .logout span {
   font-weight: bold;

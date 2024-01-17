@@ -1,4 +1,4 @@
-#ifndef TRANSACTIONDTO_H  
+#ifndef TRANSACTIONDTO_H
 #define TRANSACTIONDTO_H
 
 #include <string>

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import { signIn } from "next-auth/react";
+import { setSessionToken } from "../../utils/cookie";
 
 const Login = () => {
   const [username_or_email, setUsernameOrEmail] = useState("");
@@ -26,8 +26,6 @@ const Login = () => {
   const handleClick = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     try {
-      console.log(username_or_email, password);
-
       if (username_or_email === "" || password === "") {
         (toast.current as any)?.show({
           severity: "error",
@@ -38,7 +36,7 @@ const Login = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/login/redirect", {
+      const response = await fetch("http://localhost:8001/api/login/redirect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +50,6 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log(data);
       if (data.error) {
         (toast.current as any)?.show({
           severity: "error",
@@ -62,9 +59,9 @@ const Login = () => {
         });
         return;
       }
-      await signIn("credentials", {
-        redirect: false,
-      });
+
+      setSessionToken(data.token);
+      router.push("/");
 
       (toast.current as any)?.show({
         severity: "success",
@@ -73,7 +70,6 @@ const Login = () => {
         life: 1000,
       });
       setTimeout(() => {}, 500);
-      console.log(data);
     } catch (error) {
       console.error("Error sending message:", error as Error);
     }

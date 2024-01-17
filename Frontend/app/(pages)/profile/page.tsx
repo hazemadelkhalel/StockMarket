@@ -11,10 +11,14 @@ import "primeflex/primeflex.css";
 
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { Tag } from "primereact/tag";
 import { Chart } from "primereact/chart";
 import { Button } from "primereact/button";
+import { useRouter } from "next/navigation";
+import { getSessionToken } from "../../utils/cookie";
+import { Toast } from "primereact/toast";
+import { get } from "http";
 interface Stocker {
   name: string;
   type: string;
@@ -25,12 +29,35 @@ interface Stocker {
 }
 
 const Profile = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [created_at, setCreatedAt] = useState("");
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [aboutme, setAboutme] = useState("");
+  const [website, setWebsite] = useState("");
+  const [facebook_profile, setFacebook_profile] = useState("");
+  const [instagram_profile, setInstagram_profile] = useState("");
+  const [card_number, setCard_number] = useState("");
+  const [wallet, setWallet] = useState(0);
+
+  const [totalBuy, setTotalBuy] = useState(0);
+  const [totalSell, setTotalSell] = useState(0);
   const [selectedTap, setSelectedTap] = useState(1);
   const [stockers, setStockers] = useState<Stocker[]>([]);
-
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
   const [timeRange, setTimeRange] = useState("day"); // 'day', 'month', 'year'
+  const router = useRouter();
+  const sessionToken = getSessionToken();
+  const toast = useRef(null);
+
+  console.log(sessionToken);
+  if (!sessionToken) {
+    router.push("/login");
+    return;
+  }
 
   const getSeverity = (stocker: Stocker) => {
     switch (stocker.type) {
@@ -40,12 +67,6 @@ const Profile = () => {
         return "danger";
     }
   };
-  const formattedStockers = stockers.map((stock) => {
-    const parts = stock.date.split("/");
-    const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    return { ...stock, date: formattedDate };
-  });
-
   useEffect(() => {
     const transactions: Stocker[] = [
       {
@@ -293,6 +314,97 @@ const Profile = () => {
     setChartOptions(options);
   }, [timeRange]);
 
+  const getUser = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8001/api/getUser?token=${getSessionToken()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.error) {
+        (toast.current as any)?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: data.error,
+          life: 3000,
+        });
+        return;
+      }
+
+      setUsername(data["User"].username);
+      setEmail(data["User"].email);
+      setCreatedAt(data["User"].created_at);
+      setFirstName(data["User"].first_name);
+      setLastName(data["User"].last_name);
+      setPhone(data["User"].phone);
+      setAboutme(data["User"].aboutme);
+      setWebsite(data["User"].website);
+      setFacebook_profile(data["User"].facebook_profile);
+      setInstagram_profile(data["User"].instagram_profile);
+      setCard_number(data["User"].card_number);
+      setWallet(data["User"].wallet);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const getStockers = async () => {
+    const response = await fetch(
+      `http://localhost:8001/api/profile/getAllTransactions?token=${getSessionToken()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+    if (data.error) {
+      (toast.current as any)?.show({
+        severity: "error",
+        summary: "Failed",
+        detail: data.error,
+        life: 3000,
+      });
+      return;
+    }
+    let transactions: Stocker[] = [];
+
+    console.log(data["transactions"]);
+    let cntBuy = 0;
+    let cntSell = 0;
+    for (let i = 0; i < data["transactions"]?.length; i++) {
+      let transaction = data["transactions"][i];
+      transactions.push({
+        name: "Transaction #" + transaction.id,
+        type: transaction.stock.type,
+        company: transaction.stock.company,
+        price: parseFloat(transaction.stock.price).toFixed(2),
+        balance: parseFloat(transaction.user.wallet).toFixed(2),
+        date: transaction.date,
+      });
+      if (transaction.stock.type == "Buy") cntBuy++;
+      else cntSell++;
+      setTotalBuy(cntBuy);
+      setTotalSell(cntSell);
+      transactions[i].date = transactions[i].date
+        .replace("T", " ")
+        .split(".")[0];
+    }
+    setStockers(transactions);
+  };
+  useEffect(() => {
+    getUser();
+    getStockers();
+  }, [selectedTap]);
+
   const statusBodyTemplate = (stocker: Stocker) => {
     return (
       <Tag
@@ -303,17 +415,20 @@ const Profile = () => {
     );
   };
 
+  const dateBodyTemplate = (rowData: { date: string }) => {
+    return <span>{rowData.date}</span>;
+  };
+
   const handleTimeRangeChange = (newTimeRange: SetStateAction<string>) => {
     setTimeRange(newTimeRange);
   };
   return (
     <>
       <Navbar idx={0} />
+      <Toast ref={toast} />
       <div className="profile-container">
         <section className="profile-section-1">
-          <div className="profile-pc">
-            <img src="/Images/Me.jpg" />
-          </div>
+          <div className="profile-pc">H</div>
           <div className="profile-info">
             <div className="p-i-data">
               <h1>hazemadelkhalel</h1>
@@ -324,15 +439,15 @@ const Profile = () => {
             </div>
             <div className="p-i-container-progress">
               <div className="p-i-progress">
-                <h3>14</h3>
+                <h3>{totalBuy}</h3>
                 <span>Buy</span>
               </div>
               <div className="p-i-progress">
-                <h3>5</h3>
+                <h3>{totalSell}</h3>
                 <span>Sell</span>
               </div>
               <div className="p-i-progress">
-                <h3>19</h3>
+                <h3>{stockers.length}</h3>
                 <span>Transactions</span>
               </div>
               <div className="p-i-progress">
@@ -425,7 +540,7 @@ const Profile = () => {
           {selectedTap == 2 ? (
             <div style={{ width: "100%" }}>
               <DataTable
-                value={formattedStockers}
+                value={stockers}
                 stripedRows
                 paginator
                 sortMode="multiple"
@@ -443,7 +558,12 @@ const Profile = () => {
                   sortable
                   body={statusBodyTemplate}
                 ></Column>
-                <Column field="date" sortable header="Date "></Column>
+                <Column
+                  field="date"
+                  sortable
+                  header="Date"
+                  body={dateBodyTemplate}
+                ></Column>
               </DataTable>
             </div>
           ) : null}
@@ -458,13 +578,18 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Username</span>
-                    <input type="text" placeholder="Username" />
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      disabled
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">About Me</span>
-                    <textarea placeholder="" />
+                    <textarea placeholder="" value={aboutme} />
                   </div>
                 </div>
                 <h3>
@@ -474,19 +599,27 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Website</span>
-                    <input type="text" placeholder="Website" />
+                    <input type="text" placeholder="Website" value={website} />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Facebook profile</span>
-                    <input type="text" placeholder="Username" />
+                    <input
+                      type="text"
+                      placeholder="Facebook Username"
+                      value={facebook_profile}
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Instagram profile</span>
-                    <input type="text" placeholder="Username" />
+                    <input
+                      type="text"
+                      placeholder="Instagram Username"
+                      value={instagram_profile}
+                    />
                   </div>
                 </div>
                 <div className="settings-btn">
@@ -499,25 +632,33 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Email</span>
-                    <input type="text" placeholder="Email" />
+                    <input type="text" placeholder="Email" value={email} />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">First Name</span>
-                    <input type="text" placeholder="First Name" />
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      value={first_name}
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Last Name</span>
-                    <input type="text" placeholder="Last Name" />
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      value={last_name}
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Phone</span>
-                    <input type="text" placeholder="Phone" />
+                    <input type="text" placeholder="Phone" value={phone} />
                   </div>
                 </div>
                 <Divider />
@@ -532,7 +673,11 @@ const Profile = () => {
                   <div className="settings-item">
                     <div className="stocker-item-input">
                       <span className="gi-item-text">Credit Number</span>
-                      <input type="text" placeholder="Credit Number" />
+                      <input
+                        type="text"
+                        placeholder="Credit Number"
+                        value={card_number}
+                      />
                     </div>
                   </div>
                   <div className="stocker-item-input">
@@ -546,7 +691,7 @@ const Profile = () => {
                         width: "100%",
                       }}
                     >
-                      $1265
+                      ${wallet.toFixed(2)}
                     </span>
                   </div>
                 </div>

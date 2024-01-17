@@ -3,9 +3,27 @@
 import Link from "next/link";
 import "./scss/navbar.css";
 import { useState } from "react";
+import { Divider } from "primereact/divider";
+import { useRouter } from "next/navigation";
+import { removeSessionToken } from "../../utils/cookie";
 
 const Navbar = (props: { idx: number }) => {
   const [profileActive, setProfileActive] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const handleClickLogout = async (event: { preventDefault: () => void }) => {
+    removeSessionToken();
+    router.push("/login");
+  };
   return (
     <nav className="nav-container">
       <Link className="nav-link" href="/">
@@ -54,13 +72,13 @@ const Navbar = (props: { idx: number }) => {
           setProfileActive((state) => !state);
         }}
       >
-        <img src="SVG/userIcon.svg" alt="user" />
+        <span>H</span>
       </div>
       <div className={`profile-area ${profileActive}`}>
-        <Link href="/login">
+        <Link href="/profile">
           <div className="pa-info">
-            <img src="/SVG/userIconColored.svg" alt="ProfilePicture" />
-            <span>Sign In</span>
+            <span className="home-user-img">H</span>
+            <span>Hazem Adel</span>
           </div>
         </Link>
         <Link href="/help">
@@ -71,6 +89,23 @@ const Navbar = (props: { idx: number }) => {
         <Link href="/news">
           <div className="logout">
             <span>What's new</span>
+          </div>
+        </Link>
+        <div className="profile-area-space"></div>
+        <Link href="/login" onClick={handleClickLogout}>
+          <div
+            className={`logout ${isHovered ? "active-logout" : ""}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img
+              className="logoutImage"
+              src={
+                isHovered ? "/SVG/white-logout.svg" : "/SVG/black-logout.svg"
+              }
+              alt="Logout"
+            />
+            <span>Logout</span>
           </div>
         </Link>
       </div>

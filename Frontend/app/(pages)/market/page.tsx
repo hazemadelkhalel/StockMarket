@@ -1,6 +1,6 @@
 "use client";
 import { GBtn, Navbar } from "../../components";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -12,6 +12,8 @@ import { Button } from "primereact/button";
 import React from "react";
 import { Dialog } from "primereact/dialog";
 import { useRouter } from "next/navigation";
+import { getSessionToken } from "../../utils/cookie";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface Stock {
   id: number;
@@ -20,6 +22,8 @@ interface Stock {
   price: string;
   change: string;
   profit: string;
+  initial_price?: string;
+  available_stocks?: string;
 }
 
 const Market = () => {
@@ -37,32 +41,70 @@ const Market = () => {
   const [selectedTypeStock, setSelectedTypeStock] = useState(1);
   const [stock, setStock] = useState<Stock>(emptyStock);
   const [actionStockDialog, setActionStockDialog] = useState<boolean>(false);
-  const [nextUpdate, setNextUpdate] = useState(20);
+  const [nextUpdate, setNextUpdate] = useState(10);
+  const [wallet, setWallet] = useState(0);
   const clearEveryThing = () => {
     setBuyStocks([]);
     setSellStocks([]);
     setSelectedTypeStock(1);
     setStock(emptyStock);
     setActionStockDialog(false);
-    setNextUpdate(20);
+    setNextUpdate(10);
   };
+
+  const router = useRouter();
+  const sessionToken = getSessionToken();
+  if (!sessionToken) {
+    router.push("/login");
+    return;
+  }
 
   const hideActionStockDialog = () => {
     setActionStockDialog(false);
   };
+  const fetchWallet = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8001/api/getUser?token=${getSessionToken()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.error) {
+        (toast.current as any)?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: data.error,
+          life: 3000,
+        });
+        return;
+      }
+      setWallet(data["User"].wallet);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchWallet();
+  }, []);
 
   const actionStock = async () => {
     let _stocks;
     if (selectedTypeStock === 1) {
       _stocks = buyStocks.filter((val) => val.company !== stock.company);
       try {
-        const response = await fetch("http://localhost:8000/market/buy", {
+        const response = await fetch("http://localhost:8001/api/market/buy", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            User: 1,
+            token: getSessionToken(),
             Stock: stock.id,
           }),
         });
@@ -77,6 +119,7 @@ const Market = () => {
           });
           return;
         }
+        fetchWallet();
         setActionStockDialog(false);
         setStock(emptyStock);
         setBuyStocks(_stocks);
@@ -94,13 +137,13 @@ const Market = () => {
     } else {
       _stocks = sellStocks.filter((val) => val.company !== stock.company);
       try {
-        const response = await fetch("http://localhost:8000/market/sell", {
+        const response = await fetch("http://localhost:8001/api/market/sell", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            User: 1,
+            token: getSessionToken(),
             Stock: stock.id,
           }),
         });
@@ -155,33 +198,39 @@ const Market = () => {
   );
 
   const fetchData = async () => {
-    try {
-      clearEveryThing();
-      const response = await fetch(
-        "http://localhost:8000/market/getAllStocks",
-        {
+    if (selectedTypeStock === 1) {
+      try {
+        clearEveryThing();
+
+        const url = `http://localhost:8001/api/market/getAllStocks?token=${getSessionToken()}`;
+
+        const response = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        }
-      );
-      const data = await response.json();
+        });
 
-      const shuffledStocks = shuffleArray(data.stocks);
+        const data = await response.json();
 
-      setBuyStocks(
-        shuffledStocks.filter((stock: { type: string }) => stock.type === "Buy")
-      );
-      setSellStocks(
-        shuffledStocks.filter(
-          (stock: { type: string }) => stock.type === "Sell"
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching data:", error);
+        const shuffledStocks = shuffleArray(data.stocks);
+
+        setBuyStocks(
+          shuffledStocks.filter(
+            (stock: { type: string }) => stock.type === "Buy"
+          )
+        );
+        setSellStocks(
+          shuffledStocks.filter(
+            (stock: { type: string }) => stock.type === "Sell"
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
+
   const shuffleArray = (array: any) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -189,25 +238,70 @@ const Market = () => {
     }
     return array;
   };
-
   useEffect(() => {
-    // Fetch data initially
     fetchData();
+    const socket = new WebSocket("ws://127.0.0.1:8083");
 
-    // Set up interval to fetch data every 10 seconds
-    const fetchDataIntervalId = setInterval(fetchData, 20000);
+    socket.addEventListener("open", (event) => {
+      console.log("WebSocket connection opened:", event);
+    });
 
-    // Set up interval to decrement nextUpdate every second
-    const countdownIntervalId = setInterval(() => {
-      setNextUpdate((prevNextUpdate) => prevNextUpdate - 1);
-    }, 1000);
+    socket.addEventListener("message", (event) => {
+      console.log("WebSocket message received:", event.data);
+      const data = JSON.parse(event.data);
+      console.log("AMD", data["AMD"]);
+      const newData = shuffleArray(data);
+      let _buyStocks: Stock[] = [];
+      for (let key in data) {
+        let _stock: Stock = {
+          id: 0,
+          company: key,
+          type: "Buy",
+          price: data[key].current_price,
+          change: data[key].change,
+          profit: data[key].profit,
+          initial_price: data[key].initial_price,
+          available_stocks: data[key].available_stocks,
+        };
+        _buyStocks.push(_stock);
+      }
+      console.log(_buyStocks);
+      setBuyStocks(_buyStocks);
+    });
 
-    // Clear intervals on component unmount
+    socket.addEventListener("close", (event) => {
+      console.log("WebSocket connection closed:", event);
+    });
+
     return () => {
-      clearInterval(fetchDataIntervalId);
-      clearInterval(countdownIntervalId);
+      // Close the WebSocket connection when the component is unmounted
+      socket.close();
     };
   }, []);
+  // useEffect(() => {
+  //   // Check the condition before setting up intervals
+  //   if (selectedTypeStock === 1) {
+  //     // Fetch data initially
+  //     fetchData();
+
+  //     // Set up interval to fetch data every 10 seconds
+  //     const fetchDataIntervalId = setInterval(fetchData, 20000);
+
+  //     // Set up interval to decrement nextUpdate every second
+  //     const countdownIntervalId = setInterval(() => {
+  //       setNextUpdate((prevNextUpdate) => prevNextUpdate - 1);
+  //     }, 1000);
+
+  //     // Clear intervals on component unmount
+  //     return () => {
+  //       clearInterval(fetchDataIntervalId);
+  //       clearInterval(countdownIntervalId);
+  //     };
+  //   }
+
+  //   // If selectedType is not 1, do nothing on mount and return an empty cleanup function
+  //   return () => {};
+  // }, [selectedTypeStock]);
 
   const actionView = (rowData: any) => {
     return (
@@ -245,12 +339,31 @@ const Market = () => {
       return <span>{changeValue.toFixed(2)}%</span>;
     }
   };
+  const changeBodyInitPriceTemplate = (rowData: { initial_price: string }) => {
+    const changeValue = parseFloat(rowData.initial_price);
+    return <span>${changeValue.toFixed(2)}</span>;
+  };
+  const changeBodyPriceTemplate = (rowData: { price: string }) => {
+    const changeValue = parseFloat(rowData.price);
+    return <span>${changeValue.toFixed(2)}</span>;
+  };
+  const changeBodyProfitTemplate = (rowData: { profit: string }) => {
+    const changeValue = parseFloat(rowData.profit);
+    if (changeValue > 0) {
+      return <span>${changeValue.toFixed(2)}</span>;
+    } else if (changeValue == 0) {
+      return <span>$0.00</span>;
+    } else {
+      let _changeValue = changeValue * -1;
+      return <span>-${_changeValue.toFixed(2)}</span>;
+    }
+  };
 
   return (
     <>
       <Navbar idx={2} />
       <div className="market-container">
-        <Toast ref={toast} position="bottom-right" />
+        <Toast ref={toast} />
         <div className="m-c-section1">
           <h1>Stock Market</h1>
           <h3>Don't miss a beat with global real-time updates.</h3>
@@ -291,10 +404,14 @@ const Market = () => {
               />
             )}
           </div>
-          <span className="market-balance">Current Balance: $217</span>
-          <div className="market-timer">
-            <span>Refresh after: {nextUpdate}s</span>
-          </div>
+          <span className="market-balance">
+            Current Balance: ${wallet.toFixed(2)}
+          </span>
+          {selectedTypeStock === 1 ? (
+            <div className="market-timer">
+              <span>Refresh after: {nextUpdate}s</span>
+            </div>
+          ) : null}
         </div>
         <div className="m-c-section2">
           <div style={{ width: "100%" }}>
@@ -307,16 +424,48 @@ const Market = () => {
               rows={10}
               size={"normal"}
               rowsPerPageOptions={[10, 50, 100, 200]}
+              emptyMessage={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ProgressSpinner style={{ width: "50px" }} />
+                </div>
+              }
             >
               <Column field="company" sortable header="Company"></Column>
-              <Column field="price" sortable header="Price "></Column>
+              <Column
+                field="available_stocks"
+                sortable
+                header="Available Stocks"
+              />
+              <Column
+                field="initial_price"
+                sortable
+                header="Initial Price"
+                body={changeBodyInitPriceTemplate}
+              />
+              <Column
+                field="price"
+                sortable
+                header="Price "
+                body={changeBodyPriceTemplate}
+              ></Column>
               <Column
                 field="change"
                 sortable
                 body={changeBodyTemplate}
-                header="Change %"
+                header="Current Change %"
               ></Column>
-              <Column field="profit" sortable header="Profit"></Column>
+              <Column
+                field="profit"
+                sortable
+                header="Profit"
+                body={changeBodyProfitTemplate}
+              ></Column>
               <Column body={actionView} style={{ width: "120px" }}></Column>
             </DataTable>
             <Dialog

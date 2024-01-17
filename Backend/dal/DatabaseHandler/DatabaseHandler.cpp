@@ -11,13 +11,13 @@ DatabaseHandler::DatabaseHandler()
     int status = 0;
     if (SQLITE_OK != (status = sqlite3_initialize()))
     {
-        std::cout << "Failed to initialize library: "<< status << '\n';
+        std::cout << "Failed to initialize library: " << status << '\n';
         return;
     }
     // open connection to a DB
     if (SQLITE_OK != (status = sqlite3_open_v2("StockMarket.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL)))
     {
-        std::cout << "Failed to open conn: "<< status << '\n';
+        std::cout << "Failed to open conn: " << status << '\n';
         return;
     }
     std::string databasePath = "StockMarket.db";
@@ -33,41 +33,45 @@ DatabaseHandler::DatabaseHandler()
     // To enable foreign key constraints support
     sqlite3_exec(db, "PRAGMA foreign_keys = ON", NULL, 0, NULL);
 
-std::string schemaQ = "BEGIN TRANSACTION; "
-                      "CREATE TABLE IF NOT EXISTS \"user\" ( "
-                      "\"id\" INTEGER, "
-                      "\"username\" TEXT NOT NULL UNIQUE, "
-                      "\"email\" TEXT NOT NULL UNIQUE, "
-                      "\"password\" TEXT NOT NULL, "
-                      "\"created_at\" TEXT NOT NULL, "
-                      "\"first_name\" TEXT, "
-                      "\"last_name\" TEXT, "
-                      "\"phone\" TEXT, "
-                      "\"aboutme\" TEXT, "
-                      "\"website\" TEXT, "
-                      "\"facebook_profile\" TEXT, "
-                      "\"instagram_profile\" TEXT, "
-                      "\"card_number\" TEXT, "
-                      "\"wallet\" REAL DEFAULT 0.00, "
-                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
-                      "); "
-                      "CREATE TABLE IF NOT EXISTS \"stock\" ( "
-                      "\"id\" INTEGER, "
-                      "\"company\" TEXT NOT NULL UNIQUE, "
-                      "\"type\" TEXT NOT NULL, "
-                      "\"price\" REAL DEFAULT 0.00, "
-                      "\"change\" REAL DEFAULT 0.00, "
-                      "\"profit\" REAL DEFAULT 0.00, "
-                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
-                      "); "
-                      "CREATE TABLE IF NOT EXISTS \"stock_transaction\" ( "
-                      "\"id\" INTEGER, "
-                      "\"userID\" INTEGER REFERENCES \"user\"(\"id\"), "
-                      "\"stockID\" INTEGER REFERENCES \"stock\"(\"id\"), "
-                      "\"date\" TEXT NOT NULL, "
-                      "PRIMARY KEY(\"id\" AUTOINCREMENT) "
-                      "); "
-                      "COMMIT;";
+    std::string schemaQ = "BEGIN TRANSACTION; "
+                          "CREATE TABLE IF NOT EXISTS \"user\" ( "
+                          "\"id\" INTEGER, "
+                          "\"username\" TEXT NOT NULL UNIQUE, "
+                          "\"email\" TEXT NOT NULL UNIQUE, "
+                          "\"password\" TEXT NOT NULL, "
+                          "\"created_at\" TEXT NOT NULL, "
+                          "\"first_name\" TEXT, "
+                          "\"last_name\" TEXT, "
+                          "\"phone\" TEXT, "
+                          "\"aboutme\" TEXT, "
+                          "\"website\" TEXT, "
+                          "\"facebook_profile\" TEXT, "
+                          "\"instagram_profile\" TEXT, "
+                          "\"card_number\" TEXT, "
+                          "\"wallet\" REAL DEFAULT 0.00, "
+                          "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                          "); "
+                          "CREATE TABLE IF NOT EXISTS \"stock\" ( "
+                          "\"id\" INTEGER, "
+                          "\"company\" TEXT NOT NULL UNIQUE, "
+                          "\"type\" TEXT NOT NULL, "
+                          "\"price\" REAL DEFAULT 0.00, "
+                          "\"change\" REAL DEFAULT 0.00, "
+                          "\"profit\" REAL DEFAULT 0.00, "
+                          "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                          "); "
+                          "CREATE TABLE IF NOT EXISTS \"stock_transaction\" ( "
+                          "\"id\" INTEGER, "
+                          "\"userID\" INTEGER REFERENCES \"user\"(\"id\"), "
+                          "\"stockID\" INTEGER REFERENCES \"stock\"(\"id\"), "
+                          "\"date\" TEXT NOT NULL, "
+                          "PRIMARY KEY(\"id\" AUTOINCREMENT) "
+                          "); "
+                          "CREATE TABLE IF NOT EXISTS \"stock_token\" ( "
+                          "\"token\" TEXT NOT NULL UNIQUE, "
+                          "\"userID\" INTEGER REFERENCES \"user\"(\"id\")"
+                          "); "
+                          "COMMIT;";
     sqlite3_exec(db, schemaQ.c_str(), NULL, 0, NULL);
 }
 
@@ -136,10 +140,68 @@ std::string DatabaseHandler::datetimeNow()
     std::string timeNow(std::size("yyyy-mm-ddThh:mm:ss"), 0);
     std::strftime(std::data(timeNow), std::size(timeNow),
                   "%FT%T", std::gmtime(&time));
-    timeNow.erase(timeNow.find('T'));
+
+    std::cout << timeNow << '\n';
     return timeNow;
 }
 
+Response<int> DatabaseHandler::addStockTokenByUserId(const int &userId, std::string token)
+{
+    Response<int> response;
+    response.result = new int(1);
+
+    std::string updateQ = "INSERT INTO stock_token "
+                          "(token, userID) "
+                          "VALUES (?, ?)";
+
+    sqlite3_stmt *stmt = 0;
+    sqlite3_prepare_v2(this->db, updateQ.c_str(), -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, token.c_str(), token.length(), SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 2, userId);
+
+    char *preparedQ = sqlite3_expanded_sql(stmt);
+
+    auto updateRes = this->queryRows(preparedQ);
+
+    if (updateRes.ok)
+    {
+        response.status = SUCCESS;
+    }
+    else
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    response.result = new int(sqlite3_last_insert_rowid(db));
+    response.status = SUCCESS;
+    return response;
+}
+
+Response<std::string> DatabaseHandler::getStockTokenByUserId(const int &userId)
+{
+    Response<std::string> response;
+    std::string selectQ = "SELECT token FROM stock_token WHERE userID = " + std::to_string(userId);
+
+    auto selectRes = this->queryRows(selectQ.c_str());
+    if (!selectRes.ok)
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    auto rows = selectRes.rows;
+    if (rows->size() == 0)
+    {
+        response.status = NOT_FOUND;
+        return response;
+    }
+
+    response.status = SUCCESS;
+    response.result = new std::string(rows->at(0)["token"]);
+    return response;
+}
 
 Response<int> DatabaseHandler::createUser(UserDTO &dto)
 {
@@ -153,7 +215,8 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
     sqlite3_stmt *stmt = 0;
     int prepareResult = sqlite3_prepare_v2(this->db, updateQ.c_str(), -1, &stmt, NULL);
 
-    if(prepareResult != SQLITE_OK){
+    if (prepareResult != SQLITE_OK)
+    {
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -190,7 +253,6 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
     response.status = SUCCESS;
     return response;
 }
-
 
 Response<int> DatabaseHandler::addStock(StockDTO &dto)
 {
@@ -229,32 +291,31 @@ Response<int> DatabaseHandler::addStock(StockDTO &dto)
     return response;
 }
 
-
 Response<UserDTO> DatabaseHandler::getUserById(int id)
 {
     Response<UserDTO> response;
 
     std::string UserQ = "SELECT "
-                         "user.id, "
-                         "user.username, "
-                         "user.email, "
-                         "user.password, "
-                         "user.created_at, "
-                         "user.first_name, "
-                         "user.last_name, "
-                         "user.phone, "
-                         "user.aboutme, "
-                         "user.website, "
-                         "user.facebook_profile, "
-                         "user.instagram_profile, "
-                         "user.card_number, "  
-                         "user.wallet "
-                         "FROM user AS user "
-                         "WHERE user.id = " +
-                         std::to_string(id);
+                        "user.id, "
+                        "user.username, "
+                        "user.email, "
+                        "user.password, "
+                        "user.created_at, "
+                        "user.first_name, "
+                        "user.last_name, "
+                        "user.phone, "
+                        "user.aboutme, "
+                        "user.website, "
+                        "user.facebook_profile, "
+                        "user.instagram_profile, "
+                        "user.card_number, "
+                        "user.wallet "
+                        "FROM user AS user "
+                        "WHERE user.id = " +
+                        std::to_string(id);
 
     auto UserResult = this->queryRows(UserQ.c_str());
-    
+
     if (!UserResult.ok)
     {
         response.status = INTERNAL_ERROR;
@@ -283,8 +344,7 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
             UserResult.rows->at(0).at("facebook_profile"),
             UserResult.rows->at(0).at("instagram_profile"),
             UserResult.rows->at(0).at("card_number"),
-            std::stof(UserResult.rows->at(0).at("wallet"))
-        );
+            std::stof(UserResult.rows->at(0).at("wallet")));
 
         response.status = SUCCESS;
         response.result = dto;
@@ -302,23 +362,23 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
     Response<UserDTO> response;
 
     std::string UserQ = "SELECT "
-                         "user.id, "
-                         "user.username, "
-                         "user.email, "
-                         "user.password, "
-                         "user.created_at, "
-                         "user.first_name, "
-                         "user.last_name, "
-                         "user.phone, "
-                         "user.aboutme, "
-                         "user.website, "
-                         "user.facebook_profile, "
-                         "user.instagram_profile, "
-                         "user.card_number, "
-                         "user.wallet "
-                         "FROM user AS user "
-                         "WHERE user.username = '" +
-                         username + "'";
+                        "user.id, "
+                        "user.username, "
+                        "user.email, "
+                        "user.password, "
+                        "user.created_at, "
+                        "user.first_name, "
+                        "user.last_name, "
+                        "user.phone, "
+                        "user.aboutme, "
+                        "user.website, "
+                        "user.facebook_profile, "
+                        "user.instagram_profile, "
+                        "user.card_number, "
+                        "user.wallet "
+                        "FROM user AS user "
+                        "WHERE user.username = '" +
+                        username + "'";
 
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
@@ -347,36 +407,35 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
         UserResult.rows->at(0)["facebook_profile"],
         UserResult.rows->at(0)["instagram_profile"],
         UserResult.rows->at(0)["card_number"],
-        std::stof(UserResult.rows->at(0)["wallet"])
-    );
+        std::stof(UserResult.rows->at(0)["wallet"]));
 
     response.status = SUCCESS;
     response.result = dto;
     return response;
 }
 
-
 Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
 {
     Response<UserDTO> response;
 
     std::string UserQ = "SELECT "
-                     "user.id, "
-                     "user.username, "
-                     "user.email, "
-                     "user.password, "
-                     "user.created_at, "
-                     "user.first_name, "
-                     "user.last_name, "
-                     "user.phone, "
-                     "user.aboutme, "
-                     "user.website, "
-                     "user.facebook_profile, "
-                     "user.instagram_profile, "
-                     "user.card_number, "
-                     "user.wallet "
-                     "FROM user AS user "
-                     "WHERE user.email = '" + email + "'";
+                        "user.id, "
+                        "user.username, "
+                        "user.email, "
+                        "user.password, "
+                        "user.created_at, "
+                        "user.first_name, "
+                        "user.last_name, "
+                        "user.phone, "
+                        "user.aboutme, "
+                        "user.website, "
+                        "user.facebook_profile, "
+                        "user.instagram_profile, "
+                        "user.card_number, "
+                        "user.wallet "
+                        "FROM user AS user "
+                        "WHERE user.email = '" +
+                        email + "'";
 
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
@@ -412,7 +471,7 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
         response.status = SUCCESS;
         response.result = dto;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         response.status = INTERNAL_ERROR;
     }
@@ -420,31 +479,30 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
     return response;
 }
 
-
 Response<UserDTO> DatabaseHandler::validateUserLogin(std::string username_or_email, std::string password)
 {
     Response<UserDTO> response;
 
-std::string UserQ = "SELECT "
-                    "user.id, "
-                    "user.username, "
-                    "user.email, "
-                    "user.password, "
-                    "user.created_at, "
-                    "user.first_name, "
-                    "user.last_name, "
-                    "user.phone, "
-                    "user.aboutme, "
-                    "user.website, "
-                    "user.facebook_profile, "
-                    "user.instagram_profile, "
-                    "user.card_number, "
-                    "user.wallet "
-                    "FROM user AS user "
-                    "WHERE (user.email = '" + username_or_email + 
-                    "' OR user.username = '" + username_or_email +
-                     "') AND user.password = '" + password + "'";
-
+    std::string UserQ = "SELECT "
+                        "user.id, "
+                        "user.username, "
+                        "user.email, "
+                        "user.password, "
+                        "user.created_at, "
+                        "user.first_name, "
+                        "user.last_name, "
+                        "user.phone, "
+                        "user.aboutme, "
+                        "user.website, "
+                        "user.facebook_profile, "
+                        "user.instagram_profile, "
+                        "user.card_number, "
+                        "user.wallet "
+                        "FROM user AS user "
+                        "WHERE (user.email = '" +
+                        username_or_email +
+                        "' OR user.username = '" + username_or_email +
+                        "') AND user.password = '" + password + "'";
 
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
@@ -458,7 +516,6 @@ std::string UserQ = "SELECT "
         response.status = NOT_FOUND;
         return response;
     }
-
 
     UserDTO *dto = new UserDTO(
         std::stoi(UserResult.rows->at(0)["id"]),
@@ -474,31 +531,27 @@ std::string UserQ = "SELECT "
         UserResult.rows->at(0)["facebook_profile"],
         UserResult.rows->at(0)["instagram_profile"],
         UserResult.rows->at(0)["card_number"],
-        std::stof(UserResult.rows->at(0)["wallet"])
-        );
-        
+        std::stof(UserResult.rows->at(0)["wallet"]));
 
     response.status = SUCCESS;
     response.result = dto;
     return response;
 }
 
-
 Response<StockDTO> DatabaseHandler::getStockById(int id)
 {
     Response<StockDTO> response;
 
     std::string StockQ = "SELECT "
-                     "stock.id, "
-                     "stock.company, "
-                     "stock.type, "
-                     "stock.price, "
-                     "stock.change, "
-                     "stock.profit "
-                     "FROM stock AS stock "
-                     "WHERE stock.id = " +
-                     std::to_string(id);
-
+                         "stock.id, "
+                         "stock.company, "
+                         "stock.type, "
+                         "stock.price, "
+                         "stock.change, "
+                         "stock.profit "
+                         "FROM stock AS stock "
+                         "WHERE stock.id = " +
+                         std::to_string(id);
 
     auto StockResult = this->queryRows(StockQ.c_str());
     if (!StockResult.ok)
@@ -513,22 +566,21 @@ Response<StockDTO> DatabaseHandler::getStockById(int id)
         return response;
     }
 
-
     StockDTO *dto = new StockDTO(
         id,
         StockResult.rows->at(0)["company"],
         StockResult.rows->at(0)["type"],
         std::stof(StockResult.rows->at(0)["price"]),
         std::stof(StockResult.rows->at(0)["change"]),
-        std::stof(StockResult.rows->at(0)["profit"])
-        );        
+        std::stof(StockResult.rows->at(0)["profit"]));
 
     response.status = SUCCESS;
     response.result = dto;
     return response;
 }
 
-Response<UserDTO> DatabaseHandler::updateUser(UserDTO &newUser){
+Response<UserDTO> DatabaseHandler::updateUser(UserDTO &newUser)
+{
     Response<UserDTO> response;
     std::string updateQ = "UPDATE user "
                           "SET username = ?, email = ?, password = ?, first_name = ?, last_name = ?, phone = ?, aboutme = ?, website = ?, facebook_profile = ?, instagram_profile = ?, card_number = ?, wallet = ? "
@@ -567,9 +619,11 @@ Response<UserDTO> DatabaseHandler::updateUser(UserDTO &newUser){
     return response;
 }
 
-Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, const int &stockID){
+Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, const int &stockID)
+{
     Response<TransactionDTO> response;
     std::string dateNow = this->datetimeNow();
+
     response.result = new TransactionDTO(1, userID, stockID, dateNow);
     std::string updateQ = "INSERT INTO stock_transaction "
                           "(userID, stockID, date) "
@@ -597,17 +651,18 @@ Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, cons
     return response;
 }
 
-Response<TransactionDTO> DatabaseHandler::getTransactionById(const int &transactionID) {
+Response<TransactionDTO> DatabaseHandler::getTransactionById(const int &transactionID)
+{
     Response<TransactionDTO> response;
     std::string TransactionQ = "SELECT "
-                     "trans.id, "
-                     "trans.userID, "
-                     "trans.stockID, "
-                     "trans.date "
-                     "FROM stock_transaction AS trans "
-                     "WHERE trans.id = " +
-                     std::to_string(transactionID);
-    
+                               "trans.id, "
+                               "trans.userID, "
+                               "trans.stockID, "
+                               "trans.date "
+                               "FROM stock_transaction AS trans "
+                               "WHERE trans.id = " +
+                               std::to_string(transactionID);
+
     auto TransactionResult = this->queryRows(TransactionQ.c_str());
 
     if (!TransactionResult.ok)
@@ -626,24 +681,51 @@ Response<TransactionDTO> DatabaseHandler::getTransactionById(const int &transact
         transactionID,
         std::stoi(TransactionResult.rows->at(0)["userID"]),
         std::stoi(TransactionResult.rows->at(0)["stockID"]),
-        TransactionResult.rows->at(0)["date"]
-    );
-
+        TransactionResult.rows->at(0)["date"]);
 
     response.status = SUCCESS;
     response.result = dto;
     return response;
 }
 
+Response<std::vector<TransactionDTO>> DatabaseHandler::getAllTransactionsByUserId(const int &userID)
+{
+    Response<std::vector<TransactionDTO>> response;
 
-Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int &stockID){
+    std::string selectQ = "SELECT * FROM stock_transaction Where userID = " + std::to_string(userID) + " ORDER BY date ASC";
+
+    auto selectRes = this->queryRows(selectQ.c_str());
+
+    if (!selectRes.ok)
+    {
+        response.status = INTERNAL_ERROR;
+        return response;
+    }
+
+    auto rows = selectRes.rows;
+    std::vector<TransactionDTO> *dtos = new std::vector<TransactionDTO>();
+    for (int i = 0; i < static_cast<int>(rows->size()); i++)
+    {
+        dtos->push_back(TransactionDTO(
+            std::stoi(rows->at(i)["id"]),
+            std::stoi(rows->at(i)["userID"]),
+            std::stoi(rows->at(i)["stockID"]),
+            rows->at(i)["date"]));
+    }
+    response.status = SUCCESS;
+    response.result = dtos;
+    return response;
+}
+
+Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int &stockID)
+{
 
     Response<TransactionDTO> response = this->addTransaction(userID, stockID);
     if (response.status != SUCCESS)
     {
         return response;
     }
-    
+
     std::string updateQ = "UPDATE user "
                           "SET wallet = wallet - (SELECT price FROM stock WHERE id = ?) "
                           "WHERE id = ?";
@@ -668,9 +750,10 @@ Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int 
     return response;
 }
 
-Response<int> DatabaseHandler::sellStock(const int &transactionID){
+Response<int> DatabaseHandler::sellStock(const int &transactionID)
+{
     Response<int> response;
-    
+
     auto curTransaction = this->getTransactionById(transactionID);
 
     auto curUser = this->getUserById(curTransaction.result->userID);
@@ -689,8 +772,7 @@ Response<int> DatabaseHandler::sellStock(const int &transactionID){
         curUser.result->facebook_profile,
         curUser.result->instagram_profile,
         curUser.result->card_number,
-        curUser.result->wallet + this->getStockById(curTransaction.result->stockID).result->price
-    };
+        curUser.result->wallet + this->getStockById(curTransaction.result->stockID).result->price};
 
     auto updateUserRes = this->updateUser(dto);
 
@@ -752,9 +834,7 @@ Response<std::vector<StockDTO>> DatabaseHandler::getAllStocks()
             rows->at(i)["type"],
             std::stof(rows->at(i)["price"]),
             std::stof(rows->at(i)["change"]),
-            std::stof(rows->at(i)["profit"])
-            )
-        );
+            std::stof(rows->at(i)["profit"])));
     }
     response.status = SUCCESS;
     response.result = dtos;

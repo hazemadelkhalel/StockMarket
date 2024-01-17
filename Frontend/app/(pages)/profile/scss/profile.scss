@@ -14,11 +14,14 @@ body {
     padding-left: 100px;
     margin-bottom: 40px;
     .profile-pc {
+      @include center;
       margin-right: 20px;
-      img {
-        width: 180px;
-        height: 180px;
-      }
+      width: 180px;
+      height: 180px;
+      background-color: $blueColor;
+      font-size: 100px;
+      border-radius: 12px;
+      color: white;
     }
     .profile-info {
       display: flex;
@@ -165,15 +168,21 @@ body {
               transition: 0.3s;
               width: 100%;
               outline: 2px solid transparent;
-              &:focus,
-              &:hover {
+              &:focus:not(:disabled),
+              &:hover:not(:disabled) {
                 outline-color: $blueColor;
+              }
+              &:hover:disabled {
+                cursor: not-allowed;
               }
               &::placeholder {
                 opacity: 0.5;
                 font-size: 14px;
                 color: rgba(0, 0, 0, 0.854);
               }
+            }
+            input:disabled {
+              color: rgba(0, 0, 0, 0.493);
             }
             textarea {
               background-color: #eee;

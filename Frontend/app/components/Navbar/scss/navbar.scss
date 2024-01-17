@@ -54,14 +54,19 @@ body {
     @include end;
     flex: 1;
     margin-right: 40px;
-    img {
-      width: 45px;
-      height: 45px;
-      padding: 5px;
+    span {
+      @include center;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      align-items: center;
       border-radius: 50%;
+      background-color: $blueColor;
+      transition: 0.3s;
+      font-size: 20px;
       &:hover {
         cursor: pointer;
-        background-color: #333840;
+        background-color: #0079b6;
       }
     }
   }
@@ -98,10 +103,16 @@ body {
         transform: translateX(-50%);
         background-color: #ddd;
       }
-      img {
+      .home-user-img {
+        @include center;
+        background-color: $blueColor;
+        color: white;
+        text-align: center;
+        align-items: center;
         width: 30px;
+        height: 30px;
         border-radius: 50%;
-        margin-right: 5px;
+        margin-right: 10px;
       }
       span {
         font-weight: bold;
@@ -112,6 +123,19 @@ body {
         background-color: #eee;
       }
     }
+    .profile-area-space {
+      content: "";
+      height: 1px;
+      width: 100%;
+      background-color: #ddd;
+      margin-top: 5px;
+    }
+    .active-logout {
+      &:hover {
+        background-color: $redColor !important;
+      }
+    }
+
     .logout {
       @include start;
       width: fit-content;
@@ -127,8 +151,7 @@ body {
         color: #fff;
       }
       img {
-        width: 16px;
-        margin-right: 5px;
+        width: 20px;
       }
       span {
         font-weight: bold;

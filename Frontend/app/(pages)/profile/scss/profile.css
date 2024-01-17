@@ -13,11 +13,16 @@ body {
   margin-bottom: 40px;
 }
 .profile-container .profile-section-1 .profile-pc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-right: 20px;
-}
-.profile-container .profile-section-1 .profile-pc img {
   width: 180px;
   height: 180px;
+  background-color: #00a9ff;
+  font-size: 100px;
+  border-radius: 12px;
+  color: white;
 }
 .profile-container .profile-section-1 .profile-info {
   display: flex;
@@ -158,8 +163,11 @@ body {
   width: 100%;
   outline: 2px solid transparent;
 }
-.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:focus, .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:hover {
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:focus:not(:disabled), .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:hover:not(:disabled) {
   outline-color: #00a9ff;
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:hover:disabled {
+  cursor: not-allowed;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input::-moz-placeholder {
   opacity: 0.5;
@@ -170,6 +178,9 @@ body {
   opacity: 0.5;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.854);
+}
+.profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input input:disabled {
+  color: rgba(0, 0, 0, 0.493);
 }
 .profile-container .profile-section-3 .p-s-3-settings-container .settings-left .settings-item .stocker-item-input textarea {
   background-color: #eee;

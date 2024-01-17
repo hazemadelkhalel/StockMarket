@@ -1,37 +1,284 @@
 {
-  "example": {
-    "name": "Release 12.6.0 Benchmarks",
-    "status": "Running",
-    "timeLeft": "01:26",
-    "queuing": 126,
-    "running": 13,
-    "passed": 214,
-    "failed": 83,
-    "completionPercentage": 83,
-    "history": [
-      {
-        "date": "15/10/2020",
-        "passed": 327,
-        "failed": 21
-      },
-      {
-        "date": "15/10/2020",
-        "passed": 327,
-        "failed": 21
-      },
-      {
-        "date": "15/10/2020",
-        "passed": 327,
-        "failed": 21
-      },
-      {
-        "date": "15/10/2020",
-        "passed": 327,
-        "failed": 21
-      }
-    ],
-    "creationDate": "15/10/2020 10:30",
-    "updateDate": "28/06/2021 02:46",
-    "tags": ["mpg", "sw_streamer", "emulation", "hw_streamer"]
-  }
+  "stocks": [
+    {
+      "name": "Apple",
+      "type": "Buy",
+      "price": "$127.13",
+      "change": "0.23",
+      "profit": "$1271.30"
+    },
+    {
+      "name": "Microsoft",
+      "type": "Sell",
+      "price": "$92.45",
+      "change": "0.00",
+      "profit": "$785.60"
+    },
+    {
+      "name": "Google",
+      "type": "Sell",
+      "price": "$345.78",
+      "change": "1.12",
+      "profit": "$2430.90"
+    },
+    {
+      "name": "Amazon",
+      "type": "Buy",
+      "price": "$1892.36",
+      "change": "0.88",
+      "profit": "$5678.20"
+    },
+    {
+      "name": "Tesla",
+      "type": "Sell",
+      "price": "$720.50",
+      "change": "0.75",
+      "profit": "$3456.80"
+    },
+    {
+      "name": "Apple",
+      "type": "Buy",
+      "price": "$135.80",
+      "change": "0.42",
+      "profit": "$987.40"
+    },
+    {
+      "name": "Microsoft",
+      "type": "Buy",
+      "price": "$102.20",
+      "change": "-0.91",
+      "profit": "$1234.50"
+    },
+    {
+      "name": "Google",
+      "type": "Sell",
+      "price": "$410.25",
+      "change": "-1.25",
+      "profit": "$4567.90"
+    },
+    {
+      "name": "Amazon",
+      "type": "Buy",
+      "price": "$2005.60",
+      "change": "-2.05",
+      "profit": "$8765.30"
+    },
+    {
+      "name": "Tesla",
+      "type": "Sell",
+      "price": "$890.20",
+      "change": "-0.98%",
+      "profit": "$6543.10"
+    },
+    {
+      "name": "Apple",
+      "type": "Buy",
+      "price": "$115.75",
+      "change": "0.54",
+      "profit": "$1123.60"
+    },
+    {
+      "name": "Microsoft",
+      "type": "Sell",
+      "price": "$110.30",
+      "change": "-0.75%",
+      "profit": "$987.20"
+    },
+    {
+      "name": "Google",
+      "type": "Buy",
+      "price": "$380.90",
+      "change": "+1.80%",
+      "profit": "$3890.50"
+    },
+    {
+      "name": "Amazon",
+      "type": "Sell",
+      "price": "$1750.10",
+      "change": "-1.15%",
+      "profit": "$5432.40"
+    },
+    {
+      "name": "Tesla",
+      "type": "Buy",
+      "price": "$670.40",
+      "change": "+0.32%",
+      "profit": "$2345.60"
+    },
+    {
+      "name": "Apple",
+      "type": "Sell",
+      "price": "$145.15",
+      "change": "-0.21%",
+      "profit": "$1567.80"
+    },
+    {
+      "name": "Microsoft",
+      "type": "Sell",
+      "price": "$98.60",
+      "change": "+1.15%",
+      "profit": "$1345.70"
+    },
+    {
+      "name": "Google",
+      "type": "Buy",
+      "price": "$330.50",
+      "change": "-0.95%",
+      "profit": "$4678.90"
+    },
+    {
+      "name": "Amazon",
+      "type": "Buy",
+      "price": "$1800.80",
+      "change": "+1.50%",
+      "profit": "$7890.20"
+    },
+    {
+      "name": "Tesla",
+      "type": "Sell",
+      "price": "$810.30",
+      "change": "-0.72%",
+      "profit": "$5678.90"
+    },
+    {
+      "name": "Facebook",
+      "type": "Buy",
+      "price": "$300.45",
+      "change": "+0.85%",
+      "profit": "$2345.60"
+    },
+    {
+      "name": "Netflix",
+      "type": "Sell",
+      "price": "$520.30",
+      "change": "-0.62%",
+      "profit": "$3,987.40"
+    },
+    {
+      "name": "Twitter",
+      "type": "Buy",
+      "price": "$45.20",
+      "change": "+1.20%",
+      "profit": "$456.70"
+    },
+    {
+      "name": "Snapchat",
+      "type": "Sell",
+      "price": "$65.75",
+      "change": "-0.45%",
+      "profit": "$789.20"
+    },
+    {
+      "name": "Uber",
+      "type": "Buy",
+      "price": "$32.90",
+      "change": "+0.95%",
+      "profit": "$234.50"
+    },
+    {
+      "name": "Lyft",
+      "type": "Sell",
+      "price": "$48.60",
+      "change": "-1.15%",
+      "profit": "$345.80"
+    },
+    {
+      "name": "Airbnb",
+      "type": "Buy",
+      "price": "$180.20",
+      "change": "+2.10%",
+      "profit": "$1234.50"
+    },
+    {
+      "name": "Zoom",
+      "type": "Sell",
+      "price": "$340.90",
+      "change": "-1.75%",
+      "profit": "$4567.80"
+    },
+    {
+      "name": "Alibaba",
+      "type": "Buy",
+      "price": "$210.60",
+      "change": "+1.80%",
+      "profit": "$6789.20"
+    },
+    {
+      "name": "Tencent",
+      "type": "Sell",
+      "price": "$380.10",
+      "change": "-0.98%",
+      "profit": "$8765.30"
+    },
+    {
+      "name": "Intel",
+      "type": "Buy",
+      "price": "$50.75",
+      "change": "+0.54%",
+      "profit": "$567.80"
+    },
+    {
+      "name": "AMD",
+      "type": "Sell",
+      "price": "$95.30",
+      "change": "-0.75%",
+      "profit": "$789.20"
+    },
+    {
+      "name": "NVIDIA",
+      "type": "Buy",
+      "price": "$220.90",
+      "change": "+1.20%",
+      "profit": "$2345.60"
+    },
+    {
+      "name": "Samsung",
+      "type": "Sell",
+      "price": "$150.20",
+      "change": "-1.30%",
+      "profit": "$1234.50"
+    },
+    {
+      "name": "Sony",
+      "type": "Buy",
+      "price": "$75.80",
+      "change": "+0.98%",
+      "profit": "$987.40"
+    },
+    {
+      "name": "LG",
+      "type": "Sell",
+      "price": "$40.60",
+      "change": "-0.85%",
+      "profit": "$567.80"
+    },
+    {
+      "name": "Tesla",
+      "type": "Buy",
+      "price": "$650.30",
+      "change": "+0.65%",
+      "profit": "$5678.90"
+    },
+    {
+      "name": "SpaceX",
+      "type": "Sell",
+      "price": "$800.60",
+      "change": "-1.50%",
+      "profit": "$7890.20"
+    },
+    {
+      "name": "Coca-Cola",
+      "type": "Buy",
+      "price": "$50.20",
+      "change": "+0.75%",
+      "profit": "$456.70"
+    },
+    {
+      "name": "PepsiCo",
+      "type": "Sell",
+      "price": "$120.90",
+      "change": "-0.98%",
+      "profit": "$1234.50"
+    }
+  ]
 }
