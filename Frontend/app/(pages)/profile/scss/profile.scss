@@ -111,8 +111,30 @@ body {
     margin-top: 20px;
     margin-bottom: 100px;
     width: 100%;
-    height: 750px;
-
+    min-height: 750px;
+    .profile-stockCart {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      .profile-stockCart-item {
+        @include center;
+        width: 200px;
+        height: 200px;
+        flex-direction: column;
+        background-color: #eee;
+        box-shadow: $headerShadow;
+        border-radius: 12px;
+        h2 {
+          font-size: 28px;
+          font-weight: bold;
+        }
+        p {
+          font-size: 16px;
+          color: #6a6d78;
+        }
+      }
+    }
     .p-s-3-settings-container {
       display: flex;
       justify-content: space-between;

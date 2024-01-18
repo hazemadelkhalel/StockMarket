@@ -2,6 +2,8 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <iomanip>
 
 DatabaseHandler *DatabaseHandler::instance;
 
@@ -146,11 +148,17 @@ QueryResponse DatabaseHandler::queryRows(const char *query)
 
 std::string DatabaseHandler::datetimeNow()
 {
-    std::time_t time = std::time({});
-    std::string timeNow(std::size("yyyy-mm-ddThh:mm:ss"), 0);
-    std::strftime(std::data(timeNow), std::size(timeNow),
-                  "%FT%T", std::gmtime(&time));
-    return timeNow;
+    // Get the current time point
+    auto now = std::chrono::system_clock::now();
+
+    // Convert the time point to a time_t object
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+
+    // Format the time as "yyyy-mm-ddThh:mm:ss"
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&currentTime), "%Y-%m-%dT%H:%M:%S");
+
+    return ss.str();
 }
 
 Response<int> DatabaseHandler::addStockTokenByUserId(const int &userId, std::string token)
@@ -281,16 +289,6 @@ Response<StockDTO> DatabaseHandler::addStock(StockDTO &dto)
     char *preparedQ = sqlite3_expanded_sql(stmt);
 
     auto updateRes = this->queryRows(preparedQ);
-
-    if (updateRes.ok)
-    {
-        response.status = SUCCESS;
-    }
-    else
-    {
-        response.status = INTERNAL_ERROR;
-        return response;
-    }
 
     response.result = new StockDTO(sqlite3_last_insert_rowid(db), dto.company, dto.available_stocks, dto.initial_price, dto.current_price);
     response.status = SUCCESS;

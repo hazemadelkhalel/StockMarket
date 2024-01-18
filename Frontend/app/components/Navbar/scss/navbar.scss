@@ -11,7 +11,7 @@ body {
   height: 70px;
   position: sticky;
   top: 0px;
-  background-color: black;
+  background-color: $mainColor;
   color: white;
   z-index: 100;
   .active {

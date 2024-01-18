@@ -81,7 +81,8 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
                         {"balance", transaction.balance},
                         {"quantity", transaction.quantity},
                         {"type", transaction.type},
-                        {"transaction_date", transaction.transaction_date}};
+                        {"transaction_date", transaction.transaction_date},
+                    };
                     std::cout << "Q7\n";
 
                     response["transactions"].push_back(transactionJson);

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { GBtn, Navbar, StockerField } from "../../components";
+import { Footer, GBtn, Navbar, StockerField } from "../../components";
 import "./scss/profile.css";
 import { Divider } from "primereact/divider";
 import "primereact/resources/themes/lara-light-blue/theme.css";
@@ -27,6 +27,7 @@ interface Stocker {
   balance: string;
   transaction_date: string;
   quantity: number;
+  available_stocks: number;
 }
 
 const Profile = () => {
@@ -47,14 +48,13 @@ const Profile = () => {
   const [totalSell, setTotalSell] = useState(0);
   const [selectedTap, setSelectedTap] = useState(1);
   const [stockers, setStockers] = useState<Stocker[]>([]);
-  const [chartData, setChartData] = useState({});
-  const [chartOptions, setChartOptions] = useState({});
   const [timeRange, setTimeRange] = useState("day"); // 'day', 'month', 'year'
   const router = useRouter();
   const sessionToken = getSessionToken();
   const toast = useRef(null);
   const [walletValues, setWalletValues] = useState<number[]>([]);
   const [sumWalletValues, setSumWalletValues] = useState<number>(0);
+  const [stockCart, setStockCart] = useState<Stocker[]>([]);
 
   console.log(sessionToken);
   if (!sessionToken) {
@@ -126,167 +126,6 @@ const Profile = () => {
     });
   };
 
-  useEffect(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue("--text-color");
-    const textColorSecondary = documentStyle.getPropertyValue(
-      "--text-color-secondary"
-    );
-    const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-    const dataPoints =
-      timeRange === "day" ? 48 : timeRange === "month" ? 30 : 12;
-
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const data = {
-      labels: Array.from({ length: dataPoints }, (_, i) => {
-        if (timeRange === "day") {
-          const hour = Math.floor(i / 2);
-          const minute = i % 2 === 0 ? "00" : "30";
-          return `${hour}:${minute}`;
-        } else if (timeRange === "month") {
-          return `Day ${i + 1}`;
-        } else {
-          return monthNames[i];
-        }
-      }),
-      datasets: [
-        {
-          label: "Balance",
-          data: walletValues,
-          fill: true,
-          borderColor: documentStyle.getPropertyValue("--blue-500"),
-        },
-      ],
-    };
-
-    const options = {
-      maintainAspectRatio: false,
-      aspectRatio: 0.6,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-          },
-        },
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-        y: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-      },
-    };
-
-    setChartData(data);
-    setChartOptions(options);
-  }, [walletValues]);
-  useEffect(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue("--text-color");
-    const textColorSecondary = documentStyle.getPropertyValue(
-      "--text-color-secondary"
-    );
-    const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-    const dataPoints =
-      timeRange === "day" ? 48 : timeRange === "month" ? 30 : 12;
-
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const data = {
-      labels: Array.from({ length: dataPoints }, (_, i) => {
-        if (timeRange === "day") {
-          const hour = Math.floor(i / 2);
-          const minute = i % 2 === 0 ? "00" : "30";
-          return `${hour}:${minute}`;
-        } else if (timeRange === "month") {
-          return `Day ${i + 1}`;
-        } else {
-          return monthNames[i];
-        }
-      }),
-      datasets: [
-        {
-          label: "Balance",
-          data: walletValues,
-          fill: true,
-          borderColor: documentStyle.getPropertyValue("--blue-500"),
-        },
-      ],
-    };
-
-    const options = {
-      maintainAspectRatio: false,
-      aspectRatio: 0.6,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-          },
-        },
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-        y: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-      },
-    };
-
-    setChartData(data);
-    setChartOptions(options);
-  }, [timeRange]);
-
   const getUser = async () => {
     try {
       const response = await fetch(
@@ -327,7 +166,7 @@ const Profile = () => {
     }
   };
 
-  const getStockers = async () => {
+  const getAllTransactions = async () => {
     const response = await fetch(
       `http://localhost:8001/api/profile/getAllTransactions?token=${getSessionToken()}`,
       {
@@ -363,22 +202,49 @@ const Profile = () => {
         company: transaction.company,
         price: parseFloat(transaction.price).toFixed(2),
         type: transaction.type,
-        quantity: transaction.quantity,
         transaction_date: transaction.transaction_date,
+        quantity: transaction.quantity,
+        available_stocks: 0,
       });
       if (transaction.type == "Buy") cntBuy++;
       else cntSell++;
       setTotalBuy(cntBuy);
       setTotalSell(cntSell);
     }
-    console.log(transactions);
     setWalletValues(_walletValues);
     setStockers(transactions);
     setSumWalletValues(_sumWalletValues);
   };
+
+  const fetchStockCart = async () => {
+    const url = `http://localhost:8001/api/market/getStockCart?token=${getSessionToken()}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.log(data.error);
+      return;
+    }
+    // setSellStocks(data["stocks"]);
+    let _stockCart: Stocker[] = [];
+    for (let key in data["stocks"]) {
+      let curStock: Stocker = data["stocks"][key];
+      _stockCart.push(curStock);
+    }
+    console.log("HAMADADADA", _stockCart);
+    setStockCart(_stockCart);
+  };
+
   useEffect(() => {
     getUser();
-    getStockers();
+    getAllTransactions();
+    fetchStockCart();
   }, [selectedTap]);
 
   const statusBodyTemplate = (stocker: Stocker) => {
@@ -551,36 +417,19 @@ const Profile = () => {
         </div>
         <div className="profile-section-3">
           {selectedTap == 1 ? (
-            <div style={{ width: "100%" }}>
-              <Chart type="line" data={chartData} options={chartOptions} />
-              <Button
-                label="Day"
-                onClick={() => handleTimeRangeChange("day")}
-                style={{
-                  marginLeft: "30px",
-                  marginRight: "10px",
-                  marginTop: "20px",
-                  fontSize: "14px",
-                  padding: "10px 15px",
-                }}
-              />
-              <Button
-                label="Month"
-                onClick={() => handleTimeRangeChange("month")}
-                style={{
-                  marginRight: "10px",
-                  fontSize: "14px",
-                  padding: "10px 15px",
-                }}
-              />
-              <Button
-                label="Year"
-                onClick={() => handleTimeRangeChange("year")}
-                style={{
-                  fontSize: "14px",
-                  padding: "10px 15px",
-                }}
-              />
+            <div className="profile-stockCart">
+              {stockCart.length > 0 ? (
+                stockCart.map((stocker, index) => {
+                  return (
+                    <div className="profile-stockCart-item">
+                      <h2>{stocker.available_stocks}</h2>
+                      <p>{stocker.company}</p>
+                    </div>
+                  );
+                })
+              ) : (
+                <div></div>
+              )}
             </div>
           ) : null}
           {selectedTap == 2 ? (
@@ -598,6 +447,7 @@ const Profile = () => {
                 <Column field="company" sortable header="Company"></Column>
                 <Column field="price" sortable header="Price "></Column>
                 <Column field="balance" sortable header="Balance "></Column>
+                <Column field="quantity" sortable header="Quantity "></Column>
                 <Column
                   field="type"
                   header="Type"
@@ -774,6 +624,7 @@ const Profile = () => {
           ) : null}
         </div>
       </div>
+      <Footer />
     </>
   );
 };

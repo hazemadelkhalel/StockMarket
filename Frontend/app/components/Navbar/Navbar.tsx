@@ -44,7 +44,7 @@ const Navbar = (props: { idx: number; username: string }) => {
         <li>
           <Link
             className={`${props.idx == 1 ? "nav-link active" : "nav-link "}`}
-            href="/companies"
+            href="/#top-companies"
           >
             Top Companies
           </Link>
@@ -58,12 +58,11 @@ const Navbar = (props: { idx: number; username: string }) => {
           </Link>
         </li>
         <li>
-          <Link
+          <div
             className={`${props.idx == 3 ? "nav-link active" : "nav-link "}`}
-            href="/news"
           >
             News
-          </Link>
+          </div>
         </li>
       </ul>
       <div
@@ -89,16 +88,14 @@ const Navbar = (props: { idx: number; username: string }) => {
             <span>{props.username}</span>
           </div>
         </Link>
-        <Link href="/help">
+        <Link href="/#help">
           <div className="logout">
             <span>Help Center</span>
           </div>
         </Link>
-        <Link href="/news">
-          <div className="logout">
-            <span>What's new</span>
-          </div>
-        </Link>
+        <div className="logout">
+          <span>What's new</span>
+        </div>
         <div className="profile-area-space"></div>
         <Link href="/login" onClick={handleClickLogout}>
           <div

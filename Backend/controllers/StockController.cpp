@@ -131,11 +131,6 @@ json StockController::getStockCartByUserId(const int &userID)
 json StockController::addStock(StockDTO stockDTO)
 {
     auto response = db_handler->addStock(stockDTO);
-    if (response.status != SUCCESS)
-    {
-        return json({{"status", "failed"}, {"message", "add stock failed"}});
-    }
-
     json stock = {
         {"id", response.result->id},
         {"company", response.result->company},
@@ -149,30 +144,21 @@ json StockController::addStock(StockDTO stockDTO)
 json StockController::updateStock(StockDTO stockDTO)
 {
     auto getStockResponse = db_handler->getStockById(stockDTO.id);
-    std::cout << "HERE 1\n";
     if (getStockResponse.status != SUCCESS)
     {
-        std::cout << "HERE 2\n";
 
         return json({{"status", "failed"}, {"message", "stock not found"}});
     }
 
-    std::cout << "HERE 3\n";
-
     if (getStockResponse.result->available_stocks == stockDTO.available_stocks && getStockResponse.result->current_price == stockDTO.current_price)
     {
-        std::cout << "HERE 4\n";
 
         return json({{"status", "failed"}, {"message", "There is no change in stock"}});
     }
 
-    std::cout << "HERE 5\n";
-
     auto response = db_handler->updateStock(stockDTO);
     if (response.status != SUCCESS)
     {
-        std::cout << "HERE 6\n";
-
         return json({{"status", "failed"}, {"message", "update stock failed"}});
     }
 

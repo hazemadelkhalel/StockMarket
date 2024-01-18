@@ -1,0 +1,145 @@
+@use "../shared/styles/colors" as *;
+@use "../shared/styles/mixins" as *;
+
+.home-container {
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+  .home-section1 {
+    @include center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 450px;
+    background-image: url("/Images/Background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+    h1 {
+      font-size: 70px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      z-index: 2;
+    }
+    h2 {
+      font-size: 30px;
+      line-height: 36px;
+      margin-bottom: 30px;
+      z-index: 2;
+    }
+    .get-started-btn {
+      z-index: 2;
+      left: 46%;
+      top: 20%;
+    }
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 450px;
+      background-color: rgba(
+        0,
+        0,
+        0,
+        0.5
+      ); /* Adjust the last value (0.5) for transparency */
+      z-index: 1;
+    }
+  }
+  .home-section2 {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    @include center;
+    flex-direction: column;
+    width: 100%;
+    .cards {
+      display: flex;
+    }
+    h1 {
+      width: fit-content;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #ddd;
+        margin-top: 10px;
+      }
+    }
+  }
+  .home-section3 {
+    @include center;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 80px;
+
+    h1 {
+      width: fit-content;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #ddd;
+        margin-top: 10px;
+      }
+    }
+  }
+  .home-section4 {
+    @include center;
+    flex-direction: column;
+    h1 {
+      width: fit-content;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #ddd;
+        margin-top: 10px;
+      }
+    }
+  }
+  .top-companies {
+    @include center;
+    flex-direction: column;
+    margin-bottom: 100px;
+    h1 {
+      width: fit-content;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #ddd;
+        margin-top: 10px;
+      }
+    }
+  }
+}
+.card {
+  box-shadow: $headerShadow;
+  height: 200px;
+  margin-bottom: 5px;
+  margin: 10px 20px;
+  width: 100%;
+}

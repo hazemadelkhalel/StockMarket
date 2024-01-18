@@ -10,7 +10,7 @@ body {
   height: 70px;
   position: sticky;
   top: 0px;
-  background-color: black;
+  background-color: #0e141e;
   color: white;
   z-index: 100;
 }

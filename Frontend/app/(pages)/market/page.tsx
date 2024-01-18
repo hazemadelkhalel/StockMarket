@@ -1,5 +1,5 @@
 "use client";
-import { GBtn, Navbar } from "../../components";
+import { Footer, GBtn, Navbar } from "../../components";
 import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/lara-light-blue/theme.css";
@@ -218,53 +218,53 @@ const Market = () => {
     </React.Fragment>
   );
 
-  const fetchData = async () => {
-    if (selectedTypeStock === 1) {
-      try {
-        clearEveryThing();
+  // const fetchData = async () => {
+  //   if (selectedTypeStock === 1) {
+  //     try {
+  //       clearEveryThing();
 
-        const url = `http://localhost:8001/api/market/getAllStocks?token=${getSessionToken()}`;
+  //       const url = `http://localhost:8001/api/market/getAllStocks?token=${getSessionToken()}`;
 
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  //       const response = await fetch(url, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
 
-        const data = await response.json();
-        if (data.error) {
-          console.log(data.error);
-          return;
-        }
-        let _buyStocks: Stock[] = data["stocks"].map((stockData: any) => ({
-          id: stockData.id,
-          company: stockData.company,
-          type: "Buy",
-          price: stockData.current_price,
-          change: "0",
-          profit: "0",
-          initial_price: stockData.initial_price,
-          available_stocks: stockData.available_stocks,
-        }));
-        setBuyStocks(_buyStocks);
-        let _sellStocks: Stock[] = [];
-        for (let i = 0; i < _buyStocks?.length; i++) {
-          if (
-            _buyStocks[i].company ==
-            sellStocks?.find((stock) => stock.company == _buyStocks[i].company)
-              ?.company
-          ) {
-            _sellStocks.push(_buyStocks[i]);
-          }
-        }
-        console.log("SELL STOCKS", _sellStocks);
-        setSellStocks(_sellStocks);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-  };
+  //       const data = await response.json();
+  //       if (data.error) {
+  //         console.log(data.error);
+  //         return;
+  //       }
+  //       let _buyStocks: Stock[] = data["stocks"].map((stockData: any) => ({
+  //         id: stockData.id,
+  //         company: stockData.company,
+  //         type: "Buy",
+  //         price: stockData.current_price,
+  //         change: "0",
+  //         profit: "0",
+  //         initial_price: stockData.initial_price,
+  //         available_stocks: stockData.available_stocks,
+  //       }));
+  //       setBuyStocks(_buyStocks);
+  //       let _sellStocks: Stock[] = [];
+  //       for (let i = 0; i < _buyStocks?.length; i++) {
+  //         if (
+  //           _buyStocks[i].company ==
+  //           sellStocks?.find((stock) => stock.company == _buyStocks[i].company)
+  //             ?.company
+  //         ) {
+  //           _sellStocks.push(_buyStocks[i]);
+  //         }
+  //       }
+  //       console.log("SELL STOCKS", _sellStocks);
+  //       setSellStocks(_sellStocks);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   }
+  // };
 
   const fetchStockCart = async () => {
     const url = `http://localhost:8001/api/market/getStockCart?token=${getSessionToken()}`;
@@ -309,19 +309,91 @@ const Market = () => {
     fetchWallet();
   }, [buyStocks]);
 
+  // useEffect(() => {
+  //   const socket = new WebSocket("ws://127.0.0.1:8083");
+
+  //   socket.addEventListener("open", (event) => {
+  //     console.log("WebSocket connection opened:", event);
+  //     fetchData();
+  //     fetchWallet();
+  //     fetchStockCart();
+  //   });
+
+  //   socket.addEventListener("message", (event) => {
+  //     console.log("WebSocket message received:", event.data);
+  // const data = JSON.parse(event.data);
+  // let _buyStocks: Stock[] = [];
+  // for (let key in data) {
+  //   console.log(data[key]);
+  //   let _stock: Stock = {
+  //     id: data[key].id,
+  //     company: data[key].company,
+  //     type: "Buy",
+  //     price: data[key].current_price,
+  //     change: data[key].change,
+  //     profit: data[key].profit,
+  //     initial_price: data[key].initial_price,
+  //     available_stocks: data[key].available_stocks,
+  //   };
+  //   _buyStocks.push(_stock);
+  // }
+  // setBuyStocks(_buyStocks);
+
+  // let _sellStocks: Stock[] = [];
+  // for (let i = 0; i < _buyStocks?.length; i++) {
+  //   if (
+  //     _buyStocks[i].company ==
+  //     sellStocks?.find((stock) => stock.company == _buyStocks[i].company)
+  //       ?.company
+  //   ) {
+  //     _sellStocks.push(_buyStocks[i]);
+  //   }
+  // }
+  // console.log("SELL STOCKS", _sellStocks);
+  // setSellStocks(_sellStocks);
+  //   });
+
+  //   socket.addEventListener("close", (event) => {
+  //     console.log("WebSocket connection closed:", event);
+  //     fetchData();
+  //     fetchWallet();
+  //     fetchStockCart();
+  //   });
+
+  // // Countdown mechanism
+  // const countdownInterval = setInterval(() => {
+  //   setNextUpdate((prevValue) => (prevValue === 0 ? 10 : prevValue - 1));
+  // }, 1000);
+
+  // return () => {
+  //   // Close the WebSocket connection when the component is unmounted
+  //   socket.close();
+  //   clearInterval(countdownInterval);
+  // };
+  // }, []);
+
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8083");
 
-    socket.addEventListener("open", (event) => {
-      console.log("WebSocket connection opened:", event);
-      fetchData();
-      fetchWallet();
-      fetchStockCart();
-    });
+    socket.onopen = () => {
+      console.log("WebSocket connection opened");
 
-    socket.addEventListener("message", (event) => {
-      console.log("WebSocket message received:", event.data);
+      // Send an initial message
+      socket.send("Hello, server!");
+
+      // Set up interval to send a message every 5 seconds
+      const intervalId = setInterval(() => {
+        socket.send("Sending a message at regular intervals");
+      }, 5000);
+
+      // Save the interval ID for cleanup
+      return () => clearInterval(intervalId);
+    };
+
+    socket.onmessage = (event) => {
+      console.log(`Received message from server: ${event.data}`);
       const data = JSON.parse(event.data);
+      console.log("ana geeeeeeeet", data);
       let _buyStocks: Stock[] = [];
       for (let key in data) {
         console.log(data[key]);
@@ -351,14 +423,7 @@ const Market = () => {
       }
       console.log("SELL STOCKS", _sellStocks);
       setSellStocks(_sellStocks);
-    });
-
-    socket.addEventListener("close", (event) => {
-      console.log("WebSocket connection closed:", event);
-      fetchData();
-      fetchWallet();
-      fetchStockCart();
-    });
+    };
 
     // Countdown mechanism
     const countdownInterval = setInterval(() => {
@@ -371,6 +436,7 @@ const Market = () => {
       clearInterval(countdownInterval);
     };
   }, []);
+
   // useEffect(() => {
   //   // Check the condition before setting up intervals
   //   if (selectedTypeStock === 1) {
@@ -443,7 +509,7 @@ const Market = () => {
       <div className="market-container">
         <Toast ref={toast} />
         <div className="m-c-section1">
-          <h1>Stock Market</h1>
+          <h1>Start Trading</h1>
           <h3>Don't miss a beat with global real-time updates.</h3>
           <div className="m-c-s1-btns">
             {selectedTypeStock === 1 ? (
@@ -592,6 +658,7 @@ const Market = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
