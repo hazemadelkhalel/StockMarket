@@ -246,6 +246,10 @@ json AuthController::createUser(json &User)
     {
         wallet = User["wallet"];
     }
+    else
+    {
+        wallet = 1200;
+    }
     created_at = DatabaseHandler::getHandler()->datetimeNow();
 
     UserDTO dto(1, username, email, password, created_at, first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, wallet);

@@ -167,6 +167,99 @@ int main()
     } });
 
     // Handle the OPTIONS preflight request
+    svr.Options("/api/profile/update", [](const httplib::Request &, httplib::Response &res)
+                {
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "POST, OPTIONS");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type");
+        res.set_header("Acresultcess-Control-Max-Age", "86400");
+        res.status = 204; });
+
+    svr.Post("/api/profile/update", [](const httplib::Request &req, httplib::Response &res)
+             {
+    res.set_header("Access-Control-Allow-Origin", "*");
+    res.set_header("Content-Type", "application/json");
+    try {
+        if(req.body.find("token") == std::string::npos) {
+            res.status = 400;
+            res.set_content("{\"error\": \"Missing 'token' parameter\"}", "application/json");
+            return;
+        }
+
+        auto UserResponse = AuthController::getInstance()->authenticateUser(json::parse(req.body)["token"]);
+
+        if(UserResponse["status"] != "success") {
+            string error = UserResponse["message"];
+            res.set_content("{\"error\": \"" + error + "\"}", "application/json");
+            return;
+        }
+        if(req.body.find("user") == std::string::npos) {
+            res.status = 400;
+            res.set_content("{\"error\": \"Missing 'user' parameter\"}", "application/json");
+            return;
+        }
+        
+
+        UserController *userController = UserController::getInstance();
+
+
+
+        json user = json::parse(req.body)["user"];
+
+        std::string aboutme = "";
+        std::string website = "";
+        std::string facebook_profile = "";
+        std::string instagram_profile = "";
+        std::string card_number = "";
+        std::string first_name = "";
+        std::string last_name = "";
+        std::string phone = "";
+        std::string email = "";
+        if(user.contains("aboutme")) {
+            aboutme = user["aboutme"];
+        }
+        if(user.contains("website")) {
+            website = user["website"];
+        }
+        if(user.contains("facebook_profile")) {
+            facebook_profile = user["facebook_profile"];
+        }
+        if(user.contains("instagram_profile")) {
+            instagram_profile = user["instagram_profile"];
+        }
+        if(user.contains("card_number")) {
+            card_number = user["card_number"];
+        }
+        if(user.contains("first_name")) {
+            first_name = user["first_name"];
+        }
+        if(user.contains("last_name")) {
+            last_name = user["last_name"];
+        }
+        if(user.contains("phone")) {
+            phone = user["phone"];
+        }
+        if(user.contains("email")) {
+            email = user["email"];
+        }
+    
+
+        UserDTO userDTO = UserDTO(UserResponse["User"]["id"],UserResponse["User"]["username"], email, UserResponse["User"]["password"], UserResponse["User"]["created_at"], first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, UserResponse["User"]["wallet"]);
+        auto response = userController->updateUser(userDTO);
+
+        if(response["status"] == "success") {
+            response["message"] = "Update user successfully!";
+            res.set_content(response.dump(), "application/json");
+        } else {
+            string error = response["message"];
+            res.set_content("{\"error\": \"" + error + "\"}", "application/json");
+        }
+    } catch (const std::exception& e) {
+        res.status = 400;
+        res.set_content("{\"error\": \"Invalid request\"}", "application/json");
+    } });
+
+    // Handle the OPTIONS preflight request
     svr.Options("/api/profile/getAllTransactions", [](const httplib::Request &, httplib::Response &res)
                 {
         res.set_header("Access-Control-Allow-Origin", "*");

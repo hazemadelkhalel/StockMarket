@@ -12,12 +12,15 @@ private:
     UserController();
 
     ~UserController();
+
 public:
     static UserController *getInstance();
-    
+
     json getUserById(const int &UserId);
-    
+
     json getUserByUsername(std::string username);
+
+    json updateUser(UserDTO userDTO);
 
     // json editUser(json &User);
 };

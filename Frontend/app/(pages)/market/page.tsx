@@ -47,6 +47,7 @@ const Market = () => {
   const [nextUpdate, setNextUpdate] = useState(10);
   const [wallet, setWallet] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [username, setUsername] = useState("");
   const clearEveryThing = () => {
     setBuyStocks([]);
     setSellStocks([]);
@@ -83,6 +84,7 @@ const Market = () => {
         return;
       }
       setWallet(data["User"].wallet);
+      setUsername(data["User"].username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -437,7 +439,7 @@ const Market = () => {
 
   return (
     <>
-      <Navbar idx={2} />
+      <Navbar idx={2} username={username} />
       <div className="market-container">
         <Toast ref={toast} />
         <div className="m-c-section1">

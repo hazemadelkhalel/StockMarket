@@ -74,3 +74,36 @@ json UserController::getUserByUsername(std::string username)
 
     return userDataJson;
 }
+
+json UserController::updateUser(UserDTO UserDTO)
+{
+    auto response = db_handler->updateUser(UserDTO);
+
+    json userDataJson;
+    if (response.status != SUCCESS)
+    {
+        return userDataJson;
+    }
+    response.status = SUCCESS;
+
+    userDataJson = {
+        {"id", response.result->id},
+        {"username", response.result->username},
+        {"email", response.result->email},
+        {"password", response.result->password},
+        {"created_at", response.result->created_at},
+        {"first_name", response.result->first_name},
+        {"last_name", response.result->last_name},
+        {"phone", response.result->phone},
+        {"aboutme", response.result->aboutme},
+        {"website", response.result->website},
+        {"facebook_profile", response.result->facebook_profile},
+        {"instagram_profile", response.result->instagram_profile},
+        {"card_number", response.result->card_number},
+        {"wallet", response.result->wallet}};
+
+    return json{
+        {"status", "success"},
+        {"message", "User updated successfully"},
+        {"user", userDataJson}};
+}

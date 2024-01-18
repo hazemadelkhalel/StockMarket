@@ -7,7 +7,7 @@ import { Divider } from "primereact/divider";
 import { useRouter } from "next/navigation";
 import { removeSessionToken } from "../../utils/cookie";
 
-const Navbar = (props: { idx: number }) => {
+const Navbar = (props: { idx: number; username: string }) => {
   const [profileActive, setProfileActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
@@ -72,13 +72,21 @@ const Navbar = (props: { idx: number }) => {
           setProfileActive((state) => !state);
         }}
       >
-        <span>H</span>
+        <span>
+          {props.username && props.username.length > 0
+            ? props.username[0].toUpperCase()
+            : ""}
+        </span>
       </div>
       <div className={`profile-area ${profileActive}`}>
         <Link href="/profile">
           <div className="pa-info">
-            <span className="home-user-img">H</span>
-            <span>Hazem Adel</span>
+            <span className="home-user-img">
+              {props.username && props.username.length > 0
+                ? props.username[0].toUpperCase()
+                : ""}
+            </span>
+            <span>{props.username}</span>
           </div>
         </Link>
         <Link href="/help">

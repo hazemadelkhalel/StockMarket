@@ -54,6 +54,7 @@ const Profile = () => {
   const sessionToken = getSessionToken();
   const toast = useRef(null);
   const [walletValues, setWalletValues] = useState<number[]>([]);
+  const [sumWalletValues, setSumWalletValues] = useState<number>(0);
 
   console.log(sessionToken);
   if (!sessionToken) {
@@ -69,6 +70,62 @@ const Profile = () => {
         return "danger";
     }
   };
+
+  const handleSaveButton = async () => {
+    const response = await fetch("http://localhost:8001/api/profile/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: getSessionToken(),
+        user: {
+          username: username,
+          email: email,
+          first_name: first_name,
+          last_name: last_name,
+          phone: phone,
+          aboutme: aboutme,
+          website: website,
+          facebook_profile: facebook_profile,
+          instagram_profile: instagram_profile,
+          card_number: card_number,
+          wallet: wallet,
+        },
+      }),
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      (toast.current as any)?.show({
+        severity: "error",
+        summary: "Failed",
+        detail: data.error,
+        life: 1500,
+      });
+      return;
+    }
+
+    setUsername(data["user"].username);
+    setEmail(data["user"].email);
+    setCreatedAt(data["user"].created_at);
+    setFirstName(data["user"].first_name);
+    setLastName(data["user"].last_name);
+    setPhone(data["user"].phone);
+    setAboutme(data["user"].aboutme);
+    setWebsite(data["user"].website);
+    setFacebook_profile(data["user"].facebook_profile);
+    setInstagram_profile(data["user"].instagram_profile);
+    setCard_number(data["user"].card_number);
+    setWallet(data["user"].wallet);
+    (toast.current as any)?.show({
+      severity: "success",
+      summary: "Successful",
+      detail: data.message,
+      life: 1000,
+    });
+  };
+
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
@@ -248,7 +305,7 @@ const Profile = () => {
           severity: "error",
           summary: "Failed",
           detail: data.error,
-          life: 3000,
+          life: 1500,
         });
         return;
       }
@@ -287,19 +344,19 @@ const Profile = () => {
         severity: "error",
         summary: "Failed",
         detail: data.error,
-        life: 3000,
+        life: 1500,
       });
       return;
     }
     let transactions: Stocker[] = [];
-
-    console.log(data["transactions"]);
     let cntBuy = 0;
     let cntSell = 0;
     let _walletValues: number[] = [];
+    let _sumWalletValues = 0;
     for (let i = 0; i < data["transactions"]?.length; i++) {
       let transaction = data["transactions"][i];
       _walletValues.push(transaction.balance);
+      _sumWalletValues += transaction.balance;
       transactions.push({
         name: "Transaction #" + transaction.id,
         balance: parseFloat(transaction.balance).toFixed(2),
@@ -317,6 +374,7 @@ const Profile = () => {
     console.log(transactions);
     setWalletValues(_walletValues);
     setStockers(transactions);
+    setSumWalletValues(_sumWalletValues);
   };
   useEffect(() => {
     getUser();
@@ -331,6 +389,34 @@ const Profile = () => {
         style={{ padding: "3px 15px" }}
       ></Tag>
     );
+  };
+  // Event handler to update the state when the input value changes
+  const handleWebsiteChange = (event: { target: { value: any } }) => {
+    setWebsite(event.target.value);
+  };
+  const handleEmailChange = (event: { target: { value: any } }) => {
+    setEmail(event.target.value);
+  };
+  const handleFirstNameChange = (event: { target: { value: any } }) => {
+    setFirstName(event.target.value);
+  };
+  const handleLastNameChange = (event: { target: { value: any } }) => {
+    setLastName(event.target.value);
+  };
+  const handlePhoneChange = (event: { target: { value: any } }) => {
+    setPhone(event.target.value);
+  };
+  const handleAboutMeChange = (event: { target: { value: any } }) => {
+    setAboutme(event.target.value);
+  };
+  const handleFacebookChange = (event: { target: { value: any } }) => {
+    setFacebook_profile(event.target.value);
+  };
+  const handleInstagramChange = (event: { target: { value: any } }) => {
+    setInstagram_profile(event.target.value);
+  };
+  const handleCardNumberChange = (event: { target: { value: any } }) => {
+    setCard_number(event.target.value);
   };
 
   const formatDate = (curDate: string) => {
@@ -376,14 +462,17 @@ const Profile = () => {
   };
   return (
     <>
-      <Navbar idx={-1} />
+      <Navbar idx={-1} username={username} />
       <Toast ref={toast} />
       <div className="profile-container">
         <section className="profile-section-1">
-          <div className="profile-pc">H</div>
+          <div className="profile-pc">
+            {" "}
+            {username && username.length > 0 ? username[0].toUpperCase() : ""}
+          </div>
           <div className="profile-info">
             <div className="p-i-data">
-              <h1>hazemadelkhalel</h1>
+              <h1>{username}</h1>
               <div className="p-i-creation">
                 <img src="/SVG/calendar.svg" />
                 <span>Joined {formatDate(created_at)}.</span>
@@ -403,8 +492,13 @@ const Profile = () => {
                 <span>Transactions</span>
               </div>
               <div className="p-i-progress">
-                <h3>3</h3>
-                <span>Stocks</span>
+                <h3>
+                  $
+                  {walletValues.length == 0
+                    ? 0
+                    : (sumWalletValues / walletValues.length).toFixed(2)}
+                </h3>
+                <span>Avg. Prices</span>
               </div>
             </div>
           </div>
@@ -541,7 +635,12 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">About Me</span>
-                    <textarea placeholder="" value={aboutme} />
+                    <textarea
+                      name="aboutme"
+                      id="aboutme"
+                      onChange={handleAboutMeChange}
+                      value={aboutme}
+                    />
                   </div>
                 </div>
                 <h3>
@@ -551,7 +650,12 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Website</span>
-                    <input type="text" placeholder="Website" value={website} />
+                    <input
+                      type="text"
+                      placeholder="Website"
+                      value={website}
+                      onChange={handleWebsiteChange}
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
@@ -561,6 +665,7 @@ const Profile = () => {
                       type="text"
                       placeholder="Facebook Username"
                       value={facebook_profile}
+                      onChange={handleFacebookChange}
                     />
                   </div>
                 </div>
@@ -571,11 +676,12 @@ const Profile = () => {
                       type="text"
                       placeholder="Instagram Username"
                       value={instagram_profile}
+                      onChange={handleInstagramChange}
                     />
                   </div>
                 </div>
                 <div className="settings-btn">
-                  <GBtn btnText="Save changes" clickEvent={() => {}} />
+                  <GBtn btnText="Save changes" clickEvent={handleSaveButton} />
                 </div>
               </div>
               <div className="settings-right">
@@ -584,7 +690,12 @@ const Profile = () => {
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Email</span>
-                    <input type="text" placeholder="Email" value={email} />
+                    <input
+                      type="text"
+                      placeholder="Email"
+                      value={email}
+                      onChange={handleEmailChange}
+                    />
                   </div>
                 </div>
                 <div className="settings-item">
@@ -594,6 +705,7 @@ const Profile = () => {
                       type="text"
                       placeholder="First Name"
                       value={first_name}
+                      onChange={handleFirstNameChange}
                     />
                   </div>
                 </div>
@@ -604,13 +716,19 @@ const Profile = () => {
                       type="text"
                       placeholder="Last Name"
                       value={last_name}
+                      onChange={handleLastNameChange}
                     />
                   </div>
                 </div>
                 <div className="settings-item">
                   <div className="stocker-item-input">
                     <span className="gi-item-text">Phone</span>
-                    <input type="text" placeholder="Phone" value={phone} />
+                    <input
+                      type="text"
+                      placeholder="Phone"
+                      value={phone}
+                      onChange={handlePhoneChange}
+                    />
                   </div>
                 </div>
                 <Divider />
@@ -629,6 +747,7 @@ const Profile = () => {
                         type="text"
                         placeholder="Credit Number"
                         value={card_number}
+                        onChange={handleCardNumberChange}
                       />
                     </div>
                   </div>
@@ -648,7 +767,7 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="settings-btn">
-                  <GBtn btnText="Save changes" clickEvent={() => {}} />
+                  <GBtn btnText="Save changes" clickEvent={handleSaveButton} />
                 </div>
               </div>
             </div>
