@@ -17,9 +17,9 @@ TransactionController *TransactionController::getInstance()
     return instance;
 }
 
-json TransactionController::addTransaction(const int &userID, const int &stockID)
+json TransactionController::addTransaction(const int &userID, const int &stockID, int quantity)
 {
-    auto response = db_handler->addTransaction(userID, stockID);
+    auto response = db_handler->addTransaction(userID, stockID, quantity);
     if (response.status != SUCCESS)
     {
         return json({{"status", "failed"}, {"message", "add transaction failed"}});
@@ -36,24 +36,15 @@ json TransactionController::getTransactionById(const int &transactionID)
         return json({{"status", "failed"}, {"message", "get transaction failed"}});
     }
 
-    auto responseUser = db_handler->getUserById(response.result->userID);
-    auto responseStock = db_handler->getStockById(response.result->stockID);
-
     json transaction = {
         {"id", response.result->id},
         {"userID", response.result->userID},
-        {"stockID", response.result->stockID},
-        {"date", response.result->date},
-        {"user", {{"id", responseUser.result->id}, {"username", responseUser.result->username}, {"email", responseUser.result->email}, {"password", responseUser.result->password}, {"created_at", responseUser.result->created_at}, {"first_name", responseUser.result->first_name}, {"last_name", responseUser.result->last_name}, {"phone", responseUser.result->phone}, {"aboutme", responseUser.result->aboutme}, {"website", responseUser.result->website}, {"facebook_profile", responseUser.result->facebook_profile}, {"instagram_profile", responseUser.result->instagram_profile}, {"card_number", responseUser.result->card_number}, {"wallet", responseUser.result->wallet}}},
-        {"stock", {
-                      {"id", responseStock.result->id},
-                      {"company", responseStock.result->company},
-                      {"type", responseStock.result->type},
-                      {"price", responseStock.result->price},
-                      {"change", responseStock.result->change},
-                      {"profit", responseStock.result->profit},
-                  }}};
-
+        {"company", response.result->company},
+        {"price", response.result->price},
+        {"balance", response.result->balance},
+        {"quantity", response.result->quantity},
+        {"type", response.result->type},
+        {"transaction_date", response.result->transaction_date}};
     return json({{"status", "success"}, {"message", "get transaction successfully"}, {"transaction", transaction}});
 }
 
@@ -67,6 +58,7 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
 
         if (transactionsResponse.status != SUCCESS)
         {
+            std::cout << "Q5\n";
             response["status"] = "error";
             response["error_message"] = "Database Error in getting stocks";
         }
@@ -75,31 +67,34 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
             response["status"] = "success";
 
             std::vector<TransactionDTO> *transactions = transactionsResponse.result;
-
-            for (auto &transaction : *transactions)
+            std::cout << "Q6\n";
+            if (transactions != nullptr)
             {
-                auto responseUser = db_handler->getUserById(transaction.userID);
-                auto responseStock = db_handler->getStockById(transaction.stockID);
+                std::cout << "Q8\n";
+                for (auto &transaction : *transactions)
+                {
+                    json transactionJson = {
+                        {"id", transaction.id},
+                        {"userID", transaction.userID},
+                        {"company", transaction.company},
+                        {"price", transaction.price},
+                        {"balance", transaction.balance},
+                        {"quantity", transaction.quantity},
+                        {"type", transaction.type},
+                        {"transaction_date", transaction.transaction_date}};
+                    std::cout << "Q7\n";
 
-                json transactionJson = {
-                    {"id", transaction.id},
-                    {"userID", transaction.userID},
-                    {"stockID", transaction.stockID},
-                    {"date", transaction.date},
-                    {"user", {{"id", responseUser.result->id}, {"username", responseUser.result->username}, {"email", responseUser.result->email}, {"password", responseUser.result->password}, {"created_at", responseUser.result->created_at}, {"first_name", responseUser.result->first_name}, {"last_name", responseUser.result->last_name}, {"phone", responseUser.result->phone}, {"aboutme", responseUser.result->aboutme}, {"website", responseUser.result->website}, {"facebook_profile", responseUser.result->facebook_profile}, {"instagram_profile", responseUser.result->instagram_profile}, {"card_number", responseUser.result->card_number}, {"wallet", responseUser.result->wallet}}},
-                    {"stock", {
-                                  {"id", responseStock.result->id},
-                                  {"company", responseStock.result->company},
-                                  {"type", responseStock.result->type},
-                                  {"price", responseStock.result->price},
-                                  {"change", responseStock.result->change},
-                                  {"profit", responseStock.result->profit},
-                              }}};
-                std::cout << transactionJson.dump() << std::endl;
-                response["transactions"].push_back(transactionJson);
+                    response["transactions"].push_back(transactionJson);
+                }
+            }
+            else
+            {
+                std::cout << "Q9\n";
+
+                response["transactions"] = json::array();
+                std::cout << "Q10\n";
             }
         }
-
         return response;
     }
     catch (const std::exception &e)

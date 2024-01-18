@@ -10,6 +10,9 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
+#include "dal/dtos/StockDTO.h"
+#include "dal/DatabaseHandler/DatabaseHandler.h"
+#include "controllers/StockController.h"
 
 using json = nlohmann::json;
 
@@ -20,24 +23,10 @@ namespace websocket = boost::beast::websocket;
 namespace net = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-struct Stock
-{
-    std::string company;
-    int available_stocks;
-    float initial_price;
-    float current_price;
-    float change;
-    float profit;
-
-    // Constructor to initialize stock
-    Stock(const std::string &name, int stocks, float price, float change = 0.00, float profit = 0.00)
-        : company(name), available_stocks(stocks), initial_price(price), current_price(price), change(change), profit(profit) {}
-};
-
 class StocksService
 {
 private:
-    std::vector<Stock> stocks;
+    std::vector<StockDTO> stocks;
     std::mutex mutex_;
     std::condition_variable cv_;
     bool data_ready = false;
@@ -45,7 +34,8 @@ private:
 
 public:
     // Load stocks from JSON file
-    void loadStocks(const std::string &jsonFile)
+    void
+    loadStocks(const std::string &jsonFile)
     {
         std::ifstream file(jsonFile);
         if (!file.is_open())
@@ -64,9 +54,23 @@ public:
             int available_stocks = std::stoi(stock["available_stocks"].dump());
             float initial_price = std::stof(stock["initial_price"].dump());
 
-            stocks.emplace_back(company_name, available_stocks, initial_price);
             if (available_stocks > maxAvailableStocks)
                 maxAvailableStocks = available_stocks;
+
+            StockDTO stockDTO = StockDTO(1, company_name, available_stocks, initial_price, initial_price);
+
+            StockController *stockController = StockController::getInstance();
+            auto response = stockController->addStock(stockDTO);
+            if (response["status"] == "failed")
+            {
+                std::cout << response["message"] << std::endl;
+                continue;
+            }
+            else
+            {
+                stockDTO.id = response["stock"]["id"];
+                stocks.push_back(stockDTO);
+            }
         }
 
         // TODO: Add stocks to database
@@ -92,10 +96,6 @@ public:
 
             for (auto &stock : stocks)
             {
-            }
-
-            for (auto &stock : stocks)
-            {
                 // Generate random value between -0.1 and 0.1
                 double randomChange = calculatePriceChange(stock.available_stocks);
 
@@ -103,17 +103,31 @@ public:
                 stock.current_price *= (1 + randomChange);
                 stock.change = (stock.current_price - tempCurrentPrice) / tempCurrentPrice * 100;
                 stock.profit = (stock.current_price - stock.initial_price) * stock.available_stocks;
+
+                StockDTO stockDTO = StockDTO(stock.id, stock.company, stock.available_stocks, stock.initial_price, stock.current_price, stock.change, stock.profit);
+
+                StockController *stockController = StockController::getInstance();
+                auto response = stockController->updateStock(stockDTO);
+                if (response["status"] == "failed")
+                {
+                    std::cout << response["message"] << std::endl;
+                }
             }
 
-            json result;
-            for (const auto &stock : stocks)
+            json result = json::array();
+            for (auto &stock : stocks)
             {
-                result[stock.company] = {
+                std::cout << "Stock: " << stock.company << " " << stock.id << std::endl;
+                json stockJson = {
+                    {"id", stock.id},
+                    {"company", stock.company},
                     {"available_stocks", stock.available_stocks},
                     {"initial_price", stock.initial_price},
                     {"current_price", stock.current_price},
                     {"change", stock.change},
-                    {"profit", stock.profit}};
+                    {"profit", stock.profit},
+                };
+                result.push_back(stockJson);
             }
 
             // Send the JSON message to the client
@@ -141,7 +155,7 @@ int main()
 
     // Create and initialize StocksService
     StocksService stocksService;
-    stocksService.loadStocks("stocks.json");
+    stocksService.loadStocks("../stocks.json");
 
     auto const address = net::ip::make_address("127.0.0.1");
     auto const port = static_cast<unsigned short>(std::atoi("8083"));

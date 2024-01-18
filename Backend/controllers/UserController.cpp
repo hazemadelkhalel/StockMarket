@@ -1,12 +1,11 @@
 #include "UserController.h"
 #include <iostream>
 
-
 UserController *UserController::instance;
 
-UserController::UserController(){}
+UserController::UserController() {}
 
-UserController::~UserController(){}
+UserController::~UserController() {}
 
 UserController *UserController::getInstance()
 {
@@ -27,7 +26,7 @@ json UserController::getUserById(const int &userId)
     {
         return userDataJson;
     }
-    
+
     userDataJson = {
         {"id", response.result->id},
         {"username", response.result->username},
@@ -42,9 +41,7 @@ json UserController::getUserById(const int &userId)
         {"facebook_profile", response.result->facebook_profile},
         {"instagram_profile", response.result->instagram_profile},
         {"card_number", response.result->card_number},
-        {"wallet", response.result->wallet}
-        };
-    
+        {"wallet", response.result->wallet}};
 
     return userDataJson;
 }
@@ -58,7 +55,7 @@ json UserController::getUserByUsername(std::string username)
     {
         return userDataJson;
     }
-    
+
     userDataJson = {
         {"id", response.result->id},
         {"username", response.result->username},
@@ -73,25 +70,7 @@ json UserController::getUserByUsername(std::string username)
         {"facebook_profile", response.result->facebook_profile},
         {"instagram_profile", response.result->instagram_profile},
         {"card_number", response.result->card_number},
-        {"wallet", response.result->wallet}
-        };
-    
+        {"wallet", response.result->wallet}};
 
     return userDataJson;
 }
-
-// json UserController::editUser(json &User)
-// {
-//     auto id = User["id"];
-//     auto name = User["name"];
-//     auto testCasesJson = User["inputJson"];
-
-//     UserDTO dto(std::stoi(id.dump()), name, testCasesJson, User["tags"].get<std::vector<std::string>>());
-//     auto response = db_handler->updateUser(dto);
-
-//     if (response.status != SUCCESS)
-//     {
-//         return json({{"status", "failed"}});
-//     }
-//     return json({{"status", "success"}});
-// }

@@ -7,16 +7,15 @@ struct TransactionDTO
 {
     int id;
     int userID;
-    int stockID;
-    std::string date;
+    std::string company;
+    float price;
+    float balance;
+    int quantity;
+    std::string type;
+    std::string transaction_date;
 
-    TransactionDTO(int id, int userID, int stockID, std::string date)
-    {
-        this->id = id;
-        this->userID = userID;
-        this->stockID = stockID;
-        this->date = date;
-    }
+    TransactionDTO(int id, int userID, std::string company, float price, float balance, int quantity, std::string type, std::string transaction_date)
+        : id(id), userID(userID), company(company), price(price), balance(balance), quantity(quantity), type(type), transaction_date(transaction_date) {}
 };
 
 #endif

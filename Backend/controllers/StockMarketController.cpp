@@ -18,7 +18,7 @@ StockMarketController *StockMarketController::getInstance()
     return instance;
 }
 
-json StockMarketController::validateBuyStock(const int &userID, const int &stockID)
+json StockMarketController::validateBuyStock(const int &userID, const int &stockID, int quantity)
 {
     auto response = db_handler->getStockById(stockID);
     if (response.status != SUCCESS)
@@ -31,7 +31,7 @@ json StockMarketController::validateBuyStock(const int &userID, const int &stock
     {
         return json({{"status", "failed"}, {"message", "user not found"}});
     }
-    if (response2.result->wallet < response.result->price)
+    if (response2.result->wallet < response.result->current_price * quantity)
     {
         return json({{"status", "failed"}, {"message", "not enough money"}});
     }
@@ -39,15 +39,15 @@ json StockMarketController::validateBuyStock(const int &userID, const int &stock
     return json({{"status", "success"}});
 }
 
-json StockMarketController::buyStock(const int &userID, const int &stockID)
+json StockMarketController::buyStock(const int &userID, const int &stockID, int quantity)
 {
-    auto response1 = validateBuyStock(userID, stockID);
+    auto response1 = validateBuyStock(userID, stockID, quantity);
     if (response1["status"] == "failed")
     {
         return response1;
     }
 
-    auto response2 = db_handler->buyStock(userID, stockID);
+    auto response2 = db_handler->buyStock(userID, stockID, quantity);
     if (response2.status != SUCCESS)
     {
         return json({{"status", "failed"}, {"message", "buy stock failed"}});
@@ -56,38 +56,33 @@ json StockMarketController::buyStock(const int &userID, const int &stockID)
     json transaction = {
         {"id", response2.result->id},
         {"userID", response2.result->userID},
-        {"stockID", response2.result->stockID},
-        {"date", response2.result->date},
-    };
+        {"company", response2.result->company},
+        {"price", response2.result->price},
+        {"balance", response2.result->balance},
+        {"quantity", response2.result->quantity},
+        {"type", response2.result->type},
+        {"transaction_date", response2.result->transaction_date}};
 
     return json({{"status", "success"}, {"message", "Stock bought successfully"}, {"Transaction", transaction}});
 }
 
-json StockMarketController::sellStock(const int &transactionID)
+json StockMarketController::sellStock(const int &userID, const int &stockID, int quantity)
 {
-    auto response = db_handler->getTransactionById(transactionID);
+    auto response = db_handler->sellStock(userID, stockID, quantity);
     if (response.status != SUCCESS)
-    {
-        return json({{"status", "failed"}, {"message", "transaction not found"}});
-    }
-
-    auto response2 = db_handler->getStockById(response.result->stockID);
-    if (response2.status != SUCCESS)
-    {
-        return json({{"status", "failed"}, {"message", "stock not found"}});
-    }
-
-    auto response3 = db_handler->getUserById(response.result->userID);
-    if (response3.status != SUCCESS)
-    {
-        return json({{"status", "failed"}, {"message", "user not found"}});
-    }
-
-    auto response4 = db_handler->sellStock(transactionID);
-    if (response4.status != SUCCESS)
     {
         return json({{"status", "failed"}, {"message", "sell stock failed"}});
     }
 
-    return json({{"status", "success"}, {"message", "Stock sold successfully"}});
+    json transaction = {
+        {"id", response.result->id},
+        {"userID", response.result->userID},
+        {"company", response.result->company},
+        {"price", response.result->price},
+        {"balance", response.result->balance},
+        {"quantity", response.result->quantity},
+        {"type", response.result->type},
+        {"transaction_date", response.result->transaction_date}};
+
+    return json({{"status", "success"}, {"message", "Stock sold successfully"}, {"Transaction", transaction}});
 }

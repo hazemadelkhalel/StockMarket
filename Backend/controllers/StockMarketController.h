@@ -12,16 +12,15 @@ private:
     StockMarketController();
 
     ~StockMarketController();
-    
-    json validateBuyStock(const int &userID, const int &stockID);
+
+    json validateBuyStock(const int &userID, const int &stockID, int quantity);
 
 public:
     static StockMarketController *getInstance();
 
-    json buyStock(const int &userID, const int &stockID);
+    json buyStock(const int &userID, const int &stockID, int quantity);
 
-    json sellStock(const int &transactionID);
-
+    json sellStock(const int &userID, const int &stockID, int quantity);
 };
 
 #endif

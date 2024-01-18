@@ -14,16 +14,17 @@ import { Dialog } from "primereact/dialog";
 import { useRouter } from "next/navigation";
 import { getSessionToken } from "../../utils/cookie";
 import { ProgressSpinner } from "primereact/progressspinner";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 interface Stock {
   id: number;
   company: string;
   type: string;
-  price: string;
-  change: string;
-  profit: string;
-  initial_price?: string;
-  available_stocks?: string;
+  price: number;
+  change: number;
+  profit: number;
+  initial_price: number;
+  available_stocks: number;
 }
 
 const Market = () => {
@@ -31,9 +32,11 @@ const Market = () => {
     id: 0,
     company: "",
     type: "",
-    price: "",
-    change: "",
-    profit: "",
+    price: 0,
+    change: 0,
+    profit: 0,
+    initial_price: 0,
+    available_stocks: 0,
   };
   const toast = useRef(null);
   const [buyStocks, setBuyStocks] = useState<Stock[]>([]);
@@ -43,10 +46,10 @@ const Market = () => {
   const [actionStockDialog, setActionStockDialog] = useState<boolean>(false);
   const [nextUpdate, setNextUpdate] = useState(10);
   const [wallet, setWallet] = useState(0);
+  const [quantity, setQuantity] = useState(0);
   const clearEveryThing = () => {
     setBuyStocks([]);
     setSellStocks([]);
-    setSelectedTypeStock(1);
     setStock(emptyStock);
     setActionStockDialog(false);
     setNextUpdate(10);
@@ -76,12 +79,7 @@ const Market = () => {
 
       const data = await response.json();
       if (data.error) {
-        (toast.current as any)?.show({
-          severity: "error",
-          summary: "Failed",
-          detail: data.error,
-          life: 3000,
-        });
+        console.log(data.error);
         return;
       }
       setWallet(data["User"].wallet);
@@ -89,12 +87,10 @@ const Market = () => {
       console.error("Error fetching data:", error);
     }
   };
-  useEffect(() => {
-    fetchWallet();
-  }, []);
 
   const actionStock = async () => {
     let _stocks;
+
     if (selectedTypeStock === 1) {
       _stocks = buyStocks.filter((val) => val.company !== stock.company);
       try {
@@ -105,7 +101,8 @@ const Market = () => {
           },
           body: JSON.stringify({
             token: getSessionToken(),
-            Stock: stock.id,
+            stock: stock.id,
+            quantity: quantity,
           }),
         });
 
@@ -123,6 +120,7 @@ const Market = () => {
         setActionStockDialog(false);
         setStock(emptyStock);
         setBuyStocks(_stocks);
+        setQuantity(0);
 
         let summary = selectedTypeStock === 1 ? "Bought" : "Sold";
         (toast.current as any)?.show({
@@ -144,7 +142,8 @@ const Market = () => {
           },
           body: JSON.stringify({
             token: getSessionToken(),
-            Stock: stock.id,
+            stock: stock.id,
+            quantity: quantity,
           }),
         });
 
@@ -160,6 +159,8 @@ const Market = () => {
         }
         setActionStockDialog(false);
         setStock(emptyStock);
+        setQuantity(0);
+
         let summary = selectedTypeStock === 1 ? "Bought" : "Sold";
         setBuyStocks(_stocks);
         (toast.current as any)?.show({
@@ -175,8 +176,26 @@ const Market = () => {
   };
 
   const confirmActionStock = (rowStock: Stock) => {
-    setStock(rowStock);
-    setActionStockDialog(true);
+    if (quantity > (rowStock.available_stocks ?? 0)) {
+      (toast.current as any)?.show({
+        severity: "info",
+        summary: "Info",
+        detail: "Quantity must be less than available stocks",
+        life: 1000,
+      });
+      return;
+    }
+    if (quantity > 0) {
+      setStock(rowStock);
+      setActionStockDialog(true);
+    } else {
+      (toast.current as any)?.show({
+        severity: "info",
+        summary: "Info",
+        detail: "Quantity must be greater than 0",
+        life: 1000,
+      });
+    }
   };
   const deleteTestDialogFooter = (
     <React.Fragment>
@@ -212,50 +231,101 @@ const Market = () => {
         });
 
         const data = await response.json();
-
-        const shuffledStocks = shuffleArray(data.stocks);
-
-        setBuyStocks(
-          shuffledStocks.filter(
-            (stock: { type: string }) => stock.type === "Buy"
-          )
-        );
-        setSellStocks(
-          shuffledStocks.filter(
-            (stock: { type: string }) => stock.type === "Sell"
-          )
-        );
+        if (data.error) {
+          console.log(data.error);
+          return;
+        }
+        let _buyStocks: Stock[] = data["stocks"].map((stockData: any) => ({
+          id: stockData.id,
+          company: stockData.company,
+          type: "Buy",
+          price: stockData.current_price,
+          change: "0",
+          profit: "0",
+          initial_price: stockData.initial_price,
+          available_stocks: stockData.available_stocks,
+        }));
+        setBuyStocks(_buyStocks);
+        let _sellStocks: Stock[] = [];
+        for (let i = 0; i < _buyStocks?.length; i++) {
+          if (
+            _buyStocks[i].company ==
+            sellStocks?.find((stock) => stock.company == _buyStocks[i].company)
+              ?.company
+          ) {
+            _sellStocks.push(_buyStocks[i]);
+          }
+        }
+        console.log("SELL STOCKS", _sellStocks);
+        setSellStocks(_sellStocks);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
   };
 
-  const shuffleArray = (array: any) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+  const fetchStockCart = async () => {
+    const url = `http://localhost:8001/api/market/getStockCart?token=${getSessionToken()}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.log(data.error);
+      return;
     }
-    return array;
+    // setSellStocks(data["stocks"]);
+    let _sellStocks: Stock[] = [];
+    for (let key in data["stocks"]) {
+      let curStock: Stock = data["stocks"][key];
+      if (
+        curStock.company ==
+        buyStocks?.find((stock) => stock.company == curStock.company)?.company
+      ) {
+        const index = buyStocks.findIndex(
+          (stock) => stock.company == curStock.company
+        );
+        curStock.price = buyStocks[index].price;
+        curStock.change = buyStocks[index].change;
+        curStock.profit = buyStocks[index].profit;
+        curStock.initial_price = buyStocks[index].initial_price;
+        _sellStocks.push(curStock);
+      }
+    }
+    setSellStocks(_sellStocks);
+    console.log("MY STOCKS", _sellStocks);
+    console.log("GET QUERY", data);
   };
   useEffect(() => {
-    fetchData();
+    setNextUpdate(10);
+    fetchStockCart();
+    fetchWallet();
+  }, [buyStocks]);
+
+  useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8083");
 
     socket.addEventListener("open", (event) => {
       console.log("WebSocket connection opened:", event);
+      fetchData();
+      fetchWallet();
+      fetchStockCart();
     });
 
     socket.addEventListener("message", (event) => {
       console.log("WebSocket message received:", event.data);
       const data = JSON.parse(event.data);
-      console.log("AMD", data["AMD"]);
-      const newData = shuffleArray(data);
       let _buyStocks: Stock[] = [];
       for (let key in data) {
+        console.log(data[key]);
         let _stock: Stock = {
-          id: 0,
-          company: key,
+          id: data[key].id,
+          company: data[key].company,
           type: "Buy",
           price: data[key].current_price,
           change: data[key].change,
@@ -265,17 +335,38 @@ const Market = () => {
         };
         _buyStocks.push(_stock);
       }
-      console.log(_buyStocks);
       setBuyStocks(_buyStocks);
+
+      let _sellStocks: Stock[] = [];
+      for (let i = 0; i < _buyStocks?.length; i++) {
+        if (
+          _buyStocks[i].company ==
+          sellStocks?.find((stock) => stock.company == _buyStocks[i].company)
+            ?.company
+        ) {
+          _sellStocks.push(_buyStocks[i]);
+        }
+      }
+      console.log("SELL STOCKS", _sellStocks);
+      setSellStocks(_sellStocks);
     });
 
     socket.addEventListener("close", (event) => {
       console.log("WebSocket connection closed:", event);
+      fetchData();
+      fetchWallet();
+      fetchStockCart();
     });
+
+    // Countdown mechanism
+    const countdownInterval = setInterval(() => {
+      setNextUpdate((prevValue) => (prevValue === 0 ? 10 : prevValue - 1));
+    }, 1000);
 
     return () => {
       // Close the WebSocket connection when the component is unmounted
       socket.close();
+      clearInterval(countdownInterval);
     };
   }, []);
   // useEffect(() => {
@@ -283,21 +374,6 @@ const Market = () => {
   //   if (selectedTypeStock === 1) {
   //     // Fetch data initially
   //     fetchData();
-
-  //     // Set up interval to fetch data every 10 seconds
-  //     const fetchDataIntervalId = setInterval(fetchData, 20000);
-
-  //     // Set up interval to decrement nextUpdate every second
-  //     const countdownIntervalId = setInterval(() => {
-  //       setNextUpdate((prevNextUpdate) => prevNextUpdate - 1);
-  //     }, 1000);
-
-  //     // Clear intervals on component unmount
-  //     return () => {
-  //       clearInterval(fetchDataIntervalId);
-  //       clearInterval(countdownIntervalId);
-  //     };
-  //   }
 
   //   // If selectedType is not 1, do nothing on mount and return an empty cleanup function
   //   return () => {};
@@ -407,11 +483,9 @@ const Market = () => {
           <span className="market-balance">
             Current Balance: ${wallet.toFixed(2)}
           </span>
-          {selectedTypeStock === 1 ? (
-            <div className="market-timer">
-              <span>Refresh after: {nextUpdate}s</span>
-            </div>
-          ) : null}
+          <div className="market-timer">
+            <span>Refresh after: {nextUpdate}s</span>
+          </div>
         </div>
         <div className="m-c-section2">
           <div style={{ width: "100%" }}>
@@ -466,7 +540,29 @@ const Market = () => {
                 header="Profit"
                 body={changeBodyProfitTemplate}
               ></Column>
-              <Column body={actionView} style={{ width: "120px" }}></Column>
+              <Column
+                header={
+                  <div className="counting-container">
+                    <span
+                      onClick={() => {
+                        setQuantity(Math.max(quantity - 1, 0));
+                      }}
+                    >
+                      -
+                    </span>
+                    <h3>{quantity}</h3>
+                    <span
+                      onClick={() => {
+                        setQuantity(quantity + 1);
+                      }}
+                    >
+                      +
+                    </span>
+                  </div>
+                }
+                body={actionView}
+                style={{ width: "120px" }}
+              ></Column>
             </DataTable>
             <Dialog
               visible={actionStockDialog}

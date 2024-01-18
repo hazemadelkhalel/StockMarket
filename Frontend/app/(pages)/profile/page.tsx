@@ -25,7 +25,8 @@ interface Stocker {
   company: string;
   price: string;
   balance: string;
-  date: string;
+  transaction_date: string;
+  quantity: number;
 }
 
 const Profile = () => {
@@ -52,6 +53,7 @@ const Profile = () => {
   const router = useRouter();
   const sessionToken = getSessionToken();
   const toast = useRef(null);
+  const [walletValues, setWalletValues] = useState<number[]>([]);
 
   console.log(sessionToken);
   if (!sessionToken) {
@@ -68,170 +70,6 @@ const Profile = () => {
     }
   };
   useEffect(() => {
-    const transactions: Stocker[] = [
-      {
-        name: "Transaction 1",
-        type: "Buy",
-        company: "Apple.inc",
-        price: "100$",
-        balance: "1245$",
-        date: "12/12/2020",
-      },
-      {
-        name: "Transaction 2",
-        type: "Sell",
-        company: "Microsoft",
-        price: "150$",
-        balance: "2000$",
-        date: "25/05/2021",
-      },
-      {
-        name: "Transaction 3",
-        type: "Buy",
-        company: "Google",
-        price: "200$",
-        balance: "1500$",
-        date: "09/03/2022",
-      },
-      {
-        name: "Transaction 4",
-        type: "Sell",
-        company: "Amazon",
-        price: "250$",
-        balance: "1000$",
-        date: "18/11/2021",
-      },
-      {
-        name: "Transaction 5",
-        type: "Buy",
-        company: "Tesla",
-        price: "300$",
-        balance: "2500$",
-        date: "08/07/2020",
-      },
-      {
-        name: "Transaction 6",
-        type: "Sell",
-        company: "Apple.inc",
-        price: "150$",
-        balance: "1200$",
-        date: "14/03/2022",
-      },
-      {
-        name: "Transaction 7",
-        type: "Buy",
-        company: "Google",
-        price: "120$",
-        balance: "1800$",
-        date: "30/06/2020",
-      },
-      {
-        name: "Transaction 8",
-        type: "Sell",
-        company: "Microsoft",
-        price: "180$",
-        balance: "2200$",
-        date: "02/09/2022",
-      },
-      {
-        name: "Transaction 9",
-        type: "Buy",
-        company: "Amazon",
-        price: "220$",
-        balance: "1600$",
-        date: "22/10/2021",
-      },
-      {
-        name: "Transaction 10",
-        type: "Sell",
-        company: "Tesla",
-        price: "280$",
-        balance: "2300$",
-        date: "07/05/2020",
-      },
-      {
-        name: "Transaction 11",
-        type: "Buy",
-        company: "Apple.inc",
-        price: "90$",
-        balance: "1400$",
-        date: "28/01/2021",
-      },
-      {
-        name: "Transaction 12",
-        type: "Sell",
-        company: "Google",
-        price: "170$",
-        balance: "1900$",
-        date: "17/04/2022",
-      },
-      {
-        name: "Transaction 13",
-        type: "Buy",
-        company: "Microsoft",
-        price: "110$",
-        balance: "2100$",
-        date: "14/09/2020",
-      },
-      {
-        name: "Transaction 14",
-        type: "Sell",
-        company: "Amazon",
-        price: "190$",
-        balance: "1300$",
-        date: "12/03/2021",
-      },
-      {
-        name: "Transaction 15",
-        type: "Buy",
-        company: "Tesla",
-        price: "260$",
-        balance: "2400$",
-        date: "19/08/2020",
-      },
-      {
-        name: "Transaction 16",
-        type: "Sell",
-        company: "Apple.inc",
-        price: "130$",
-        balance: "2000$",
-        date: "02/02/2022",
-      },
-      {
-        name: "Transaction 17",
-        type: "Buy",
-        company: "Google",
-        price: "240$",
-        balance: "1700$",
-        date: "10/11/2021",
-      },
-      {
-        name: "Transaction 18",
-        type: "Sell",
-        company: "Microsoft",
-        price: "200$",
-        balance: "1600$",
-        date: "26/06/2020",
-      },
-      {
-        name: "Transaction 19",
-        type: "Buy",
-        company: "Amazon",
-        price: "140$",
-        balance: "1800$",
-        date: "11/09/2021",
-      },
-      {
-        name: "Transaction 20",
-        type: "Sell",
-        company: "Tesla",
-        price: "160$",
-        balance: "2100$",
-        date: "30/04/2022",
-      },
-    ];
-    setStockers(transactions);
-
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue(
@@ -270,10 +108,88 @@ const Profile = () => {
       }),
       datasets: [
         {
-          label: "First Dataset",
-          data: Array.from({ length: dataPoints }, () =>
-            Math.floor(Math.random() * 100)
-          ),
+          label: "Balance",
+          data: walletValues,
+          fill: true,
+          borderColor: documentStyle.getPropertyValue("--blue-500"),
+        },
+      ],
+    };
+
+    const options = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.6,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColorSecondary,
+          },
+          grid: {
+            color: surfaceBorder,
+          },
+        },
+        y: {
+          ticks: {
+            color: textColorSecondary,
+          },
+          grid: {
+            color: surfaceBorder,
+          },
+        },
+      },
+    };
+
+    setChartData(data);
+    setChartOptions(options);
+  }, [walletValues]);
+  useEffect(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue("--text-color");
+    const textColorSecondary = documentStyle.getPropertyValue(
+      "--text-color-secondary"
+    );
+    const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
+    const dataPoints =
+      timeRange === "day" ? 48 : timeRange === "month" ? 30 : 12;
+
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const data = {
+      labels: Array.from({ length: dataPoints }, (_, i) => {
+        if (timeRange === "day") {
+          const hour = Math.floor(i / 2);
+          const minute = i % 2 === 0 ? "00" : "30";
+          return `${hour}:${minute}`;
+        } else if (timeRange === "month") {
+          return `Day ${i + 1}`;
+        } else {
+          return monthNames[i];
+        }
+      }),
+      datasets: [
+        {
+          label: "Balance",
+          data: walletValues,
           fill: true,
           borderColor: documentStyle.getPropertyValue("--blue-500"),
         },
@@ -380,24 +296,26 @@ const Profile = () => {
     console.log(data["transactions"]);
     let cntBuy = 0;
     let cntSell = 0;
+    let _walletValues: number[] = [];
     for (let i = 0; i < data["transactions"]?.length; i++) {
       let transaction = data["transactions"][i];
+      _walletValues.push(transaction.balance);
       transactions.push({
         name: "Transaction #" + transaction.id,
-        type: transaction.stock.type,
-        company: transaction.stock.company,
-        price: parseFloat(transaction.stock.price).toFixed(2),
-        balance: parseFloat(transaction.user.wallet).toFixed(2),
-        date: transaction.date,
+        balance: parseFloat(transaction.balance).toFixed(2),
+        company: transaction.company,
+        price: parseFloat(transaction.price).toFixed(2),
+        type: transaction.type,
+        quantity: transaction.quantity,
+        transaction_date: transaction.transaction_date,
       });
-      if (transaction.stock.type == "Buy") cntBuy++;
+      if (transaction.type == "Buy") cntBuy++;
       else cntSell++;
       setTotalBuy(cntBuy);
       setTotalSell(cntSell);
-      transactions[i].date = transactions[i].date
-        .replace("T", " ")
-        .split(".")[0];
     }
+    console.log(transactions);
+    setWalletValues(_walletValues);
     setStockers(transactions);
   };
   useEffect(() => {
@@ -415,8 +333,42 @@ const Profile = () => {
     );
   };
 
-  const dateBodyTemplate = (rowData: { date: string }) => {
-    return <span>{rowData.date}</span>;
+  const formatDate = (curDate: string) => {
+    const currentDate = new Date();
+    const date = new Date(curDate);
+
+    const diffTime = Math.abs(currentDate.getTime() - date.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffSeconds = Math.floor(diffTime / 1000);
+
+    if (diffSeconds < 60) return <span>{diffSeconds} seconds ago</span>;
+    if (diffMinutes < 60) return <span>{diffMinutes} minutes ago</span>;
+    if (diffHours < 24) return <span>{diffHours} hours ago</span>;
+
+    if (diffDays == 0) {
+      return <span>Today</span>;
+    }
+    if (diffDays == 1) {
+      return <span>Yesterday</span>;
+    }
+    if (diffDays < 7) {
+      return <span>{diffDays} days ago</span>;
+    }
+    if (diffDays < 30) {
+      return <span>{Math.floor(diffDays / 7)} weeks ago</span>;
+    }
+    if (diffDays < 365) {
+      return <span>{Math.floor(diffDays / 30)} months ago</span>;
+    }
+    if (diffDays >= 365) {
+      return <span>{Math.floor(diffDays / 365)} years ago</span>;
+    }
+  };
+
+  const dateBodyTemplate = (rowData: { transaction_date: string }) => {
+    return formatDate(rowData.transaction_date);
   };
 
   const handleTimeRangeChange = (newTimeRange: SetStateAction<string>) => {
@@ -424,7 +376,7 @@ const Profile = () => {
   };
   return (
     <>
-      <Navbar idx={0} />
+      <Navbar idx={-1} />
       <Toast ref={toast} />
       <div className="profile-container">
         <section className="profile-section-1">
@@ -434,7 +386,7 @@ const Profile = () => {
               <h1>hazemadelkhalel</h1>
               <div className="p-i-creation">
                 <img src="/SVG/calendar.svg" />
-                <span>Joined 6 months ago.</span>
+                <span>Joined {formatDate(created_at)}.</span>
               </div>
             </div>
             <div className="p-i-container-progress">
@@ -559,7 +511,7 @@ const Profile = () => {
                   body={statusBodyTemplate}
                 ></Column>
                 <Column
-                  field="date"
+                  field="transaction_date"
                   sortable
                   header="Date"
                   body={dateBodyTemplate}

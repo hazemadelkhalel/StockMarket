@@ -41,7 +41,9 @@ public:
 
     Response<int> createUser(UserDTO &dto);
 
-    Response<int> addStock(StockDTO &dto);
+    Response<StockDTO> addStock(StockDTO &dto);
+
+    Response<StockDTO> updateStock(StockDTO &dto);
 
     Response<UserDTO> getUserById(int id);
 
@@ -55,15 +57,19 @@ public:
 
     Response<StockDTO> getStockById(int id);
 
-    Response<TransactionDTO> buyStock(const int &userID, const int &stockID);
+    Response<TransactionDTO> buyStock(const int &userID, const int &stockID, int quantity);
 
-    Response<int> sellStock(const int &transactionID);
+    Response<TransactionDTO> sellStock(const int &userID, const int &stockID, int quantity);
 
-    Response<TransactionDTO> addTransaction(const int &userID, const int &stockID);
+    Response<UserDTO> addStockToStockCartByUser(const int &userID, const int &stockID, int quantity);
+
+    Response<TransactionDTO> addTransaction(const int &userID, const int &stockID, int quantity);
 
     Response<TransactionDTO> getTransactionById(const int &transactionID);
 
     Response<std::vector<StockDTO>> getAllStocks();
+
+    Response<std::vector<StockDTO>> getStockCartByUserId(const int &userID);
 
     Response<std::vector<TransactionDTO>> getAllTransactionsByUserId(const int &userID);
 

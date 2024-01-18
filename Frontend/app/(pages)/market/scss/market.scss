@@ -71,6 +71,7 @@ body {
   }
 }
 .market-action-btn-buy {
+  @include center;
   .stockerbtn {
     color: white;
     background-color: #42c45e;
@@ -86,6 +87,8 @@ body {
   }
 }
 .market-action-btn-sell {
+  @include center;
+
   .stockerbtn {
     color: white;
     background-color: #e72d2d;
@@ -98,5 +101,22 @@ body {
     &:hover {
       background-color: rgb(186, 0, 0);
     }
+  }
+}
+
+.counting-container {
+  @include center;
+  span {
+    background-color: #eee;
+    font-size: 16px;
+    padding: 6px 12px;
+    cursor: pointer;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+  h3 {
+    font-size: 22px;
+    margin: 0 10px;
   }
 }

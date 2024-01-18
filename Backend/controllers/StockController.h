@@ -20,6 +20,11 @@ public:
 
     json getAllStocks();
 
+    json getStockCartByUserId(const int &userID);
+
+    json addStock(StockDTO stockDTO);
+
+    json updateStock(StockDTO stockDTO);
 };
 
 #endif
