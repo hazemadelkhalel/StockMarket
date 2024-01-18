@@ -94,6 +94,18 @@ public:
             // Lock the mutex to update stock prices
             std::unique_lock<std::mutex> lock(mutex_);
 
+            auto response = StockController::getInstance()->getAllStocks();
+            for (int i = 0; i < (int)response["stocks"].size(); i++)
+            {
+                auto stock = StockDTO(response["stocks"][i]["id"], response["stocks"][i]["company"], response["stocks"][i]["available_stocks"], response["stocks"][i]["initial_price"], response["stocks"][i]["current_price"], response["stocks"][i]["change"], response["stocks"][i]["profit"]);
+                if (stock.available_stocks > maxAvailableStocks)
+                    maxAvailableStocks = stock.available_stocks;
+                if (i >= (int)stocks.size())
+                    stocks.push_back(stock);
+                else
+                    stocks[i] = stock;
+            }
+
             for (auto &stock : stocks)
             {
                 // Generate random value between -0.1 and 0.1
@@ -133,6 +145,7 @@ public:
             // Send the JSON message to the client
             try
             {
+                std::cout << result.dump() << std::endl;
                 ws.write(boost::asio::buffer(result.dump()));
             }
             catch (const std::exception &e)
