@@ -32,7 +32,7 @@ cd services
 //Run these on two bashes independently to initialize the backend services
 
 ./StockMaret
-./StockService
+./StocksService
 
 // To run the frontend
 // Navigate to /Frontend
