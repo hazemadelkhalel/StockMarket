@@ -97,16 +97,7 @@ const Profile = () => {
 
     const data = await response.json();
     if (data.error) {
-      (toast.current as any)?.show({
-        severity: "error",
-        summary: "Failed",
-        detail: data.error,
-        life: 1500,
-      });
-      if (data.error == "Invalid token") {
-        removeSessionToken();
-        router.push("/login");
-      }
+      console.log(data.error);
       return;
     }
 
@@ -144,16 +135,7 @@ const Profile = () => {
 
       const data = await response.json();
       if (data.error) {
-        (toast.current as any)?.show({
-          severity: "error",
-          summary: "Failed",
-          detail: data.error,
-          life: 1500,
-        });
-        if (data.error == "Invalid token") {
-          removeSessionToken();
-          router.push("/login");
-        }
+        console.log(data.error);
         return;
       }
 
@@ -187,16 +169,7 @@ const Profile = () => {
 
     const data = await response.json();
     if (data.error) {
-      (toast.current as any)?.show({
-        severity: "error",
-        summary: "Failed",
-        detail: data.error,
-        life: 1500,
-      });
-      if (data.error == "Invalid token") {
-        removeSessionToken();
-        router.push("/login");
-      }
+      console.log(data.error);
       return;
     }
     let transactions: Stocker[] = [];
@@ -241,10 +214,6 @@ const Profile = () => {
     const data = await response.json();
     if (data.error) {
       console.log(data.error);
-      if (data.error == "Invalid token") {
-        removeSessionToken();
-        router.push("/login");
-      }
       return;
     }
     // setSellStocks(data["stocks"]);
