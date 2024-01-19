@@ -1,6 +1,24 @@
 # Stock Market
 This is a C++-based project that aims to implement a Stock Market application that allows multiple users to view/trade stocks through a GUI and provide per-user information and stock market data.
 
+# Pre Installation
+## Libraries
+Make sure these libraries are on your computer
+```
+- sqlite3
+- ssl
+- crypto
+- pthread
+- boost_system
+- boost_thread
+```
+## Dependencies
+clone these repos in the Backend folder after installing them.
+- [jwt-cpp](https://github.com/Thalhammer/jwt-cpp)
+- [nlohmann json](https://github.com/nlohmann/json)
+
+
+
 # Build the project
 
 ## Linux
