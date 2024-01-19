@@ -324,7 +324,7 @@ export default function Home() {
             <Card
               title="1. Create an Account"
               subTitle="Sign up for a free account"
-              className="card"
+              className="help-card"
             >
               <p className="m-0">
                 To get started, sign up for a free account. You will need to
@@ -337,7 +337,7 @@ export default function Home() {
             <Card
               title="2. Fund Your Account"
               subTitle="Deposit funds into your account"
-              className="card"
+              className="help-card"
             >
               <p className="m-0">
                 Once your account is activated, you can deposit funds into your
@@ -349,7 +349,7 @@ export default function Home() {
             <Card
               title="3. Start Trading"
               subTitle="Buy and sell stocks"
-              className="card"
+              className="help-card"
             >
               <p className="m-0">
                 You can start trading by searching for a stock and clicking on
