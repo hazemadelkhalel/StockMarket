@@ -102,6 +102,10 @@ export default function Home() {
       const data = await response.json();
       if (data.error) {
         console.log(data.error);
+        if (data.error == "Invalid token") {
+          removeSessionToken();
+          router.push("/login");
+        }
         return;
       }
       setUsername(data["User"].username);

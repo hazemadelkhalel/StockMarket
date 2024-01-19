@@ -12,7 +12,7 @@ import { Button } from "primereact/button";
 import React from "react";
 import { Dialog } from "primereact/dialog";
 import { useRouter } from "next/navigation";
-import { getSessionToken } from "../../utils/cookie";
+import { getSessionToken, removeSessionToken } from "../../utils/cookie";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
@@ -81,6 +81,10 @@ const Market = () => {
       const data = await response.json();
       if (data.error) {
         console.log(data.error);
+        if (data.error == "Invalid token") {
+          removeSessionToken();
+          router.push("/login");
+        }
         return;
       }
       setWallet(data["User"].wallet);
@@ -116,6 +120,10 @@ const Market = () => {
             detail: data.error,
             life: 3000,
           });
+          if (data.error == "Invalid token") {
+            removeSessionToken();
+            router.push("/login");
+          }
           return;
         }
         fetchWallet();
@@ -157,6 +165,10 @@ const Market = () => {
             detail: data.error,
             life: 3000,
           });
+          if (data.error == "Invalid token") {
+            removeSessionToken();
+            router.push("/login");
+          }
           return;
         }
         setActionStockDialog(false);
@@ -279,6 +291,10 @@ const Market = () => {
     const data = await response.json();
     if (data.error) {
       console.log(data.error);
+      if (data.error == "Invalid token") {
+        removeSessionToken();
+        router.push("/login");
+      }
       return;
     }
     // setSellStocks(data["stocks"]);

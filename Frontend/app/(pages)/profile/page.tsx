@@ -16,7 +16,7 @@ import { Tag } from "primereact/tag";
 import { Chart } from "primereact/chart";
 import { Button } from "primereact/button";
 import { useRouter } from "next/navigation";
-import { getSessionToken } from "../../utils/cookie";
+import { getSessionToken, removeSessionToken } from "../../utils/cookie";
 import { Toast } from "primereact/toast";
 import { get } from "http";
 interface Stocker {
@@ -103,6 +103,10 @@ const Profile = () => {
         detail: data.error,
         life: 1500,
       });
+      if (data.error == "Invalid token") {
+        removeSessionToken();
+        router.push("/login");
+      }
       return;
     }
 
@@ -146,6 +150,10 @@ const Profile = () => {
           detail: data.error,
           life: 1500,
         });
+        if (data.error == "Invalid token") {
+          removeSessionToken();
+          router.push("/login");
+        }
         return;
       }
 
@@ -185,6 +193,10 @@ const Profile = () => {
         detail: data.error,
         life: 1500,
       });
+      if (data.error == "Invalid token") {
+        removeSessionToken();
+        router.push("/login");
+      }
       return;
     }
     let transactions: Stocker[] = [];
@@ -229,6 +241,10 @@ const Profile = () => {
     const data = await response.json();
     if (data.error) {
       console.log(data.error);
+      if (data.error == "Invalid token") {
+        removeSessionToken();
+        router.push("/login");
+      }
       return;
     }
     // setSellStocks(data["stocks"]);
