@@ -23,7 +23,6 @@ public:
     json login(json &User);
 
     json authenticateUser(std::string token);
-
 };
 
 #endif

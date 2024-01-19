@@ -9,17 +9,21 @@ DatabaseHandler *DatabaseHandler::instance;
 
 DatabaseHandler::DatabaseHandler()
 {
+    this->consoleLogger = new ConsoleLogger();
+    this->fileLogger = new FileLogger("Server.log");
     // initialize engine
     int status = 0;
     if (SQLITE_OK != (status = sqlite3_initialize()))
     {
-        std::cout << "Failed to initialize library: " << status << '\n';
+        this->consoleLogger->log("Failed to initialize library", Severity::ERROR);
+        this->fileLogger->log("Failed to initialize library", Severity::ERROR);
         return;
     }
     // open connection to a DB
     if (SQLITE_OK != (status = sqlite3_open_v2("StockMarket.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL)))
     {
-        std::cout << "Failed to open conn: " << status << '\n';
+        this->consoleLogger->log("Failed to open connection", Severity::ERROR);
+        this->fileLogger->log("Failed to open connection", Severity::ERROR);
         return;
     }
     std::string databasePath = "StockMarket.db";
@@ -27,7 +31,8 @@ DatabaseHandler::DatabaseHandler()
     if (status != SQLITE_OK)
     {
         connected = false;
-        std::cerr << "SQLite error: " << sqlite3_errmsg(db) << std::endl;
+        this->consoleLogger->log("SQLite error: " + std::string(sqlite3_errmsg(db)), Severity::ERROR);
+        this->fileLogger->log("SQLite error: " + std::string(sqlite3_errmsg(db)), Severity::ERROR);
         return;
     }
     connected = true;
@@ -55,7 +60,7 @@ DatabaseHandler::DatabaseHandler()
                           "); "
                           "CREATE TABLE IF NOT EXISTS \"stock\" ( "
                           "\"id\" INTEGER, "
-                          "\"company\" TEXT NOT NULL UNIQUE, "
+                          "\"company\" TEXT NOT NULL, "
                           "\"available_stocks\" INTEGER DEFAULT 0, "
                           "\"initial_price\" REAL DEFAULT 0.00, "
                           "\"current_price\" REAL DEFAULT 0.00, "
@@ -89,6 +94,8 @@ DatabaseHandler::DatabaseHandler()
 
 DatabaseHandler::~DatabaseHandler()
 {
+    this->consoleLogger->log("Closing database connection", Severity::INFO);
+    this->fileLogger->log("Closing database connection", Severity::INFO);
     sqlite3_close(db);
 }
 
@@ -124,6 +131,8 @@ QueryResponse DatabaseHandler::queryRows(const char *query)
     // Don't run query if the database was not connected
     if (!connected)
     {
+        this->consoleLogger->log("Database is not connected", Severity::ERROR);
+        this->fileLogger->log("Database is not connected", Severity::ERROR);
         response.ok = false;
         return response;
     }
@@ -135,6 +144,8 @@ QueryResponse DatabaseHandler::queryRows(const char *query)
 
     if (status != SQLITE_OK)
     {
+        this->consoleLogger->log("SQLite error: " + std::string(errMsg), Severity::ERROR);
+        this->fileLogger->log("SQLite error: " + std::string(errMsg), Severity::ERROR);
         sqlite3_free(errMsg);
         response.ok = false;
     }
@@ -186,6 +197,8 @@ Response<int> DatabaseHandler::addStockTokenByUserId(const int &userId, std::str
     }
     else
     {
+        this->consoleLogger->log("Database Error in adding stock token", Severity::ERROR);
+        this->fileLogger->log("Database Error in adding stock token", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -203,6 +216,8 @@ Response<std::string> DatabaseHandler::getStockTokenByUserId(const int &userId)
     auto selectRes = this->queryRows(selectQ.c_str());
     if (!selectRes.ok)
     {
+        this->consoleLogger->log("Database Error in getting stock token", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock token", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -210,6 +225,8 @@ Response<std::string> DatabaseHandler::getStockTokenByUserId(const int &userId)
     auto rows = selectRes.rows;
     if (rows->size() == 0)
     {
+        this->consoleLogger->log("Stock token not found", Severity::ERROR);
+        this->fileLogger->log("Stock token not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -233,6 +250,8 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
 
     if (prepareResult != SQLITE_OK)
     {
+        this->consoleLogger->log("Database Error in creating user", Severity::ERROR);
+        this->fileLogger->log("Database Error in creating user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -261,6 +280,8 @@ Response<int> DatabaseHandler::createUser(UserDTO &dto)
     }
     else
     {
+        this->consoleLogger->log("Database Error in creating user", Severity::ERROR);
+        this->fileLogger->log("Database Error in creating user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -321,6 +342,8 @@ Response<StockDTO> DatabaseHandler::updateStock(StockDTO &dto)
     }
     else
     {
+        this->consoleLogger->log("Database Error in updating stock", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating stock", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -333,8 +356,6 @@ Response<StockDTO> DatabaseHandler::updateStock(StockDTO &dto)
 Response<UserDTO> DatabaseHandler::getUserById(int id)
 {
     Response<UserDTO> response;
-
-    std::cout << "MY ID " << id << '\n';
 
     std::string UserQ = "SELECT "
                         "user.id, "
@@ -359,15 +380,16 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
 
     if (!UserResult.ok)
     {
-        std::cout << "step 15\n";
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (UserResult.rows->empty())
     {
-        std::cout << "step 16\n";
-
+        this->consoleLogger->log("User not found", Severity::ERROR);
+        this->fileLogger->log("User not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -389,8 +411,6 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
             UserResult.rows->at(0).at("instagram_profile"),
             UserResult.rows->at(0).at("card_number"),
             std::stof(UserResult.rows->at(0).at("wallet")));
-        std::cout << "step 17\n";
-        std::cout << UserResult.rows->at(0).at("username") << '\n';
 
         response.status = SUCCESS;
         response.result = dto;
@@ -398,6 +418,8 @@ Response<UserDTO> DatabaseHandler::getUserById(int id)
     }
     catch (const std::exception &e)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -428,12 +450,16 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (UserResult.rows->empty()) // Use empty() for clarity
     {
+        this->consoleLogger->log("User not found", Severity::ERROR);
+        this->fileLogger->log("User not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -461,6 +487,8 @@ Response<UserDTO> DatabaseHandler::getUserByUsername(std::string username)
     }
     catch (const std::exception &e)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
     }
 
@@ -493,12 +521,16 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (UserResult.rows->empty()) // Use empty() for clarity
     {
+        this->consoleLogger->log("User not found", Severity::ERROR);
+        this->fileLogger->log("User not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -526,6 +558,8 @@ Response<UserDTO> DatabaseHandler::getUserByEmail(std::string email)
     }
     catch (const std::exception &e)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
     }
 
@@ -560,12 +594,16 @@ Response<UserDTO> DatabaseHandler::validateUserLogin(std::string username_or_ema
     auto UserResult = this->queryRows(UserQ.c_str());
     if (!UserResult.ok)
     {
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (UserResult.rows->size() == 0)
     {
+        this->consoleLogger->log("User not found", Severity::ERROR);
+        this->fileLogger->log("User not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -608,12 +646,16 @@ Response<StockDTO> DatabaseHandler::getStockById(int id)
     auto StockResult = this->queryRows(StockQ.c_str());
     if (!StockResult.ok)
     {
+        this->consoleLogger->log("Database Error in getting stock", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (StockResult.rows->size() == 0)
     {
+        this->consoleLogger->log("Stock not found", Severity::ERROR);
+        this->fileLogger->log("Stock not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -661,6 +703,8 @@ Response<UserDTO> DatabaseHandler::updateUser(UserDTO &newUser)
     }
     else
     {
+        this->consoleLogger->log("Database Error in updating user", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -679,6 +723,8 @@ Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, cons
 
     if (stock.status != SUCCESS)
     {
+        this->consoleLogger->log("Stock not found", Severity::ERROR);
+        this->fileLogger->log("Stock not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -687,6 +733,8 @@ Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, cons
 
     if (user.status != SUCCESS)
     {
+        this->consoleLogger->log("User not found", Severity::ERROR);
+        this->fileLogger->log("User not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -716,6 +764,8 @@ Response<TransactionDTO> DatabaseHandler::addTransaction(const int &userID, cons
     }
     else
     {
+        this->consoleLogger->log("Database Error in adding transaction", Severity::ERROR);
+        this->fileLogger->log("Database Error in adding transaction", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -752,12 +802,17 @@ Response<TransactionDTO> DatabaseHandler::getTransactionById(const int &transact
 
     if (!TransactionResult.ok)
     {
+        this->consoleLogger->log("Database Error in getting transaction", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting transaction", Severity::ERROR);
+
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (TransactionResult.rows->size() == 0)
     {
+        this->consoleLogger->log("Transaction not found", Severity::ERROR);
+        this->fileLogger->log("Transaction not found", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -786,6 +841,8 @@ Response<std::vector<TransactionDTO>> DatabaseHandler::getAllTransactionsByUserI
 
     if (!selectRes.ok)
     {
+        this->consoleLogger->log("Database Error in getting transactions", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting transactions", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -820,6 +877,8 @@ Response<UserDTO> DatabaseHandler::addStockToStockCartByUser(const int &userID, 
 
     if (!selectRes.ok)
     {
+        this->consoleLogger->log("Database Error in getting stock cart", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock cart", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -847,6 +906,8 @@ Response<UserDTO> DatabaseHandler::addStockToStockCartByUser(const int &userID, 
         }
         else
         {
+            this->consoleLogger->log("Database Error in adding stock to stock cart", Severity::ERROR);
+            this->fileLogger->log("Database Error in adding stock to stock cart", Severity::ERROR);
             response.status = INTERNAL_ERROR;
             return response;
         }
@@ -893,6 +954,8 @@ Response<UserDTO> DatabaseHandler::addStockToStockCartByUser(const int &userID, 
         }
         else
         {
+            this->consoleLogger->log("Database Error in adding stock to stock cart", Severity::ERROR);
+            this->fileLogger->log("Database Error in adding stock to stock cart", Severity::ERROR);
             response.status = INTERNAL_ERROR;
             return response;
         }
@@ -920,21 +983,17 @@ Response<UserDTO> DatabaseHandler::addStockToStockCartByUser(const int &userID, 
 
 Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int &stockID, int quantity)
 {
-
-    std::cout << "step 1\n";
     Response<TransactionDTO> response = this->addTransaction(userID, stockID, quantity);
     if (response.status != SUCCESS)
     {
         return response;
     }
-    std::cout << "step 2\n";
 
     Response<UserDTO> curUser = this->addStockToStockCartByUser(userID, stockID, quantity);
     if (curUser.status != SUCCESS)
     {
         return response;
     }
-    std::cout << "step 3\n";
 
     std::string updateQ = "UPDATE user "
                           "SET wallet = ? "
@@ -953,12 +1012,11 @@ Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int 
     }
     else
     {
-        std::cout << "step 4\n";
-
+        this->consoleLogger->log("Database Error in updating wallet of user", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating wallet of user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
-    std::cout << "step 5\n";
 
     updateQ = "UPDATE stock "
               "SET available_stocks = ? "
@@ -978,8 +1036,8 @@ Response<TransactionDTO> DatabaseHandler::buyStock(const int &userID, const int 
     }
     else
     {
-        std::cout << "step 6\n";
-
+        this->consoleLogger->log("Database Error in updating available stocks", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating available stocks", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1010,6 +1068,8 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
     }
     else
     {
+        this->consoleLogger->log("Database Error in updating available stocks", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating available stocks", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1034,6 +1094,8 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
     }
     else
     {
+        this->consoleLogger->log("Database Error in updating wallet of user", Severity::ERROR);
+        this->fileLogger->log("Database Error in updating wallet of user", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1045,12 +1107,16 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
     if (!selectRes.ok)
     {
 
+        this->consoleLogger->log("Database Error in getting stock cart", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock cart", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
 
     if (selectRes.rows->size() == 0)
     {
+        this->consoleLogger->log("Stock not found in stock cart", Severity::ERROR);
+        this->fileLogger->log("Stock not found in stock cart", Severity::ERROR);
 
         response.status = NOT_FOUND;
         return response;
@@ -1063,7 +1129,8 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
 
         if (!selectRes.ok)
         {
-
+            this->consoleLogger->log("Database Error in deleting stock from stock cart", Severity::ERROR);
+            this->fileLogger->log("Database Error in deleting stock from stock cart", Severity::ERROR);
             response.status = INTERNAL_ERROR;
             return response;
         }
@@ -1091,7 +1158,8 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
         }
         else
         {
-
+            this->consoleLogger->log("Database Error in updating stock cart", Severity::ERROR);
+            this->fileLogger->log("Database Error in updating stock cart", Severity::ERROR);
             response.status = INTERNAL_ERROR;
             return response;
         }
@@ -1102,7 +1170,6 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
     auto UserResponse = this->getUserById(userID);
     if (UserResponse.status != SUCCESS)
     {
-
         response.status = NOT_FOUND;
         return response;
     }
@@ -1140,7 +1207,8 @@ Response<TransactionDTO> DatabaseHandler::sellStock(const int &userID, const int
     }
     else
     {
-
+        this->consoleLogger->log("Database Error in adding transaction", Severity::ERROR);
+        this->fileLogger->log("Database Error in adding transaction", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1167,7 +1235,8 @@ Response<std::vector<StockDTO>> DatabaseHandler::getAllStocks()
     auto selectRes = this->queryRows(selectQ.c_str());
     if (!selectRes.ok)
     {
-
+        this->consoleLogger->log("Database Error in getting stocks", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stocks", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1205,7 +1274,8 @@ Response<std::vector<StockDTO>> DatabaseHandler::getStockCartByUserId(const int 
     auto selectRes = this->queryRows(selectQ.c_str());
     if (!selectRes.ok)
     {
-
+        this->consoleLogger->log("Database Error in getting stock cart", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock cart", Severity::ERROR);
         response.status = INTERNAL_ERROR;
         return response;
     }
@@ -1213,6 +1283,8 @@ Response<std::vector<StockDTO>> DatabaseHandler::getStockCartByUserId(const int 
     auto rows = selectRes.rows;
     if (rows->size() == 0)
     {
+        this->consoleLogger->log("Stock cart not found", Severity::ERROR);
+        this->fileLogger->log("Stock cart not found", Severity::ERROR);
 
         response.status = NOT_FOUND;
         return response;
@@ -1224,6 +1296,8 @@ Response<std::vector<StockDTO>> DatabaseHandler::getStockCartByUserId(const int 
         auto stock = this->getStockById(std::stoi(rows->at(i)["stockID"]));
         if (stock.status != SUCCESS)
         {
+            this->consoleLogger->log("Stock not found", Severity::ERROR);
+            this->fileLogger->log("Stock not found", Severity::ERROR);
             response.status = NOT_FOUND;
             return response;
         }

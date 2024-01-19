@@ -11,7 +11,9 @@ std::string generateRandomKey(int keySize)
     // Use OpenSSL to generate a secure random key
     if (RAND_bytes(buffer.data(), keySize) != 1)
     {
-        std::cerr << "Error generating random key" << std::endl;
+        AuthController *authController = AuthController::getInstance();
+        authController->consoleLogger->log("Error generating random key", Severity::ERROR);
+        authController->fileLogger->log("Error generating random key", Severity::ERROR);
         return "";
     }
 
@@ -39,7 +41,11 @@ std::string generateJWT(const std::string &username)
 
 AuthController *AuthController::instance;
 
-AuthController::AuthController() {}
+AuthController::AuthController()
+{
+    this->consoleLogger = new ConsoleLogger();
+    this->fileLogger = new FileLogger("Server.log");
+}
 
 AuthController::~AuthController() {}
 
@@ -59,10 +65,11 @@ json AuthController::authenticateUser(std::string token)
     {
         auto decoded = jwt::decode(token);
         auto username = decoded.get_payload_claim("user").as_string();
-        std::cout << "username: " << username << std::endl;
         auto response = db_handler->getUserByUsername(username);
         if (response.status != SUCCESS)
         {
+            this->consoleLogger->log("invalid token", Severity::ERROR);
+            this->fileLogger->log("invalid token", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "invalid token"}});
         }
         json userDataJson = {
@@ -80,10 +87,14 @@ json AuthController::authenticateUser(std::string token)
             {"instagram_profile", response.result->instagram_profile},
             {"card_number", response.result->card_number},
             {"wallet", response.result->wallet}};
+        this->consoleLogger->log("user authenticated", Severity::INFO);
+        this->fileLogger->log("user authenticated", Severity::INFO);
         return json({{"status", "success"}, {"User", userDataJson}});
     }
     catch (const std::exception &e)
     {
+        this->consoleLogger->log("invalid token", Severity::ERROR);
+        this->fileLogger->log("invalid token", Severity::ERROR);
         return json({{"status", "failed"}, {"message", "invalid token"}});
     }
 }
@@ -98,38 +109,53 @@ json AuthController::validateSignup(json &User)
 
         if (username.empty() || email.empty() || password.empty())
         {
+            this->consoleLogger->log("username, email, password cannot be empty", Severity::ERROR);
+            this->fileLogger->log("username, email, password cannot be empty", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "username, email, password cannot be empty"}});
         }
 
         if (username.length() < 6)
         {
+            this->consoleLogger->log("username must be at least 6 characters", Severity::ERROR);
+            this->fileLogger->log("username must be at least 6 characters", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "username must be at least 6 characters"}});
         }
 
         if (password.length() < 6)
         {
+            this->consoleLogger->log("password must be at least 6 characters", Severity::ERROR);
+            this->fileLogger->log("password must be at least 6 characters", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "password must be at least 6 characters"}});
         }
 
         if (!std::regex_match(email, std::regex("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+")))
         {
+            this->consoleLogger->log("email is not valid", Severity::ERROR);
+            this->fileLogger->log("email is not valid", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "email is not valid"}});
         }
 
         auto response1 = db_handler->getUserByUsername(username);
         if (response1.status == SUCCESS)
         {
+            this->consoleLogger->log("username already exists", Severity::ERROR);
+            this->fileLogger->log("username already exists", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "username already exists"}});
         }
         auto response2 = db_handler->getUserByEmail(email);
         if (response2.status == SUCCESS)
         {
+            this->consoleLogger->log("email already exists", Severity::ERROR);
+            this->fileLogger->log("email already exists", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "email already exists"}});
         }
+        this->consoleLogger->log("signup validated", Severity::INFO);
+        this->fileLogger->log("signup validated", Severity::INFO);
 
         return json({{"status", "success"}});
     }
-
+    this->consoleLogger->log("username, email, password cannot be empty", Severity::ERROR);
+    this->fileLogger->log("username, email, password cannot be empty", Severity::ERROR);
     return json({{"status", "failed"},
                  {"message", "username, email, password cannot be empty"}});
 }
@@ -143,12 +169,16 @@ json AuthController::login(json &User)
 
         if (username_or_email.empty() || password.empty())
         {
+            this->consoleLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
+            this->fileLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "username_or_email, password cannot be empty"}});
         }
         auto response = db_handler->validateUserLogin(username_or_email, password);
 
         if (response.status != SUCCESS)
         {
+            this->consoleLogger->log("username/email or password is incorrect", Severity::ERROR);
+            this->fileLogger->log("username/email or password is incorrect", Severity::ERROR);
             return json({{"status", "failed"}, {"message", "username/email or password is incorrect"}});
         }
 
@@ -170,9 +200,13 @@ json AuthController::login(json &User)
 
         auto token = db_handler->getStockTokenByUserId(response.result->id);
 
+        this->consoleLogger->log("user logged in", Severity::INFO);
+        this->fileLogger->log("user logged in", Severity::INFO);
+
         return json({{"status", "success"}, {"User", userDataJson}, {"stock_token", *token.result}});
     }
-
+    this->consoleLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
+    this->fileLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
     return json({{"status", "failed"},
                  {"message", "username_or_email, password cannot be empty"}});
 }
@@ -270,8 +304,8 @@ json AuthController::createUser(json &User)
     {
         return json({{"status", "failed"}});
     }
-
-    std::cout << "token: " << token << std::endl;
+    this->consoleLogger->log("user created", Severity::INFO);
+    this->fileLogger->log("user created", Severity::INFO);
 
     json UserResponse = {
         {"id", id},
@@ -288,6 +322,9 @@ json AuthController::createUser(json &User)
         {"instagram_profile", instagram_profile},
         {"card_number", card_number},
         {"wallet", wallet}};
+
+    this->consoleLogger->log("user created", Severity::INFO);
+    this->fileLogger->log("user created", Severity::INFO);
 
     return json({{"status", "success"},
                  {"User", UserResponse},

@@ -3,7 +3,11 @@
 
 TransactionController *TransactionController::instance;
 
-TransactionController::TransactionController() {}
+TransactionController::TransactionController()
+{
+    this->consoleLogger = new ConsoleLogger();
+    this->fileLogger = new FileLogger("Server.log");
+}
 
 TransactionController::~TransactionController() {}
 
@@ -24,6 +28,8 @@ json TransactionController::addTransaction(const int &userID, const int &stockID
     {
         return json({{"status", "failed"}, {"message", "add transaction failed"}});
     }
+    this->consoleLogger->log("Transaction added successfully", Severity::INFO);
+    this->fileLogger->log("Transaction added successfully", Severity::INFO);
 
     return json({{"status", "success"}, {"message", "transaction added successfully"}});
 }
@@ -33,6 +39,8 @@ json TransactionController::getTransactionById(const int &transactionID)
     auto response = db_handler->getTransactionById(transactionID);
     if (response.status != SUCCESS)
     {
+        this->consoleLogger->log("Database Error in getting transaction", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting transaction", Severity::ERROR);
         return json({{"status", "failed"}, {"message", "get transaction failed"}});
     }
 
@@ -45,6 +53,8 @@ json TransactionController::getTransactionById(const int &transactionID)
         {"quantity", response.result->quantity},
         {"type", response.result->type},
         {"transaction_date", response.result->transaction_date}};
+    this->consoleLogger->log("Get transaction by id successfully", Severity::INFO);
+    this->fileLogger->log("Get transaction by id successfully", Severity::INFO);
     return json({{"status", "success"}, {"message", "get transaction successfully"}, {"transaction", transaction}});
 }
 
@@ -58,19 +68,18 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
 
         if (transactionsResponse.status != SUCCESS)
         {
-            std::cout << "Q5\n";
             response["status"] = "error";
             response["error_message"] = "Database Error in getting stocks";
         }
         else
         {
             response["status"] = "success";
+            this->consoleLogger->log("Get all transactions by user id successfully", Severity::INFO);
+            this->fileLogger->log("Get all transactions by user id successfully", Severity::INFO);
 
             std::vector<TransactionDTO> *transactions = transactionsResponse.result;
-            std::cout << "Q6\n";
             if (transactions != nullptr)
             {
-                std::cout << "Q8\n";
                 for (auto &transaction : *transactions)
                 {
                     json transactionJson = {
@@ -83,27 +92,27 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
                         {"type", transaction.type},
                         {"transaction_date", transaction.transaction_date},
                     };
-                    std::cout << "Q7\n";
 
                     response["transactions"].push_back(transactionJson);
                 }
             }
             else
             {
-                std::cout << "Q9\n";
-
                 response["transactions"] = json::array();
-                std::cout << "Q10\n";
             }
         }
         return response;
     }
     catch (const std::exception &e)
     {
+        this->consoleLogger->log(e.what(), Severity::ERROR);
+        this->fileLogger->log(e.what(), Severity::ERROR);
         return json({{"status", "error"}, {"error_message", e.what()}});
     }
     catch (...)
     {
+        this->consoleLogger->log("An unknown error occurred", Severity::ERROR);
+        this->fileLogger->log("An unknown error occurred", Severity::ERROR);
         // Handle other types of exceptions
         return json({{"status", "error"}, {"error_message", "An unknown error occurred"}});
     }

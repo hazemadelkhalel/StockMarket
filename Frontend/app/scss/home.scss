@@ -136,10 +136,13 @@
     }
   }
 }
-.card {
+.card-stock {
+  @include center;
+  flex-direction: column;
   box-shadow: $headerShadow;
+  width: 95%;
   height: 200px;
+  padding: 0 20px;
+  margin-left: 5px;
   margin-bottom: 5px;
-  margin: 10px 20px;
-  width: 100%;
 }

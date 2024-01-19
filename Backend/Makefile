@@ -6,7 +6,7 @@ CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic
 
 # Source files for StockMarket
 SRC_STOCKMARKET := dal/DatabaseHandler/DatabaseHandler.cpp \
-                   Service.cpp \
+                   Server.cpp \
                    controllers/AuthController.cpp \
                    controllers/StockController.cpp \
                    controllers/StockMarketController.cpp \

@@ -7,12 +7,16 @@
 #include "Response.h"
 #include "../dtos/StockDTO.h"
 #include "../dtos/TransactionDTO.h"
+#include "../../Logger/ConsoleLogger.h"
+#include "../../Logger/FileLogger.h"
 
 class DatabaseHandler
 {
     static DatabaseHandler *instance;
     sqlite3 *db;
     bool connected = false;
+    Logger *fileLogger;
+    Logger *consoleLogger;
 
     DatabaseHandler();
 

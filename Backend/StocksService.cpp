@@ -23,6 +23,8 @@
 #include "dal/dtos/StockDTO.h"
 #include "dal/DatabaseHandler/DatabaseHandler.h"
 #include "controllers/StockController.h"
+#include "Logger/ConsoleLogger.h"
+#include "Logger/FileLogger.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -31,6 +33,9 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 //------------------------------------------------------------------------------
+
+ConsoleLogger *consoleLogger = new ConsoleLogger();
+FileLogger *fileLogger = new FileLogger("StockService.log");
 
 class StocksService
 {
@@ -88,8 +93,8 @@ public:
             auto response = stockController->addStock(stockDTO);
             if (response["status"] == "failed")
             {
-                std::cout << response["message"] << std::endl;
-                continue;
+                consoleLogger->log(response["message"], Severity::ERROR);
+                fileLogger->log(response["message"], Severity::ERROR);
             }
             else
             {
@@ -117,6 +122,8 @@ StocksService stocksService;
 
 void updateStockPricesAndNotify()
 {
+    consoleLogger->log("Updating stock prices", Severity::INFO);
+    fileLogger->log("Updating stock prices", Severity::INFO);
     std::vector<StockDTO> stocks = stocksService.getStocks();
     int maxAvailableStocks = stocksService.getMaxAvailableStocks();
 
@@ -155,7 +162,6 @@ void updateStockPricesAndNotify()
     json result = json::array();
     for (auto &stock : stocks)
     {
-        std::cout << "Stock: " << stock.company << " " << stock.id << std::endl;
         json stockJson = {
             {"id", stock.id},
             {"company", stock.company},
@@ -169,7 +175,8 @@ void updateStockPricesAndNotify()
     }
     stocksService.setStocks(stocks);
     stocksService.setMaxAvailableStocks(maxAvailableStocks);
-    std::cout << result.dump() << std::endl;
+    consoleLogger->log("Stock prices updated successfully", Severity::INFO);
+    fileLogger->log("Stock prices updated successfully", Severity::INFO);
 }
 
 // Report a failure
@@ -270,7 +277,6 @@ public:
         updateStockPricesAndNotify();
         for (auto &stock : stocksService.getStocks())
         {
-            std::cout << "Stock: " << stock.company << " " << stock.id << std::endl;
             json stockJson = {
                 {"id", stock.id},
                 {"company", stock.company},
@@ -282,6 +288,8 @@ public:
             };
             root.push_back(stockJson);
         }
+        consoleLogger->log("Sending stock prices to client", Severity::INFO);
+        fileLogger->log("Sending stock prices to client", Severity::INFO);
 
         ws_.async_write(
             net::buffer(root.dump()),

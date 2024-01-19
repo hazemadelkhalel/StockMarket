@@ -115,7 +115,7 @@ export default function Home() {
 
   const wisdomTemplate = (wisdom: Wisdom) => {
     return (
-      <div className="flex flex-col border-1 surface-border border-round pt-4 pb-3 px-3 h-full items-center justify-center card">
+      <div className="card-stock">
         <h2 className="text-xl  mb-1">{wisdom.title}</h2>
         <div className="text-center flex flex-wrap flex-col">
           <p className="text-m mt-0 mb-3 text-gray-400 ">

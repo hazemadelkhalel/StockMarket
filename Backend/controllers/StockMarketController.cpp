@@ -4,7 +4,11 @@
 
 StockMarketController *StockMarketController::instance;
 
-StockMarketController::StockMarketController() {}
+StockMarketController::StockMarketController()
+{
+    this->consoleLogger = new ConsoleLogger();
+    this->fileLogger = new FileLogger("Server.log");
+}
 
 StockMarketController::~StockMarketController() {}
 
@@ -23,6 +27,8 @@ json StockMarketController::validateBuyStock(const int &userID, const int &stock
     auto response = db_handler->getStockById(stockID);
     if (response.status != SUCCESS)
     {
+        this->consoleLogger->log("Database Error in getting stock", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting stock", Severity::ERROR);
         return json({{"status", "failed"}, {"message", "stock not found"}});
     }
 
@@ -35,7 +41,8 @@ json StockMarketController::validateBuyStock(const int &userID, const int &stock
     {
         return json({{"status", "failed"}, {"message", "not enough money"}});
     }
-
+    this->consoleLogger->log("Buy stock validated successfully", Severity::INFO);
+    this->fileLogger->log("Buy stock validated successfully", Severity::INFO);
     return json({{"status", "success"}});
 }
 
@@ -63,6 +70,9 @@ json StockMarketController::buyStock(const int &userID, const int &stockID, int 
         {"type", response2.result->type},
         {"transaction_date", response2.result->transaction_date}};
 
+    this->consoleLogger->log("Stock bought successfully", Severity::INFO);
+    this->fileLogger->log("Stock bought successfully", Severity::INFO);
+
     return json({{"status", "success"}, {"message", "Stock bought successfully"}, {"Transaction", transaction}});
 }
 
@@ -83,6 +93,8 @@ json StockMarketController::sellStock(const int &userID, const int &stockID, int
         {"quantity", response.result->quantity},
         {"type", response.result->type},
         {"transaction_date", response.result->transaction_date}};
+    this->consoleLogger->log("Stock sold successfully", Severity::INFO);
+    this->fileLogger->log("Stock sold successfully", Severity::INFO);
 
     return json({{"status", "success"}, {"message", "Stock sold successfully"}, {"Transaction", transaction}});
 }
