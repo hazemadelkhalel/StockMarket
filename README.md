@@ -36,6 +36,7 @@ cd services
 
 // To run the frontend
 // Navigate to /Frontend
+npm install
 
 // For web-view
 npm run dev
