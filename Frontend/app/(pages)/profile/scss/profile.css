@@ -111,6 +111,21 @@ body {
   gap: 20px;
   width: 100%;
 }
+.profile-container .profile-section-3 .profile-stockCart .empty-box {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin: 0 auto;
+  flex-direction: column;
+}
+.profile-container .profile-section-3 .profile-stockCart .empty-box img {
+  width: 180px;
+  height: 180px;
+}
+.profile-container .profile-section-3 .profile-stockCart .empty-box p {
+  font-size: 16px;
+  color: #6a6d78;
+}
 .profile-container .profile-section-3 .profile-stockCart .profile-stockCart-item {
   display: flex;
   justify-content: center;
@@ -129,6 +144,9 @@ body {
 .profile-container .profile-section-3 .profile-stockCart .profile-stockCart-item p {
   font-size: 16px;
   color: #6a6d78;
+}
+.profile-container .profile-section-3 .empty-class {
+  display: flex;
 }
 .profile-container .profile-section-3 .p-s-3-settings-container {
   display: flex;

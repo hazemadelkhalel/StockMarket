@@ -59,33 +59,12 @@ void printLogMessage(const std::string &message)
 //     }
 // }
 
-int main()
+std::queue<httplib::Request> requestBuffer;
+std::mutex bufferMutex;
+
+void handleRequests()
 {
-
     httplib::Server svr;
-    DatabaseHandler::getHandler();
-
-    json user = {
-        {"username", "hazemadelkhalel"},
-        {"email", "hazemadelkhalel@gmail.com"},
-        {"password", "123456"},
-        {"first_name", "Hazem"},
-        {"last_name", "Adel"},
-        {"phone", "01116104321"},
-        {"aboutme", "I want to work in siemens"},
-        {"website", ""},
-        {"facebook_profile", "www.facebook.com/hazemadelkhalel"},
-        {"instagram_profile", "www.instagram.com/hazemadelkhalel"},
-        {"card_number", "1234567891234567"},
-        {"wallet", 1200}};
-
-    auto response = AuthController::getInstance()->createUser(user);
-
-    auto response2 = DatabaseHandler::getHandler()->getStockTokenByUserId(1);
-
-    // // Start the consumer thread
-    // std::thread consumer_thread(consumer);
-
     // Handle the OPTIONS preflight request
     svr.Options("/api/market/getAllStocks", [](const httplib::Request &, httplib::Response &res)
                 {
@@ -545,8 +524,63 @@ int main()
             printLogMessage("Missing 'User' parameter");
         } });
 
-    // Set the port to 8001
-    svr.listen("localhost", 8001);
+    // Handle the HTTP server logic
+    while (true)
+    {
+
+        // Set the port to 8001
+        svr.listen("localhost", 8001);
+        // Check for new requests in the buffer
+        std::lock_guard<std::mutex> lock(bufferMutex);
+        if (!requestBuffer.empty())
+        {
+            httplib::Request req = requestBuffer.front();
+            requestBuffer.pop();
+
+            // Process the request (your existing logic here)
+            consoleLogger->log("Processing request: " + req.path, Severity::INFO);
+            fileLogger->log("Processing request: " + req.path, Severity::INFO);
+        }
+    }
+}
+
+int main()
+{
+
+    DatabaseHandler::getHandler();
+
+    json user = {
+        {"username", "hazemadelkhalel"},
+        {"email", "hazemadelkhalel@gmail.com"},
+        {"password", "123456"},
+        {"first_name", "Hazem"},
+        {"last_name", "Adel"},
+        {"phone", "01116104321"},
+        {"aboutme", "I want to work in siemens"},
+        {"website", ""},
+        {"facebook_profile", "www.facebook.com/hazemadelkhalel"},
+        {"instagram_profile", "www.instagram.com/hazemadelkhalel"},
+        {"card_number", "1234567891234567"},
+        {"wallet", 1200}};
+
+    auto response = AuthController::getInstance()->createUser(user);
+
+    auto response2 = DatabaseHandler::getHandler()->getStockTokenByUserId(1);
+
+    // Create a pool of worker threads
+    const int numThreads = 4; // Adjust the number of threads as needed
+    vector<thread> threads;
+
+    for (int i = 0; i < numThreads; ++i)
+    {
+        threads.emplace_back(handleRequests);
+    }
+
+    // Wait for all threads to finish
+    for (auto &thread : threads)
+    {
+        thread.join();
+    }
 
     return 0;
 }

@@ -570,17 +570,23 @@ const Market = () => {
               rows={10}
               size={"normal"}
               rowsPerPageOptions={[10, 50, 100, 200]}
-              emptyMessage={
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <ProgressSpinner style={{ width: "50px" }} />
-                </div>
-              }
+              emptyMessage={() => {
+                if (selectedTypeStock === 1) {
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ProgressSpinner style={{ width: "50px" }} />
+                    </div>
+                  );
+                } else {
+                  return <div>Stock Cart is empty!, please buy some</div>;
+                }
+              }}
             >
               <Column field="company" sortable header="Company"></Column>
               <Column

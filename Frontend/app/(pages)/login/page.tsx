@@ -98,9 +98,7 @@ const Login = () => {
           />
           <div className="f-sbmt">
             <GBtn btnText="Login" clickEvent={handleClick} />
-            <Link href="/forgetpass" className="frg-pass">
-              Forget Password?
-            </Link>
+            <div className="frg-pass">Forget Password?</div>
             <span className="alrg">
               Don't an account?<Link href="/signup">Sign Up</Link>
             </span>

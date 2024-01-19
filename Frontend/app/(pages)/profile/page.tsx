@@ -433,7 +433,11 @@ const Profile = () => {
         </div>
         <div className="profile-section-3">
           {selectedTap == 1 ? (
-            <div className="profile-stockCart">
+            <div
+              className={`profile-stockCart ${
+                stockCart.length === 0 ? "empty-class" : ""
+              }`}
+            >
               {stockCart.length > 0 ? (
                 stockCart.map((stocker, index) => {
                   return (
@@ -444,7 +448,10 @@ const Profile = () => {
                   );
                 })
               ) : (
-                <div></div>
+                <div className="empty-box">
+                  <img src="/SVG/empty-box.svg" />
+                  <p>Empty Stocks!</p>
+                </div>
               )}
             </div>
           ) : null}
