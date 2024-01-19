@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { getSessionToken, removeSessionToken } from "../../utils/cookie";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { get } from "http";
 
 interface Stock {
   id: number;
@@ -81,14 +82,10 @@ const Market = () => {
       const data = await response.json();
       if (data.error) {
         console.log(data.error);
-        if (data.error == "Invalid token") {
-          removeSessionToken();
-          router.push("/login");
-        }
         return;
       }
-      setWallet(data["User"].wallet);
-      setUsername(data["User"].username);
+      setWallet(data["user"].wallet);
+      setUsername(data["user"].username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -120,10 +117,6 @@ const Market = () => {
             detail: data.error,
             life: 3000,
           });
-          if (data.error == "Invalid token") {
-            removeSessionToken();
-            router.push("/login");
-          }
           return;
         }
         fetchWallet();
@@ -165,10 +158,6 @@ const Market = () => {
             detail: data.error,
             life: 3000,
           });
-          if (data.error == "Invalid token") {
-            removeSessionToken();
-            router.push("/login");
-          }
           return;
         }
         setActionStockDialog(false);
@@ -281,20 +270,19 @@ const Market = () => {
   const fetchStockCart = async () => {
     const url = `http://localhost:8001/api/market/getStockCart?token=${getSessionToken()}`;
 
+    console.log("URL", url);
+
     const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     });
-
+    console.log("My Token is ", getSessionToken());
     const data = await response.json();
+    console.log("DATA RETR ", data);
     if (data.error) {
       console.log(data.error);
-      if (data.error == "Invalid token") {
-        removeSessionToken();
-        router.push("/login");
-      }
       return;
     }
     // setSellStocks(data["stocks"]);
@@ -400,7 +388,7 @@ const Market = () => {
       // Set up interval to send a message every 5 seconds
       const intervalId = setInterval(() => {
         socket.send("Sending a message at regular intervals");
-      }, 5000);
+      }, 10000);
 
       // Save the interval ID for cleanup
       return () => clearInterval(intervalId);

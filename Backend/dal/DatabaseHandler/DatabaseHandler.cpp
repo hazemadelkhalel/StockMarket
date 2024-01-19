@@ -78,8 +78,9 @@ DatabaseHandler::DatabaseHandler()
                           "PRIMARY KEY(\"id\" AUTOINCREMENT) "
                           "); "
                           "CREATE TABLE IF NOT EXISTS \"stock_token\" ( "
-                          "\"token\" TEXT NOT NULL UNIQUE, "
-                          "\"userID\" INTEGER REFERENCES \"user\"(\"id\")"
+                          "\"token\" TEXT, "
+                          "\"userID\" INTEGER REFERENCES \"user\"(\"id\"), "
+                          "PRIMARY KEY(\"token\") "
                           "); "
                           "CREATE TABLE IF NOT EXISTS \"stock_cart\" ( "
                           "\"id\" INTEGER, "
@@ -96,6 +97,8 @@ DatabaseHandler::~DatabaseHandler()
 {
     this->consoleLogger->log("Closing database connection", Severity::INFO);
     this->fileLogger->log("Closing database connection", Severity::INFO);
+    delete this->consoleLogger;
+    delete this->fileLogger;
     sqlite3_close(db);
 }
 
@@ -1244,7 +1247,8 @@ Response<std::vector<StockDTO>> DatabaseHandler::getAllStocks()
     auto rows = selectRes.rows;
     if (rows->size() == 0)
     {
-
+        consoleLogger->log("Can't find stocks in database", Severity::ERROR);
+        fileLogger->log("Can't find stocks in database", Severity::ERROR);
         response.status = NOT_FOUND;
         return response;
     }
@@ -1259,7 +1263,6 @@ Response<std::vector<StockDTO>> DatabaseHandler::getAllStocks()
             std::stof(rows->at(i)["initial_price"]),
             std::stof(rows->at(i)["current_price"])));
     }
-
     response.status = SUCCESS;
     response.result = dtos;
     return response;

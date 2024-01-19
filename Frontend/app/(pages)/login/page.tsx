@@ -61,6 +61,7 @@ const Login = () => {
       }
 
       setSessionToken(data.token);
+      console.log(data.token);
       router.push("/");
 
       (toast.current as any)?.show({

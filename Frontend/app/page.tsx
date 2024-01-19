@@ -29,9 +29,8 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
-  const [profit, setProfit] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [available_stocks, setAvailableStocks] = useState(0);
+  const [chartData2, setChartData2] = useState({});
+  const [chartOptions2, setChartOptions2] = useState({});
   const wisdom: Wisdom[] = [
     {
       title: "Warren Buffett",
@@ -102,13 +101,9 @@ export default function Home() {
       const data = await response.json();
       if (data.error) {
         console.log(data.error);
-        if (data.error == "Invalid token") {
-          removeSessionToken();
-          router.push("/login");
-        }
         return;
       }
-      setUsername(data["User"].username);
+      setUsername(data["user"].username);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -156,12 +151,18 @@ export default function Home() {
       let prices: number[] = [];
       let available_stocks_arr: number[] = [];
 
+      const uniqueCompanies = new Set();
       for (let key in data) {
+        if (uniqueCompanies.has(data[key].company)) continue;
         companies.push(data[key].company);
-        profits.push(data[key].profit);
-        prices.push(data[key].current_price);
+        profits.push(data[key].profit.toFixed(0));
+        prices.push(data[key].current_price.toFixed(0));
         available_stocks_arr.push(data[key].available_stocks);
+        uniqueCompanies.add(data[key].company);
       }
+      console.log("AVAILABLE STOCKS", available_stocks_arr);
+      console.log("PROFITS", profits);
+      console.log("PRICES", prices);
 
       const documentStyle = getComputedStyle(document.documentElement);
       const textColor = documentStyle.getPropertyValue("--text-color");
@@ -173,12 +174,6 @@ export default function Home() {
         labels: companies,
         datasets: [
           {
-            label: "Profit",
-            backgroundColor: documentStyle.getPropertyValue("--blue-500"),
-            borderColor: documentStyle.getPropertyValue("--blue-500"),
-            data: profits,
-          },
-          {
             label: "Price",
             backgroundColor: documentStyle.getPropertyValue("--pink-500"),
             borderColor: documentStyle.getPropertyValue("--pink-500"),
@@ -188,7 +183,7 @@ export default function Home() {
             label: "Available Stocks",
             backgroundColor: documentStyle.getPropertyValue("--yellow-500"),
             borderColor: documentStyle.getPropertyValue("--yellow-500"),
-            data: available_stocks,
+            data: available_stocks_arr,
           },
         ],
       };
@@ -227,8 +222,56 @@ export default function Home() {
         },
       };
 
+      const dataChart2 = {
+        labels: companies,
+        datasets: [
+          {
+            label: "Profit",
+            backgroundColor: documentStyle.getPropertyValue("--blue-500"),
+            borderColor: documentStyle.getPropertyValue("--blue-500"),
+            data: profits,
+          },
+        ],
+      };
+      const options2 = {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+          legend: {
+            labels: {
+              fontColor: textColor,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: textColorSecondary,
+              font: {
+                weight: 500,
+              },
+            },
+            grid: {
+              display: false,
+              drawBorder: false,
+            },
+          },
+          y: {
+            ticks: {
+              color: textColorSecondary,
+            },
+            grid: {
+              color: surfaceBorder,
+              drawBorder: false,
+            },
+          },
+        },
+      };
+
       setChartData(dataChart);
       setChartOptions(options);
+      setChartData2(dataChart2);
+      setChartOptions2(options2);
     };
 
     return () => {
@@ -269,6 +312,12 @@ export default function Home() {
             data={chartData}
             options={chartOptions}
             style={{ width: "90%" }}
+          />
+          <Chart
+            type="bar"
+            data={chartData2}
+            options={chartOptions2}
+            style={{ width: "90%", marginTop: "2rem" }}
           />
         </div>
 

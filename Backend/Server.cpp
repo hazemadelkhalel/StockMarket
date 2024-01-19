@@ -163,7 +163,7 @@ int main()
         }
 
         StockController *stockController = StockController::getInstance();
-        auto response = stockController->getStockCartByUserId(UserResponse["User"]["id"]);
+        auto response = stockController->getStockCartByUserId(UserResponse["user"]["id"]);
 
         if(response["status"] == "success") {
             response["message"] = "Retrieve all stocks successfully!";
@@ -255,7 +255,7 @@ int main()
             email = user["email"];
         }    
 
-        UserDTO userDTO = UserDTO(UserResponse["User"]["id"],UserResponse["User"]["username"], email, UserResponse["User"]["password"], UserResponse["User"]["created_at"], first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, UserResponse["User"]["wallet"]);
+        UserDTO userDTO = UserDTO(UserResponse["user"]["id"],UserResponse["user"]["username"], email, UserResponse["user"]["password"], UserResponse["user"]["created_at"], first_name, last_name, phone, aboutme, website, facebook_profile, instagram_profile, card_number, UserResponse["user"]["wallet"]);
         auto response = userController->updateUser(userDTO);
 
         if(response["status"] == "success") {
@@ -301,7 +301,7 @@ int main()
             }
 
             TransactionController *transactionController = TransactionController::getInstance();
-            auto response = transactionController->getAllTransactionsByUserId(UserResponse["User"]["id"]);
+            auto response = transactionController->getAllTransactionsByUserId(UserResponse["user"]["id"]);
             if(response["status"] == "success") {
                 response["message"] = "Retrieve all transactions successfully!";
                 res.set_content(response.dump(), "application/json");
@@ -461,7 +461,7 @@ int main()
 
                 // Perform the stock buying operation
                 StockMarketController* stockMarketController = StockMarketController::getInstance();
-                auto response = stockMarketController->buyStock(UserResponse["User"]["id"], stock, quantity);
+                auto response = stockMarketController->buyStock(UserResponse["user"]["id"], stock, quantity);
 
                 if (response["status"] == "success") {
                     // If the operation is successful, return success message and transaction details
@@ -521,7 +521,7 @@ int main()
 
                 // Perform the stock buying operation
                 StockMarketController* stockMarketController = StockMarketController::getInstance();
-                auto response = stockMarketController->sellStock(UserResponse["User"]["id"], stock, quantity);
+                auto response = stockMarketController->sellStock(UserResponse["user"]["id"], stock, quantity);
 
                 if (response["status"] == "success") {
                     // If the operation is successful, return success message and transaction details

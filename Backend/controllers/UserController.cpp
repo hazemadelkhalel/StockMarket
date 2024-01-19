@@ -9,7 +9,11 @@ UserController::UserController()
     this->fileLogger = new FileLogger("Server.log");
 }
 
-UserController::~UserController() {}
+UserController::~UserController()
+{
+    delete this->consoleLogger;
+    delete this->fileLogger;
+}
 
 UserController *UserController::getInstance()
 {
@@ -25,11 +29,19 @@ json UserController::getUserById(const int &userId)
 {
     auto response = db_handler->getUserById(userId);
 
-    json userDataJson;
+    if (response.status == NOT_FOUND)
+    {
+        this->consoleLogger->log("There is no user with this ID", Severity::WARNING);
+        this->fileLogger->log("There is no user with this ID", Severity::WARNING);
+        return json({{"status", "failed"}, {"message", "user not found"}});
+    }
     if (response.status != SUCCESS)
     {
-        return userDataJson;
+        this->consoleLogger->log("Database Error in getting user", Severity::ERROR);
+        this->fileLogger->log("Database Error in getting user", Severity::ERROR);
+        return json({{"status", "failed"}, {"message", "user not found"}});
     }
+    json userDataJson;
 
     userDataJson = {
         {"id", response.result->id},

@@ -157,18 +157,18 @@ const Profile = () => {
         return;
       }
 
-      setUsername(data["User"].username);
-      setEmail(data["User"].email);
-      setCreatedAt(data["User"].created_at);
-      setFirstName(data["User"].first_name);
-      setLastName(data["User"].last_name);
-      setPhone(data["User"].phone);
-      setAboutme(data["User"].aboutme);
-      setWebsite(data["User"].website);
-      setFacebook_profile(data["User"].facebook_profile);
-      setInstagram_profile(data["User"].instagram_profile);
-      setCard_number(data["User"].card_number);
-      setWallet(data["User"].wallet);
+      setUsername(data["user"].username);
+      setEmail(data["user"].email);
+      setCreatedAt(data["user"].created_at);
+      setFirstName(data["user"].first_name);
+      setLastName(data["user"].last_name);
+      setPhone(data["user"].phone);
+      setAboutme(data["user"].aboutme);
+      setWebsite(data["user"].website);
+      setFacebook_profile(data["user"].facebook_profile);
+      setInstagram_profile(data["user"].instagram_profile);
+      setCard_number(data["user"].card_number);
+      setWallet(data["user"].wallet);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

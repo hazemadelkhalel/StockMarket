@@ -177,6 +177,9 @@ void updateStockPricesAndNotify()
     stocksService.setMaxAvailableStocks(maxAvailableStocks);
     consoleLogger->log("Stock prices updated successfully", Severity::INFO);
     fileLogger->log("Stock prices updated successfully", Severity::INFO);
+
+    consoleLogger->log("Sleep for 10 seconds", Severity::INFO);
+    fileLogger->log("Sleep for 10 seconds", Severity::INFO);
 }
 
 // Report a failure
@@ -275,6 +278,7 @@ public:
 
         json root = json::array();
         updateStockPricesAndNotify();
+
         for (auto &stock : stocksService.getStocks())
         {
             json stockJson = {

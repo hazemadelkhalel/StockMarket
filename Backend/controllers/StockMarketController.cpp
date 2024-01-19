@@ -10,7 +10,11 @@ StockMarketController::StockMarketController()
     this->fileLogger = new FileLogger("Server.log");
 }
 
-StockMarketController::~StockMarketController() {}
+StockMarketController::~StockMarketController()
+{
+    delete this->consoleLogger;
+    delete this->fileLogger;
+}
 
 StockMarketController *StockMarketController::getInstance()
 {
@@ -25,6 +29,12 @@ StockMarketController *StockMarketController::getInstance()
 json StockMarketController::validateBuyStock(const int &userID, const int &stockID, int quantity)
 {
     auto response = db_handler->getStockById(stockID);
+    if (response.status == NOT_FOUND)
+    {
+        this->consoleLogger->log("There is no stock with this ID", Severity::WARNING);
+        this->fileLogger->log("There is no stock with this ID", Severity::WARNING);
+        return json({{"status", "failed"}, {"message", "stock not found"}});
+    }
     if (response.status != SUCCESS)
     {
         this->consoleLogger->log("Database Error in getting stock", Severity::ERROR);

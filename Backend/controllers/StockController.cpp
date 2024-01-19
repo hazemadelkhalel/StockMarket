@@ -9,7 +9,11 @@ StockController::StockController()
     this->fileLogger = new FileLogger("Server.log");
 }
 
-StockController::~StockController() {}
+StockController::~StockController()
+{
+    delete this->consoleLogger;
+    delete this->fileLogger;
+}
 
 StockController *StockController::getInstance()
 {
@@ -29,8 +33,6 @@ json StockController::getStockById(const int &stockID)
     {
         return json({{"status", "failed"}, {"message", "get stock failed"}});
     }
-    // json stock = json::parse(response.result);
-
     json stock = {
         {"id", response.result->id},
         {"company", response.result->company},
@@ -51,12 +53,19 @@ json StockController::getAllStocks()
         auto stockResponse = db_handler->getAllStocks();
         json response;
 
-        if (stockResponse.status != SUCCESS)
+        if (stockResponse.status == NOT_FOUND)
         {
-            this->consoleLogger->log("Database Error in getting stocks", Severity::ERROR);
-            this->fileLogger->log("Database Error in getting stocks", Severity::ERROR);
+            consoleLogger->log("Stocks not found", Severity::WARNING);
+            fileLogger->log("Stocks not found", Severity::WARNING);
+            response["status"] = "Not Found";
+            response["message"] = "Stocks not found";
+        }
+        else if (stockResponse.status != SUCCESS)
+        {
+            this->consoleLogger->log("There is an error in database", Severity::ERROR);
+            this->fileLogger->log("There is an error in database", Severity::ERROR);
             response["status"] = "error";
-            response["error_message"] = "Database Error in getting stocks";
+            response["message"] = "Database Error in getting stocks";
         }
         else
         {
@@ -87,14 +96,14 @@ json StockController::getAllStocks()
     {
         this->consoleLogger->log(e.what(), Severity::ERROR);
         this->fileLogger->log(e.what(), Severity::ERROR);
-        return json({{"status", "error"}, {"error_message", e.what()}});
+        return json({{"status", "error"}, {"message", e.what()}});
     }
     catch (...)
     {
         this->consoleLogger->log("An unknown error occurred", Severity::ERROR);
         this->fileLogger->log("An unknown error occurred", Severity::ERROR);
         // Handle other types of exceptions
-        return json({{"status", "error"}, {"error_message", "An unknown error occurred"}});
+        return json({{"status", "error"}, {"message", "An unknown error occurred"}});
     }
 }
 
@@ -104,13 +113,19 @@ json StockController::getStockCartByUserId(const int &userID)
     {
         auto stockResponse = db_handler->getStockCartByUserId(userID);
         json response;
-
-        if (stockResponse.status != SUCCESS)
+        if (stockResponse.status == NOT_FOUND)
+        {
+            this->consoleLogger->log("There is no stocks in your cart", Severity::WARNING);
+            this->fileLogger->log("There is no stocks in your cart", Severity::WARNING);
+            response["status"] = "Not Found";
+            response["message"] = "There is no stocks in your cart";
+        }
+        else if (stockResponse.status != SUCCESS)
         {
             this->consoleLogger->log("Database Error in getting stocks", Severity::ERROR);
             this->fileLogger->log("Database Error in getting stocks", Severity::ERROR);
             response["status"] = "error";
-            response["error_message"] = "Database Error in getting stocks";
+            response["message"] = "Database Error in getting stocks";
         }
         else
         {
@@ -141,14 +156,14 @@ json StockController::getStockCartByUserId(const int &userID)
     {
         this->consoleLogger->log(e.what(), Severity::ERROR);
         this->fileLogger->log(e.what(), Severity::ERROR);
-        return json({{"status", "error"}, {"error_message", e.what()}});
+        return json({{"status", "error"}, {"message", e.what()}});
     }
     catch (...)
     {
         this->consoleLogger->log("An unknown error occurred", Severity::ERROR);
         this->fileLogger->log("An unknown error occurred", Severity::ERROR);
         // Handle other types of exceptions
-        return json({{"status", "error"}, {"error_message", "An unknown error occurred"}});
+        return json({{"status", "error"}, {"message", "An unknown error occurred"}});
     }
 }
 

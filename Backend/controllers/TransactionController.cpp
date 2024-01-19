@@ -9,7 +9,11 @@ TransactionController::TransactionController()
     this->fileLogger = new FileLogger("Server.log");
 }
 
-TransactionController::~TransactionController() {}
+TransactionController::~TransactionController()
+{
+    delete this->consoleLogger;
+    delete this->fileLogger;
+}
 
 TransactionController *TransactionController::getInstance()
 {
@@ -37,6 +41,12 @@ json TransactionController::addTransaction(const int &userID, const int &stockID
 json TransactionController::getTransactionById(const int &transactionID)
 {
     auto response = db_handler->getTransactionById(transactionID);
+    if (response.status == NOT_FOUND)
+    {
+        this->consoleLogger->log("There is no transaction with this ID", Severity::WARNING);
+        this->fileLogger->log("There is no transaction with this ID", Severity::WARNING);
+        return json({{"status", "failed"}, {"message", "transaction not found"}});
+    }
     if (response.status != SUCCESS)
     {
         this->consoleLogger->log("Database Error in getting transaction", Severity::ERROR);
@@ -66,10 +76,18 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
 
         json response;
 
-        if (transactionsResponse.status != SUCCESS)
+        if (transactionsResponse.status == NOT_FOUND)
+        {
+            this->consoleLogger->log("Transactions not found", Severity::WARNING);
+            this->fileLogger->log("Transactions not found", Severity::WARNING);
+            response["status"] = "Not Found";
+            response["message"] = "Transactions not found";
+        }
+
+        else if (transactionsResponse.status != SUCCESS)
         {
             response["status"] = "error";
-            response["error_message"] = "Database Error in getting stocks";
+            response["message"] = "Database Error in getting stocks";
         }
         else
         {
@@ -107,13 +125,13 @@ json TransactionController::getAllTransactionsByUserId(const int &userID)
     {
         this->consoleLogger->log(e.what(), Severity::ERROR);
         this->fileLogger->log(e.what(), Severity::ERROR);
-        return json({{"status", "error"}, {"error_message", e.what()}});
+        return json({{"status", "error"}, {"message", e.what()}});
     }
     catch (...)
     {
         this->consoleLogger->log("An unknown error occurred", Severity::ERROR);
         this->fileLogger->log("An unknown error occurred", Severity::ERROR);
         // Handle other types of exceptions
-        return json({{"status", "error"}, {"error_message", "An unknown error occurred"}});
+        return json({{"status", "error"}, {"message", "An unknown error occurred"}});
     }
 }

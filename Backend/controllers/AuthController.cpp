@@ -47,7 +47,11 @@ AuthController::AuthController()
     this->fileLogger = new FileLogger("Server.log");
 }
 
-AuthController::~AuthController() {}
+AuthController::~AuthController()
+{
+    delete this->consoleLogger;
+    delete this->fileLogger;
+}
 
 AuthController *AuthController::getInstance()
 {
@@ -89,7 +93,7 @@ json AuthController::authenticateUser(std::string token)
             {"wallet", response.result->wallet}};
         this->consoleLogger->log("user authenticated", Severity::INFO);
         this->fileLogger->log("user authenticated", Severity::INFO);
-        return json({{"status", "success"}, {"User", userDataJson}});
+        return json({{"status", "success"}, {"user", userDataJson}});
     }
     catch (const std::exception &e)
     {
@@ -203,7 +207,7 @@ json AuthController::login(json &User)
         this->consoleLogger->log("user logged in", Severity::INFO);
         this->fileLogger->log("user logged in", Severity::INFO);
 
-        return json({{"status", "success"}, {"User", userDataJson}, {"stock_token", *token.result}});
+        return json({{"status", "success"}, {"user", userDataJson}, {"stock_token", *token.result}});
     }
     this->consoleLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
     this->fileLogger->log("username_or_email, password cannot be empty", Severity::ERROR);
@@ -327,6 +331,6 @@ json AuthController::createUser(json &User)
     this->fileLogger->log("user created", Severity::INFO);
 
     return json({{"status", "success"},
-                 {"User", UserResponse},
+                 {"user", UserResponse},
                  {"stock_token", token}});
 }
