@@ -37,10 +37,7 @@ cd services
 // To run the frontend
 // Navigate to /Frontend
 
-// For web-view
 npm run dev
-
-// For desktop view using electron
 npm run electron
 ```
 
