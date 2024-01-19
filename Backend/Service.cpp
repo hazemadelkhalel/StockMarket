@@ -355,7 +355,7 @@ int main()
                 auto response = authController->createUser(user);
 
                 if(response["status"] == "success") {
-                    res.set_content("{\"message\": \"User created successfully!\"}, \"token\": " + response["stock_token"].dump() + "}", "application/json");
+                    res.set_content("{\"message\": \"User created successfully!\", \"token\": " + response["stock_token"].dump() + "}", "application/json");
                 } else {
                     string error = response["message"];
                     res.set_content("{\"error\": \"" + error + "\"}", "application/json");
